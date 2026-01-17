@@ -207,6 +207,23 @@ If yes to a command, create in `.claude/commands/[name].md`.
    - [Created new skill/command if applicable]
    ```
 
+### Step 7: Sync Skills (if modified)
+
+If you created or modified any skills during this session:
+
+1. **Commit and push skill changes**:
+   ```bash
+   cd ~/.claude/skills
+   git add -A
+   git diff --cached --quiet || git commit -m "Update skills from compound session"
+   git push origin main
+   ```
+
+2. **Remind user about session exit**:
+   > Skills are synced automatically when you end your session properly.
+   > Use `/exit` or type `exit` to ensure the Stop hook runs and syncs your skills.
+   > Closing the tab/terminal abruptly may skip the sync.
+
 ---
 
 ## Quick Reference: Compounding Checklist
@@ -236,6 +253,10 @@ Use this checklist at the end of each significant feature:
 ### Commit
 - [ ] All documentation committed?
 - [ ] Descriptive commit message?
+
+### Skills Sync (if skills modified)
+- [ ] Skill changes committed and pushed?
+- [ ] Reminded user to use `/exit` for auto-sync?
 ```
 
 ---
