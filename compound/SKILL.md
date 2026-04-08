@@ -194,11 +194,23 @@ Ask these questions:
 If yes to a skill, create in `.claude/skills/[name]/SKILL.md`.
 If yes to a command, create in `.claude/commands/[name].md`.
 
-### Step 6: Verify and Commit
+### Step 6: Update Memory Index
+
+Read `MEMORY.md` and verify it reflects the current state of the project:
+
+1. **Update stale entries** — commit counts, status dates, "remaining" items that are now done
+2. **Add new memory file pointers** if you created new memory files during this session
+3. **Keep entries under 1 line each** — MEMORY.md is an index, not a document
+4. **Remove obsolete entries** for completed/merged features that no longer need tracking
+
+MEMORY.md is loaded into every conversation automatically. Stale entries cause future sessions to start with wrong assumptions (e.g., "22 commits" when there are 35, or "remaining: TTS audio" when it's been done for days).
+
+### Step 7: Verify and Commit
 
 1. **Review the documentation** for accuracy and completeness
 2. **Check Claude.md** if updates were made
-3. **Commit with descriptive message**:
+3. **Check MEMORY.md** is current (step 6)
+4. **Commit with descriptive message**:
    ```
    docs: compound learnings from [feature name]
 
@@ -207,7 +219,7 @@ If yes to a command, create in `.claude/commands/[name].md`.
    - [Created new skill/command if applicable]
    ```
 
-### Step 7: Sync Skills (if modified)
+### Step 8: Sync Skills (if modified)
 
 If you created or modified any skills during this session:
 
@@ -243,6 +255,11 @@ Use this checklist at the end of each significant feature:
 - [ ] Should a new skill be created?
 - [ ] Should a new command be created?
 - [ ] Should a hook be added to prevent issues?
+
+### Memory Index
+- [ ] MEMORY.md entries updated (status, dates, commit counts)?
+- [ ] New memory file pointers added if needed?
+- [ ] Stale/completed entries cleaned up?
 
 ### Commit
 - [ ] All documentation committed?
