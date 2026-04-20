@@ -1,227 +1,169 @@
 ---
 name: compound
-description: Capture learnings after completing a feature or session to make future work easier. Documents patterns, decisions, failures, and determines if new skills or Claude.md updates are needed.
+description: Capture learnings after completing a feature or session to make future work easier. Net-zero-or-better on file size — prunes as much as it adds. Determines if new skills or CLAUDE.md updates are needed.
 ---
 
-# Compound: Knowledge Capture & Codification
+# Compound: Knowledge Capture & Pruning
 
-This skill formalizes the "compound" step of compound engineering: capturing learnings so each feature makes the next one easier.
-
-## When to Use This Skill
-
-**Use this skill when:**
-- You've just completed a significant feature or bug fix
-- A session is ending and valuable learnings should be preserved
-- You discovered a pattern worth documenting for future sessions
-- You want to review recent work and extract reusable knowledge
-- A bug was particularly tricky and the fix should prevent recurrence
-
-**Don't use this skill for:**
-- Active debugging (use `deep-debug` skill instead)
-- Writing tests (use `app-testing` skill)
-- Research tasks (use `tech-research` skill)
+Formalizes the "compound" step of compound engineering: capture learnings so each feature makes the next one easier, **WITHOUT adding bloat**. Every step that adds knowledge has a matching gate or a pruning companion.
 
 ## Core Philosophy
 
-> "Each unit of engineering work should make subsequent units easier—not harder."
+> "Each unit of engineering work should make subsequent units easier — not just documented more."
 
-The goal is to create a **learning loop** where:
+The learning loop:
 1. Patterns get documented so they can be reused
 2. Decisions get recorded so they don't get re-debated
 3. Failures get encoded into rules/hooks to prevent recurrence
 4. Repeated workflows get turned into skills or commands
+5. **Stale knowledge gets deleted so signal-to-noise stays high**
 
-## Compounding Workflow
+If this session adds more to CLAUDE.md or the Pattern Index than it removes, you're probably compounding in the wrong direction. Dead weight degrades compliance on every other rule.
+
+## When to Use
+
+- Just completed a significant feature or bug fix
+- Session is ending and valuable learnings should be preserved
+- Discovered a pattern worth documenting
+- A bug was tricky and the fix should prevent recurrence
+
+Don't use for:
+- Active debugging (use `deep-debug`)
+- Writing tests (use `app-testing`)
+- Research tasks (use `tech-research`)
+
+---
+
+## Workflow
 
 ### Step 1: Gather Context
 
-First, understand what was accomplished in this feature/session.
-
+```bash
+git diff main...HEAD        # what changed
+git log main..HEAD --oneline # how it got there
 ```
-Review recent work:
+
+Answer internally:
 - What feature or fix was completed?
-- What files were changed? (git diff main...HEAD)
-- What was the original problem/requirement?
-- How long did it take vs. expected?
-```
-
-**Key Questions to Answer:**
-- What worked well?
-- What took longer than expected?
-- What did I (Claude) initially misunderstand?
+- What worked well? What took longer than expected?
+- What did Claude initially misunderstand?
 - What edge cases were discovered?
-- What patterns were used or created?
 
-### Step 2: Classify the Learning Type
+### Step 2: Classify the Learning
 
-Determine what type of knowledge was generated:
+| Type | Description | Where |
+|---|---|---|
+| **Pattern** | Reusable approach that worked well | `docs/lessons-learned/` doc. Pattern Index ONLY if Step 4 gate passes. |
+| **Decision** | Choice between alternatives with rationale | Inline in the lessons-learned doc, or `docs/architecture/` |
+| **Failure/Fix** | Bug root cause + prevention | `docs/lessons-learned/` (consider a hook if deterministically catchable) |
+| **Workflow** | Repeated sequence of steps | New skill ONLY if Step 5 gate passes |
+| **Rule** | Constraint that must always be followed | CLAUDE.md cardinal rule ONLY if truly non-negotiable (rare; most go in @docs/pitfalls.md or memory) |
 
-| Type | Description | Where to Codify |
-|------|-------------|-----------------|
-| **Pattern** | Reusable approach that worked well | `docs/lessons-learned/` + Claude.md pattern index |
-| **Decision** | Choice between alternatives with rationale | `docs/architecture/` or inline in lessons-learned |
-| **Failure/Fix** | Bug root cause and prevention | `docs/lessons-learned/` + possibly a hook |
-| **Workflow** | Repeated sequence of steps | New skill or command |
-| **Rule** | Constraint that must always be followed | Claude.md cardinal rules |
+### Step 3: Write the Lessons-Learned Doc (short form)
 
-### Step 3: Create Documentation
-
-Based on classification, create appropriate documentation.
-
-#### For Patterns (Success Stories)
-
-Create a file in `docs/lessons-learned/` following this template:
+One file per feature/fix in `docs/lessons-learned/`, named by feature. Use this minimal template — **do NOT expand it**. Most learnings are 50–150 lines total.
 
 ```markdown
-# [Feature Name] - [Pattern Type] Documentation
+# [Feature Name]
 
-**Feature**: [Brief description]
-**Implementation Date**: [Date]
-**Status**: [Production Ready / In Progress / Experimental]
-**Architecture Compliance**: [% compliance with RO-bot governance]
+**Status:** [Shipped / Partially shipped / Abandoned]
+**Date:** [YYYY-MM-DD]
 
----
+## Context
+[1–3 sentences: what was the goal, what did we try, what shipped.]
 
-## Executive Summary
-[1-2 paragraphs on what was accomplished and key achievements]
+## What Worked
+- [Concrete insight per bullet. Not vague platitudes.]
 
----
+## What Didn't
+- [What blocked progress, what was discarded, what was harder than expected.]
 
-## Implementation Approach
-### Phase 1: [Phase Name]
-**Outcome**: [What this phase proved/accomplished]
-- [Bullet points of key steps]
-- **Result**: [Concrete outcome]
+## Agent Mistakes to Prevent
+- [What Claude initially misunderstood. Phrase as "don't do X because Y".
+  This is a first-class output — future sessions should read this first.]
 
-[Repeat for each phase]
+## Reusable Pattern (if any)
+- **Name:** [Short name]
+- **Use when:** [1 line]
+- **Key insight:** [1–2 lines]
+- **Admission check:** does this pass Step 4's gate, or is it RO-bot-specific?
 
----
-
-## Architecture Compliance Analysis
-### [Rule Category]
-- [Checkbox] [Specific compliance point]
-[Repeat for each relevant rule]
-
----
-
-## Technical Implementation Details
-### Files Created/Modified
-```
-/path/to/file.ts - [Description]
+## References
+- Code: [file paths touched]
+- PRs/commits: [links]
 ```
 
-### API Endpoints (if applicable)
-```
-METHOD /endpoint - [Description]
-```
+**Do NOT include:** Executive Summary, Architecture Compliance Analysis, Data Flow diagrams, Future Applications, Replication Template. These inflate docs without improving future sessions. Git + code are the authoritative source for implementation details.
 
-### Data Flow
-```
-[Step 1] → [Step 2] → [Step 3]
-```
+### Step 4: Pattern Index Gate (default: NO)
 
----
+Default action: **do NOT add to `docs/lessons-learned/INDEX.md`**. The lessons-learned doc alone is enough for most learnings.
 
-## Lessons Learned
+Only add an INDEX row if BOTH are true:
 
-### What Worked Well
-1. [Specific success factor]
+- [ ] **Cross-project test:** A new engineer working on an unrelated project (not RO-bot) would benefit from this pattern.
+- [ ] **Non-obvious test:** The insight would NOT be rediscovered in an hour of reading the codebase.
 
-### What Could Be Improved
-1. [Area for improvement]
+If either fails:
+- **RO-bot-specific:** add a row to `memory/reference_ro_bot_internal_patterns.md` instead.
+- **Obvious from code:** no INDEX row. The lessons-learned doc is enough for archival.
 
-### Agent Mistakes to Prevent
-1. [What I (Claude) initially misunderstood and how to prevent it]
+The INDEX flows into every session's context via CLAUDE.md. Each row has a compliance cost. Over 30+ sessions, adding one row per session is how a CLAUDE.md grows from 100 lines to 335.
 
----
+### Step 5: Skill / Command Creation Gate (default: NO)
 
-## Replication Template
-[Prompt patterns or approach that can be reused for similar features]
+Creating a skill costs context in every session. Default: **don't create**.
 
----
+Create a new skill only if ALL are true:
 
-## Future Applications
-[Other features that could use this pattern]
-```
+- [ ] Will be used >3 times across unrelated features (extrapolate from evidence, not hope)
+- [ ] No existing skill covers it (check `~/.claude/skills/`)
+- [ ] Workflow has decision points a bash script can't handle
 
-#### For Failures/Fixes
+Make it a command instead if:
+- Single repeatable operation, expressible as a bash script or command sequence
+- Saves >2 minutes per use
 
-Focus on prevention:
-
-```markdown
-# [Bug/Issue Name] - Root Cause Analysis
-
-**Symptoms**: [What the user experienced]
-**Root Cause**: [Technical explanation]
-**Fix Applied**: [What was changed]
-**Prevention Strategy**: [How to prevent recurrence]
-
-## Should This Become a Hook or Rule?
-- [ ] Add to Claude.md as a cardinal rule
-- [ ] Create a pre-commit hook
-- [ ] Add to an existing skill's checklist
-- [ ] No codification needed (one-time issue)
-```
-
-### Step 4: Update Claude.md Pattern Index
-
-If a significant pattern was documented, add it to the pattern index in `docs/Claude.md`:
-
-```markdown
-## Pattern Index (Quick Reference)
-
-| Pattern | Use When | Doc Link |
-|---------|----------|----------|
-| VIN OCR Success | Camera/OCR features | [vin-ocr-success-pattern.md] |
-| [New Pattern] | [Trigger condition] | [doc-link.md] |
-```
-
-### Step 5: Evaluate Skill/Command Creation
-
-Ask these questions:
-
-**Should this become a new skill?**
-- [ ] Will this workflow be repeated more than 3 times?
-- [ ] Does it require 5+ steps to execute properly?
-- [ ] Would forgetting a step cause significant problems?
-- [ ] Is it distinct from existing skills (app-testing, deep-debug, tech-research)?
-
-**Should this become a new command?**
-- [ ] Is it a single, repeatable operation (not a workflow)?
-- [ ] Can it be expressed as a simple bash script or command sequence?
-- [ ] Would it save >2 minutes each time it's used?
-
-If yes to a skill, create in `.claude/skills/[name]/SKILL.md`.
-If yes to a command, create in `.claude/commands/[name].md`.
+Skills: `~/.claude/skills/{name}/SKILL.md`. Project commands: `.claude/commands/{name}.md`.
 
 ### Step 6: Update Memory Index
 
-Read `MEMORY.md` and verify it reflects the current state of the project:
+Read `MEMORY.md` and update to current truth:
 
-1. **Update stale entries** — commit counts, status dates, "remaining" items that are now done
-2. **Add new memory file pointers** if you created new memory files during this session
-3. **Keep entries under 1 line each** — MEMORY.md is an index, not a document
-4. **Remove obsolete entries** for completed/merged features that no longer need tracking
+1. **Update stale entries** — commit counts, status dates, "remaining" items that are now done.
+2. **Add new memory file pointers** if you created memory files this session (keep each pointer under ~150 chars).
+3. **Remove obsolete entries** for completed/merged features that no longer need tracking. This is the most important update — MEMORY.md lines decay fast.
 
-MEMORY.md is loaded into every conversation automatically. Stale entries cause future sessions to start with wrong assumptions (e.g., "22 commits" when there are 35, or "remaining: TTS audio" when it's been done for days).
+MEMORY.md is loaded into every conversation. Stale entries = future sessions start with wrong assumptions.
 
-### Step 7: Verify and Commit
+### Step 7: PRUNE (net-zero check) ⭐
 
-1. **Review the documentation** for accuracy and completeness
-2. **Check Claude.md** if updates were made
-3. **Check MEMORY.md** is current (step 6)
-4. **Commit with descriptive message**:
+The step most compounding workflows skip. Before committing, look for deletions:
+
+- [ ] **CLAUDE.md size:** `wc -l CLAUDE.md`. Target <150. Over? Identify sections to cut or move to `@docs/...` imports.
+- [ ] **Pattern Index rows:** any rows that reference deleted code, superseded approaches, or are no longer relevant? Remove.
+- [ ] **Lessons-learned docs >6 months old** not referenced in current code or memory? Archive to `docs/lessons-learned/archived/`.
+- [ ] **Memory entries** for completed/merged features still marked "active"? Move to Completed or delete.
+- [ ] **Dead rules** in CLAUDE.md referencing renamed files, deleted features, or past projects? Delete.
+
+A compound session that adds 0 INDEX rows and removes 1 stale one is a **WIN**. Net-negative compounding is the goal when the repo is already mature.
+
+### Step 8: Verify and Commit
+
+1. Review the lessons-learned doc for accuracy and terseness.
+2. Confirm CLAUDE.md / INDEX.md / MEMORY.md changes reflect reality (including deletions from Step 7).
+3. Commit:
    ```
    docs: compound learnings from [feature name]
 
    - Added [pattern/fix] documentation
-   - Updated Claude.md pattern index
+   - Removed [stale entry/rule] from [file]
    - [Created new skill/command if applicable]
    ```
 
-### Step 8: Sync Skills (if modified)
+### Step 9: Sync Skills (if modified)
 
-If you created or modified any skills during this session:
+If you created or modified skills this session:
 
 ```bash
 cd ~/.claude/skills
@@ -232,102 +174,44 @@ git push origin main
 
 ---
 
-## Quick Reference: Compounding Checklist
-
-Use this checklist at the end of each significant feature:
-
-```
-## Compounding Checklist for [Feature Name]
-
-### Knowledge Capture
-- [ ] What patterns were used or discovered?
-- [ ] What decisions were made and why?
-- [ ] What took longer than expected?
-- [ ] What did Claude initially misunderstand?
-
-### Documentation
-- [ ] Created/updated docs/lessons-learned/ entry?
-- [ ] Updated Claude.md pattern index (if significant)?
-- [ ] Documented architecture compliance?
-
-### Codification
-- [ ] Should any rules be added to Claude.md?
-- [ ] Should a new skill be created?
-- [ ] Should a new command be created?
-- [ ] Should a hook be added to prevent issues?
-
-### Memory Index
-- [ ] MEMORY.md entries updated (status, dates, commit counts)?
-- [ ] New memory file pointers added if needed?
-- [ ] Stale/completed entries cleaned up?
-
-### Commit
-- [ ] All documentation committed?
-- [ ] Descriptive commit message?
-
-### Skills Sync (if skills modified)
-- [ ] Skill changes committed and pushed?
-```
-
----
-
-## RO-bot Specific Considerations
-
-When compounding knowledge for RO-bot, always consider:
-
-1. **Mobile-First Impact**: Did this affect iOS Safari behavior? Document it.
-2. **Data Isolation**: Any learnings about organization_id filtering?
-3. **Architecture Compliance**: How well did this follow the direct-to-Firebase model?
-4. **Voice/Video Features**: Any learnings about media handling?
-
----
-
 ## Integration with Other Skills
-
-This skill completes the development loop:
 
 ```
 tech-research → Plan
     ↓
- (coding)    → Work
+(coding)      → Work
     ↓
-app-testing  → Verify
+app-testing   → Verify
     ↓
-deep-debug   → Fix (if needed)
+deep-debug    → Fix (if needed)
     ↓
-compound     → Learn & Codify
+compound      → Learn + Prune + Codify (net-zero size goal)
     ↓
-(next feature, now easier)
+(next feature, now easier — without the file being bigger)
 ```
-
----
 
 ## Example Session
 
-**User**: "We just finished the issue labels feature. Let's compound the learnings."
+**User:** "We just finished the issue labels feature. Let's compound."
 
-**Claude**:
-1. Reviews recent commits and changes
-2. Identifies that testing was skipped initially (failure pattern)
-3. Creates `docs/lessons-learned/issue-labels-feature.md`
-4. Notes that a testing reminder should be added to Claude.md
-5. Confirms no new skill needed (existing app-testing covers this)
-6. Commits documentation with clear message
+**Claude:**
+1. `git diff main...HEAD` — reviews changes.
+2. Identifies: testing was skipped initially (failure pattern).
+3. Writes `docs/lessons-learned/issue-labels-feature.md` using short template.
+4. **Step 4 gate:** "always run tests before shipping" is too obvious for INDEX — skip the row.
+5. **Step 5 gate:** no new skill — existing `app-testing` skill covers this.
+6. **Step 7 prune:** checks CLAUDE.md size (110 lines ✓); removes one stale Pattern Index row referencing a deleted feature.
+7. Commits.
 
-**Outcome**: Future features will have stronger testing discipline because the failure was codified.
+**Outcome:** one new lessons-learned doc (preserved), zero bloat in always-loaded files, one stale row removed. Net signal went up.
 
 ---
 
 ## References
 
-This skill is based on the compound engineering methodology developed at Every.to.
+- [Compound Engineering Plugin](https://github.com/EveryInc/compound-engineering-plugin) — Every's original workflow
+- [Compound Engineering: How Every Codes With Agents](https://every.to/chain-of-thought/compound-engineering-how-every-codes-with-agents) — Dan Shipper's explanation
+- [HumanLayer: Writing a Good CLAUDE.md](https://www.humanlayer.dev/blog/writing-a-good-claude-md) — on instruction budget and compliance degradation
+- [Anthropic: Claude Code Best Practices](https://code.claude.com/docs/en/best-practices) — on verification, hooks, and when rules become hooks
 
-**Primary Sources:**
-- [Compound Engineering Plugin](https://github.com/EveryInc/compound-engineering-plugin) — Official Claude Code plugin with full workflow implementation
-- [Compound Engineering: How Every Codes With Agents](https://every.to/chain-of-thought/compound-engineering-how-every-codes-with-agents) — Dan Shipper's article explaining the methodology
-- [How Two Engineers Ship Like a Team of 15 With AI Agents](https://every.to/podcast/how-two-engineers-ship-like-a-team-of-15-with-ai-agents) — Podcast with implementation details
-
-**Pattern Documentation:**
-- [Compounding Engineering Pattern](https://github.com/nibzard/awesome-agentic-patterns/blob/main/patterns/compounding-engineering-pattern.md) — Community pattern documentation with trade-offs analysis
-
-**Key Insight:** The methodology inverts traditional engineering where each feature makes the next harder. By systematically capturing learnings, each feature makes the next *easier*.
+**Key insight:** The compound methodology inverts traditional engineering (where each feature makes the next harder). But it only works if compounding is net-additive on *useful signal*, not on *volume*. Pruning is half the job.
