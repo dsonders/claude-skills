@@ -1,9 +1,11 @@
 ---
 name: ui-design
-description: Mobile-first UI design and refinement workflow for RO-bot. Covers component creation, visual polish, iOS Safari compatibility, React render optimization, and pattern establishment with clear rules for stack, accessibility, animation, and performance. Use for React performance issues, re-render optimization, or memoization questions.
+description: Mobile-first UI design and refinement workflow for the RO-bot main app (React + Tailwind + Radix + shadcn at /ro-bot/app/). Covers component creation, visual polish, iOS Safari compatibility, React render optimization, and pattern establishment. Use for React performance issues, re-render optimization, or memoization questions. Use ONLY in /ro-bot/app/ — the marketing website (Astro) is separate, has no React, and uses different design patterns.
 ---
 
 # UI Design Skill: Mobile-First Interface Development
+
+**Scope:** This skill is specific to the RO-bot main app at `/ro-bot/app/`. The React component library, Tailwind config, Radix primitives, shadcn baked-in styles, and iOS-Safari-specific patterns described here only apply there. Do not invoke from `website/` (Astro, no React) or `GTM/`.
 
 This skill provides a systematic approach to UI design and refinement for the RO-bot application, emphasizing mobile-first development, iOS Safari compatibility, and consistent use of established patterns.
 

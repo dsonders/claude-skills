@@ -1,9 +1,11 @@
 ---
 name: app-testing
-description: Comprehensive automated testing workflow for RO-bot. Creates proactive tests for new features, manages test suites, uses Playwright MCP for visual debugging, and ensures data isolation. Covers unit tests, API tests, E2E tests, and mobile/iOS Safari testing.
+description: Comprehensive automated testing workflow for the RO-bot main app (Express+React+Firestore at /ro-bot/app/). Creates proactive tests for new features, manages test suites, uses Playwright MCP for visual debugging, and ensures organization data isolation. Covers Jest unit + API tests, Playwright E2E, mobile/iOS Safari. Use ONLY in /ro-bot/app/ — not for the marketing website (Astro) or GTM workspace.
 ---
 
 # App Testing: Comprehensive Automated Testing for RO-bot
+
+**Scope:** This skill is specific to the RO-bot main app at `/ro-bot/app/`. The Jest config, Playwright setup, fixtures, organization-isolation patterns, and `__tests__/{unit,api,e2e}/` layout described here only exist in that subproject. Do not invoke from `website/` (Astro static site, no Jest setup) or `GTM/` (no test infrastructure).
 
 This skill provides a systematic approach to creating and managing automated tests for the RO-bot application. It covers all testing layers from unit tests to visual E2E testing with Playwright MCP.
 

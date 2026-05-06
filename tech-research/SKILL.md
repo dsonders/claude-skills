@@ -5,7 +5,7 @@ description: Structured workflow for researching new features, technical capabil
 
 # Research Skill: Feature & Technology Exploration
 
-This skill provides a systematic approach to researching new features, UX elements, technical capabilities, and third-party integrations for the RO-bot application.
+This skill provides a systematic approach to researching new features, UX elements, technical capabilities, and third-party integrations for any project. Reads the working tree's existing architecture, researches solutions, evaluates options, and produces a recommendation with proof-of-concept code.
 
 ## When to Use This Skill
 

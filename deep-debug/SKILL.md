@@ -1,6 +1,6 @@
 ---
 name: deep-debug
-description: Systematic debugging workflow for persistent, tricky, or recurring bugs. Creates reproduction tests, investigates with git archaeology, uses automated testing to validate fixes, and prevents regressions. Particularly effective for data isolation issues, mobile browser quirks, and bugs that seemed fixed but returned.
+description: Systematic debugging workflow for persistent, tricky, or recurring bugs in any project. Creates reproduction tests, investigates with git archaeology, uses automated testing to validate fixes, and prevents regressions. Effective for multi-tenant data isolation, mobile browser quirks, race conditions, and bugs that seemed fixed but returned.
 ---
 
 # Deep Debug: Systematic Debugging for Persistent Issues
@@ -8,7 +8,7 @@ description: Systematic debugging workflow for persistent, tricky, or recurring 
 This skill provides a structured workflow for investigating bugs that are:
 - Persistent and difficult to diagnose
 - Recurring after seemingly being fixed
-- Related to data isolation or mobile browser issues
+- Subtle in pattern (works in some code paths, fails in others; intermittent under load; tied to environment differences)
 - Requiring systematic hypothesis testing
 
 ## Core Principles

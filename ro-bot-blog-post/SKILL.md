@@ -1,11 +1,15 @@
 ---
 name: ro-bot-blog-post
-description: End-to-end workflow for producing a new blog post on the RO.bot marketing site. Covers ideation, drafting, hero image, infographic, SEO/AEO optimization, two-way internal linking, distribution drafts, build verification, and deploy. Use when the user asks to add, write, or draft a new blog post.
+description: End-to-end workflow for producing a new blog post on the RO.bot marketing site at /ro-bot/website/. Covers ideation, drafting, hero image, infographic, SEO/AEO optimization, two-way internal linking, distribution drafts, build verification, and deploy. Use ONLY when working in /ro-bot/website/ — the blog frontmatter schema, Astro content collection, and deploy pipeline described here are website-specific.
 ---
 
 # RO.bot Blog Post Workflow
 
+**Scope:** This skill is specific to the RO.bot marketing website at `/ro-bot/website/`. The Astro content collection in `src/content/blog/`, the frontmatter schema in `src/content/config.ts`, the Netlify deploy step, and the build-verification commands all assume that subproject's structure. Do not invoke from `app/` or `GTM/`.
+
 End-to-end workflow to produce and ship a blog post on the RO.bot marketing site (`ro-bot.io`). The goal is to publish something high-quality in one session with the user only in the loop at 5 clear checkpoints.
+
+**Before drafting, read `/ro-bot/shared/product-facts.md` and `/ro-bot/shared/brand.md`** to ensure the post doesn't propagate stale facts or use banned words.
 
 ## When to use
 
