@@ -66,6 +66,24 @@ Read these files before Phase 1:
 
 ## Phase 2: Draft
 
+### Pre-draft research (audience voice)
+
+Before drafting audience-specific content, research how the audience actually talks. Industry tropes are usually wrong, and a draft built from tropes reads generic and gets called out.
+
+For Fixed Ops / technician content, sources in order of value:
+- **Reddit:** r/MechanicAdvice, r/AskMechanics, r/Justrolledintotheshop, r/askcarsales. Search the topic plus "flat rate", "warranty pay", "leaving the dealer", "dispatch", "skating".
+- **WrenchWay annual technician survey** — primary source for compensation-preference and "why I left" data.
+- **Tech forums:** Humble Mechanic, ScannerDanner, brand-specific Nation forums. These mirror Reddit voice when Reddit fetch is blocked.
+- **Industry reporting:** Auto Dealer Today, Automotive News Fixed Ops Journal, Digital Dealer.
+
+WebFetch is typically blocked at the DNS level on reddit.com from this environment. Delegate to a general-purpose research agent with specific subreddits and search terms. Ask for: top 5-7 reasons the audience leaves a shop in their own words, plus what dynamics are non-obvious or contradict conventional wisdom.
+
+Verified ground truth for dealership-tech content (from past research; do not re-litigate in the draft):
+- Pay is **flat-rate** (book hours × flag rate), NOT hourly. Variance is the pain, not the rate.
+- The villain in tech voice is the service writer/advisor, NOT the customer.
+- "Younger techs want phone-first tools" is marketing fluff. Techs of every age hate friction.
+- Warranty book times are tight; warranty documentation is a wage-clawback risk when claims get denied.
+
 ### Auto-steps
 
 1. **Assign sequential asset number** — look at `public/blog-assets/` for the highest numeric prefix (e.g., `8-warranty-audit-playbook`) and increment.
@@ -193,7 +211,30 @@ If the post naturally pairs with a downloadable asset (checklist, template, calc
    - `/blog/{slug}/` appears in the page list
    - `grep` the built HTML for the primary keyword and any infographic key values to confirm they rendered
 6. **Append to keyword tracker** — add a row to `docs/seo/keyword-tracker.md` with slug, publish date, primary keyword, and placeholders for rank tracking.
-7. **Start the dev server** in the background: `npm run dev` with `run_in_background: true`. Share `http://localhost:4321/blog/{slug}` with the user.
+7. **Start the dev server** in the background: `npm run dev` with `run_in_background: true`.
+8. **Visual verification (render before claiming success).** Do not pass the post to the user with phrases like "this should match your reference." Render via headless Chrome and read the screenshot first. If the user has to call out a visual problem you could have caught by looking, you wasted a round-trip.
+
+   One-time setup (in `/tmp` so it doesn't pollute the repo):
+   ```bash
+   cd /tmp && mkdir -p pw-tools && cd pw-tools && npm install --silent playwright
+   ```
+
+   Per-iteration screenshot script (saves the design block, prints its rendered dimensions for layout math):
+   ```js
+   // /tmp/pw-tools/inspect.mjs
+   import { chromium } from 'playwright';
+   const browser = await chromium.launch({ channel: 'chrome' }); // uses installed Chrome, no download
+   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+   await page.goto('http://localhost:4321/blog/{slug}/', { waitUntil: 'networkidle' });
+   const block = page.locator('.bg-surface.rounded-xl').first(); // adjust selector per post
+   await block.scrollIntoViewIfNeeded();
+   console.log('Block:', JSON.stringify(await block.boundingBox()));
+   await block.screenshot({ path: '/tmp/pw-tools/block.png' });
+   await browser.close();
+   ```
+   Run with `cd /tmp/pw-tools && node inspect.mjs`, then `Read /tmp/pw-tools/block.png` to see the render. For image-cropping math when using `object-cover`: container ratio < image ratio means image upscales to fill width, cropping vertically. Use `object-top` to preserve the top of the image (e.g., a meme caption).
+
+9. **Share `http://localhost:4321/blog/{slug}/` with the user** for their visual review.
 
 ### Checkpoint 4
 
@@ -201,7 +242,7 @@ If the post naturally pairs with a downloadable asset (checklist, template, calc
 
 ### Auto-steps (after approval)
 
-8. **Stop the dev server** — `pkill -f "astro dev"`.
+10. **Stop the dev server** — `pkill -f "astro dev"`.
 
 ---
 
