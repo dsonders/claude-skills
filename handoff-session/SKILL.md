@@ -1,9 +1,9 @@
 ---
-name: wrap-session
+name: handoff-session
 description: End-of-session wrap-up before clearing context on a long build session. Tidies the working tree, updates documentation, runs /compound, creates final PRs, delivers a session debrief with epic progress bar to re-ground the user, then writes a copy-paste handoff prompt for the post-/clear session. Use when the context window is getting heavy, at a junction point in a large build, when the user says "clear context and continue", "wrap up this session", or asks for a handoff prompt or progress summary.
 ---
 
-# Wrap Session: Tidy → Docs → Compound → PRs → Handoff
+# Handoff Session: Tidy → Docs → Compound → PRs → Handoff
 
 Lands a long build session cleanly so work can continue in a fresh context window with zero re-litigation. The final deliverable is a **handoff prompt** the user pastes after `/clear`.
 
@@ -145,7 +145,7 @@ Trim sections that are empty rather than padding them. If the session produced H
 ```
 (long build session)
     ↓
-wrap-session ──→ /compound   (Step 3 — capture + prune + memory)
+handoff-session ──→ /compound   (Step 3 — capture + prune + memory)
     ↓
 (user runs /clear, pastes handoff prompt)
     ↓
