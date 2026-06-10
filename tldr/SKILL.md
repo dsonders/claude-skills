@@ -28,6 +28,7 @@ The user is **Dave — solo founder, product leader, and CEO. He is not an engin
 - **Translate engineer-speak into outcomes.** Say what changed for the product/business, not how it was implemented.
 - **Cut the play-by-play.** He does not care about test names, function names, line numbers, or which files moved — unless that's the exact thing he must act on.
 - **But never hide a required action just because it's technical.** If he must run a command or approve something, surface it verbatim, in `code font`, even if it looks like engineering.
+- **Make it visual.** He should be able to *scan* the brief, not read it. Favor short labeled bullets, headers, whitespace, and the status markers below over prose paragraphs. (For a pure presentation re-render that keeps all the content, that's the sibling `/visual` skill.)
 
 ## What to summarize (scope)
 
