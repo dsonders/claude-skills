@@ -61,14 +61,18 @@ Do not duplicate its outputs in later steps — the handoff prompt links to what
 
 ### Step 4: Create Final PRs
 
+- **Test gate first**: run `/test:safe` (web-safe) on the branch before pushing, or — if the suite already ran this session on the final state — skip and rely on CI, but say so in the handoff.
 - Commit remaining logical units separately; push every branch (RULE #5 — Dave reviews on Replit/GitHub).
-- Open PRs with `gh pr create` for each branch that's ready. Note draft vs. ready-for-review.
+- Open PRs with `gh pr create` for each branch that's ready. Note draft vs. ready-for-review, and check `gh pr checks` so the handoff can report CI state (passing / pending / failing).
 - **Stacked PRs**: if a base just merged, remember the repo squash-merges — `git rebase --onto origin/main <base> <branch>` + force-push, or GitHub shows a false conflict.
+- **Backfill PR numbers into MEMORY.md**: `/compound` ran before these PRs existed, so any project-status entries it wrote reference branches, not PR numbers. Update them now.
 - Record every PR number and state — the handoff prompt needs them.
 
 ### Step 5: Write the Handoff Prompt
 
-Output as a single fenced code block the user copies and pastes after `/clear`. Template:
+**Verify before you write**: handoff claims drift from reality. Execute the read-only startup commands yourself (`pwd`, `git branch --show-current`, `git status`) and paste the *actual* output into the startup sequence — never write it from memory. Confirm every file path you cite exists.
+
+**Save it twice**: output the prompt as a single fenced code block in chat AND write the same content to a file (`/tmp/handoff-<workstream>-<date>.md`, or alongside the Step 2 brief if one was committed). Chat scrollback is the only other copy after `/clear` — tell the user the file path. Template:
 
 ```markdown
 # Handoff: [workstream name] — continuing from [date] session
@@ -106,9 +110,10 @@ Trim sections that are empty rather than padding them. If the session produced H
 ## Success Criteria
 
 - [ ] `git status` clean in every touched repo/worktree (or intentionally-dirty state named in the handoff)
-- [ ] `/compound` ran; MEMORY.md reflects current truth
-- [ ] All session branches pushed; PRs created with numbers recorded
-- [ ] Handoff prompt delivered as one copy-paste block, written against the FINAL state
+- [ ] `/compound` ran; MEMORY.md reflects current truth (including backfilled PR numbers)
+- [ ] Tests ran (or CI state checked) before final PRs; branches pushed; PR numbers + CI state recorded
+- [ ] Startup sequence verified by actually running it, not written from memory
+- [ ] Handoff prompt delivered as one copy-paste block AND saved to a file, written against the FINAL state
 - [ ] Handoff includes startup sequence + locked decisions + single next task
 
 ## Integration with Other Skills
