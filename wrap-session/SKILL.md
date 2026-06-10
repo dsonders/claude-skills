@@ -1,6 +1,6 @@
 ---
 name: wrap-session
-description: End-of-session wrap-up before clearing context on a long build session. Tidies the working tree, updates documentation, runs /compound, creates final PRs, then writes a copy-paste handoff prompt for the post-/clear session. Use when the context window is getting heavy, at a junction point in a large build, when the user says "clear context and continue", "wrap up this session", or asks for a handoff prompt.
+description: End-of-session wrap-up before clearing context on a long build session. Tidies the working tree, updates documentation, runs /compound, creates final PRs, delivers a session debrief with epic progress bar to re-ground the user, then writes a copy-paste handoff prompt for the post-/clear session. Use when the context window is getting heavy, at a junction point in a large build, when the user says "clear context and continue", "wrap up this session", or asks for a handoff prompt or progress summary.
 ---
 
 # Wrap Session: Tidy → Docs → Compound → PRs → Handoff
@@ -29,7 +29,7 @@ Lands a long build session cleanly so work can continue in a fresh context windo
 
 ## Workflow
 
-Make a todo list for these five steps and work through them in order.
+Make a todo list for these six steps and work through them in order.
 
 ### Step 1: Tidy Up
 
@@ -68,7 +68,28 @@ Do not duplicate its outputs in later steps — the handoff prompt links to what
 - **Backfill PR numbers into MEMORY.md**: `/compound` ran before these PRs existed, so any project-status entries it wrote reference branches, not PR numbers. Update them now.
 - Record every PR number and state — the handoff prompt needs them.
 
-### Step 5: Write the Handoff Prompt
+### Step 5: Session Debrief (for the user — re-grounding, not handoff)
+
+Output a short debrief in plain chat, NOT inside the handoff code block. The handoff prompt serves the next Claude session; this serves the human, who may be dozens of clears deep into a multi-day epic and losing the thread.
+
+**1. Accomplished this session** — 3–6 bullets, outcome-focused plain language ("parts dashboard now filters by status", not "refactored useRoList"), each anchored to a PR/commit number.
+
+**2. Where we are in the epic** — find the governing artifact for this workstream: the roadmap/plan doc in the repo, or the project memory entry tracking it. Derive position from that artifact, NOT from conversational recall (which is exactly what's about to be cleared). Render a progress bar plus phase list:
+
+```
+Epic: RO platform enhancements   [██████░░░░] 6/10 phases
+✅ P0 status anchor model        (#480, merged)
+✅ P1–P3 …                       (#482–#489, merged)
+🔄 P4 column config              (#506 open, awaiting review)
+⬜ P5 audit trail
+⬜ P6 plan net-new projects
+```
+
+**3. Drift check** — one or two sentences: is the planned next task still the right next move, or did this session change the picture? Name any fork in the road the user should consciously choose rather than default into. This is the antidote to blindly trudging forward.
+
+**If the epic has no governing artifact** (multi-session work tracked only in conversation), create one now — a project memory entry with the phase list and status — so the next wrap computes the bar instead of guessing. Keep it updated on every subsequent wrap; a stale bar is worse than none.
+
+### Step 6: Write the Handoff Prompt
 
 **Verify before you write**: handoff claims drift from reality. Execute the read-only startup commands yourself (`pwd`, `git branch --show-current`, `git status`) and paste the *actual* output into the startup sequence — never write it from memory. Confirm every file path you cite exists.
 
@@ -79,6 +100,7 @@ Do not duplicate its outputs in later steps — the handoff prompt links to what
 
 ## State
 [2-4 sentences: what shipped this session, what's in flight, what's next.]
+Epic position: [phase X of Y per <governing roadmap doc / memory entry> — cite it so the fresh session reads it]
 
 ## Startup sequence
 - cd [exact path / worktree]
@@ -113,8 +135,10 @@ Trim sections that are empty rather than padding them. If the session produced H
 - [ ] `/compound` ran; MEMORY.md reflects current truth (including backfilled PR numbers)
 - [ ] Tests ran (or CI state checked) before final PRs; branches pushed; PR numbers + CI state recorded
 - [ ] Startup sequence verified by actually running it, not written from memory
+- [ ] Session debrief delivered in plain chat: accomplishments, epic progress bar derived from a durable artifact, drift check
+- [ ] Multi-session epic has a governing artifact (roadmap doc or project memory entry) — created this wrap if it didn't exist
 - [ ] Handoff prompt delivered as one copy-paste block AND saved to a file, written against the FINAL state
-- [ ] Handoff includes startup sequence + locked decisions + single next task
+- [ ] Handoff includes startup sequence + locked decisions + single next task + epic position
 
 ## Integration with Other Skills
 
