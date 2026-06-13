@@ -1,36 +1,48 @@
 ---
 name: compound
-description: Capture learnings after completing a feature or session to make future work easier. Net-zero-or-better on file size — prunes as much as it adds. Determines if new skills or CLAUDE.md updates are needed.
+description: Capture learnings after a feature or session so future work compounds — technical lessons AND how Claude and the user work together. Net-zero-or-better on always-loaded files: updates existing docs instead of duplicating, prunes as much as it adds, and routes process learnings into memory.
 ---
 
 # Compound: Knowledge Capture & Pruning
 
-Formalizes the "compound" step of compound engineering: capture learnings so each feature makes the next one easier, **WITHOUT adding bloat**. Every step that adds knowledge has a matching gate or a pruning companion.
+Formalizes the "compound" step of compound engineering: capture learnings so each unit of work makes the next one easier, **WITHOUT adding bloat**. Every step that adds knowledge has a matching gate, an update-don't-duplicate check, or a pruning companion.
 
 ## Core Philosophy
 
 > "Each unit of engineering work should make subsequent units easier — not just documented more."
 
 The learning loop:
-1. Patterns get documented so they can be reused
+1. Patterns get documented (or an existing doc gets refreshed) so they can be reused
 2. Decisions get recorded so they don't get re-debated
 3. Failures get encoded into rules/hooks to prevent recurrence
-4. Repeated workflows get turned into skills or commands
-5. **Stale knowledge gets deleted so signal-to-noise stays high**
+4. **Collaboration frictions get encoded into memory** so Claude and the user work together better next time
+5. Repeated workflows get turned into skills or commands
+6. **Stale knowledge gets deleted** so signal-to-noise stays high
 
-If this session adds more to CLAUDE.md or the Pattern Index than it removes, you're probably compounding in the wrong direction. Dead weight degrades compliance on every other rule.
+If a session adds more to the always-loaded files (CLAUDE.md, any Pattern Index, MEMORY.md) than it removes, you're probably compounding in the wrong direction. Dead weight degrades compliance on *every other* rule.
+
+**Two artifacts compound, not one.** Most compound workflows only capture *technical* lessons. This one also captures *process* lessons — what this session revealed about how Claude and the user should work together — because improving the collaboration compounds across every future feature, not just the next one in this domain.
 
 ## When to Use
 
 - Just completed a significant feature or bug fix
 - Session is ending and valuable learnings should be preserved
-- Discovered a pattern worth documenting
+- Discovered a pattern, or a friction in how we worked, worth encoding
 - A bug was tricky and the fix should prevent recurrence
 
 Don't use for:
 - Active debugging (use `deep-debug`)
 - Writing tests (use `app-testing`)
 - Research tasks (use `tech-research`)
+
+## Modes
+
+| Mode | When | Behavior |
+|---|---|---|
+| **Interactive** (default) | A human is in the loop | Lead with a recommendation on judgment calls; ask only where the call is genuinely the user's. End conversationally. |
+| **Non-interactive** | Invoked by another skill (e.g., `handoff-session`), or the request says "headless"/"auto"/"just compound it" | No blocking questions. Take the conservative default at every gate (capture + full prune; gates default NO). Emit the compact report (see end) instead of back-and-forth. |
+
+Both modes run the same steps and produce the same artifacts — non-interactive just stops asking and reports.
 
 ---
 
@@ -43,11 +55,12 @@ git diff main...HEAD        # what changed
 git log main..HEAD --oneline # how it got there
 ```
 
-Answer internally:
-- What feature or fix was completed?
-- What worked well? What took longer than expected?
-- What did Claude initially misunderstand?
+Answer internally — the last two are the ones most workflows skip:
+- What feature or fix shipped? What worked? What took longer than expected?
 - What edge cases were discovered?
+- **What did Claude initially misunderstand?** (→ "Agent Mistakes" in the doc, a first-class output)
+- **What did this session reveal about how Claude and the user should work together?** A correction, a confirmed approach, a preference, a friction. This is a *process* learning, not a code one — it routes to memory in Step 6, not to a lessons-learned doc.
+- **Scan the MEMORY.md block already in your context** (no extra tool call — it's injected each session). Does this session make any entry stale? Would a learning here duplicate one that exists? Note both for Steps 2.7 and 6.
 
 ### Step 2: Classify the Learning
 
@@ -56,25 +69,40 @@ Answer internally:
 | **Pattern** | Reusable approach that worked well | `docs/lessons-learned/` doc. Pattern Index ONLY if Step 4 gate passes. |
 | **Decision** | Choice between alternatives with rationale | Inline in the lessons-learned doc, or `docs/architecture/` |
 | **Failure/Fix** | Bug root cause + prevention | `docs/lessons-learned/` (consider a hook if deterministically catchable) |
+| **Process / Collaboration** | How Claude and the user should work together — a correction, confirmed approach, or preference | Memory `feedback_*` entry (see Step 6). Never a lessons-learned doc. |
 | **Workflow** | Repeated sequence of steps | New skill ONLY if Step 5 gate passes |
-| **Rule** | Constraint that must always be followed | CLAUDE.md cardinal rule ONLY if truly non-negotiable (rare; most go in @docs/pitfalls.md or memory) |
-| **Product fact** | A user-facing fact that copy/marketing depends on (counts, mode names, workflow names) | A shared/source-of-truth file if the project has one (e.g., `shared/product-facts.md`); otherwise the closest single-source doc. Never duplicate across CLAUDE.mds. |
+| **Rule** | Constraint that must always hold | CLAUDE.md cardinal rule ONLY if truly non-negotiable (rare; most go in `@docs/pitfalls.md` or memory) |
+| **Product fact** | A user-facing fact copy/marketing depends on (counts, mode names, workflow names) | A shared/source-of-truth file if one exists (e.g., `shared/product-facts.md`); else the closest single-source doc. Never duplicate across CLAUDE.mds. |
 
-### Step 2.5: Route the Learning (read the project's CLAUDE.md routing table)
+### Step 2.5: Route the Learning (read the project's routing table)
 
-Before writing anything, check if the project's root CLAUDE.md (or workspace-level CLAUDE.md) has a **routing table** specifying where each type of learning belongs. Many multi-subproject workspaces (e.g., monorepos, consolidated parent dirs with sibling subproject repos) have a shared knowledge area for cross-cutting facts and a per-subproject docs area for stack-specific patterns.
+Before writing anything, check whether the project's root or workspace CLAUDE.md has a **routing table** for where each learning type belongs. Multi-subproject workspaces usually have a shared knowledge area for cross-cutting facts and a per-subproject docs area for stack-specific patterns.
 
-If a routing table exists:
-- Read it. Use it.
-- Cross-project insight (would help on an unrelated project) → shared INDEX/docs.
+If a routing table exists, use it:
+- Cross-project insight (helps an unrelated project) → shared INDEX/docs.
 - Stack-specific insight (only makes sense in this subproject's stack) → subproject INDEX/docs.
-- Product fact (count, mode name, workflow name) → shared product-facts file, NOT lessons-learned.
+- Product fact → shared product-facts file, NOT lessons-learned.
+- Process/collaboration → user memory.
 
-If no routing table exists, the skill defaults from Step 2 apply: write to `docs/lessons-learned/` of the current working tree.
+If no routing table exists, default per Step 2: write to `docs/lessons-learned/` of the current working tree.
+
+### Step 2.7: Overlap Check — Update, Don't Duplicate ⭐
+
+The highest-leverage net-zero move, and the one most workflows skip. **Before writing a new doc, look for an existing one on the same problem.** Grep the target `docs/lessons-learned/` dir (and the relevant shared area) for the feature, module, error string, or component.
+
+Score overlap with any candidate across five dimensions — problem statement, root cause, solution approach, files touched, prevention rule:
+
+| Overlap | Action |
+|---|---|
+| **High** (4–5 match) — essentially the same problem again | **Update the existing doc.** Fold in the fresher context (new code refs, added prevention), add a dated note. Do NOT create a second file. |
+| **Moderate** (2–3) — same area, different angle | **Create the new doc**, and flag the pair for Step 7 consolidation review. |
+| **Low** (0–1) — related but distinct | **Create the new doc** normally. |
+
+Why update beats create: two docs describing the same problem inevitably drift apart and eventually contradict each other — silently, because nothing forces them to be read together. The newer context is fresher and more trustworthy, so fold it in.
 
 ### Step 3: Write the Lessons-Learned Doc (short form)
 
-One file per feature/fix in `docs/lessons-learned/`, named by feature. Use this minimal template — **do NOT expand it**. Most learnings are 50–150 lines total.
+One file per feature/fix, named by feature. Use this minimal template — **do NOT expand it.** Most learnings are 50–150 lines.
 
 ```markdown
 # [Feature Name]
@@ -83,7 +111,7 @@ One file per feature/fix in `docs/lessons-learned/`, named by feature. Use this 
 **Date:** [YYYY-MM-DD]
 
 ## Context
-[1–3 sentences: what was the goal, what did we try, what shipped.]
+[1–3 sentences: goal, what we tried, what shipped.]
 
 ## What Worked
 - [Concrete insight per bullet. Not vague platitudes.]
@@ -93,166 +121,176 @@ One file per feature/fix in `docs/lessons-learned/`, named by feature. Use this 
 
 ## Agent Mistakes to Prevent
 - [What Claude initially misunderstood. Phrase as "don't do X because Y".
-  This is a first-class output — future sessions should read this first.]
+  Future sessions should read this first.]
 
 ## Reusable Pattern (if any)
-- **Name:** [Short name]
-- **Use when:** [1 line]
-- **Key insight:** [1–2 lines]
-- **Admission check:** does this pass Step 4's gate, or is it RO-bot-specific?
+- **Name / Use when / Key insight** — one line each.
+- **Admission check:** does this pass Step 4's gate, or is it project-specific?
 
 ## References
-- Code: [file paths touched]
-- PRs/commits: [links]
+- Code: [file paths]   PRs/commits: [links]
 ```
 
-**Do NOT include:** Executive Summary, Architecture Compliance Analysis, Data Flow diagrams, Future Applications, Replication Template. These inflate docs without improving future sessions. Git + code are the authoritative source for implementation details.
+**Do NOT include:** Executive Summary, Architecture Compliance Analysis, Data Flow diagrams, Future Applications, Replication Template. These inflate docs without improving future sessions. Git + code are the authoritative source for implementation detail.
 
 ### Step 4: Pattern Index Gate (default: NO)
 
-Default action: **do NOT add a row to any INDEX**. The lessons-learned doc alone is enough for most learnings.
+Default: **do NOT add a row to any INDEX.** The lessons-learned doc alone is enough for most learnings.
 
-Only add an INDEX row if BOTH are true:
+Add an INDEX row only if BOTH hold:
+- [ ] **Cross-project test:** an engineer on an *unrelated* project would benefit.
+- [ ] **Non-obvious test:** the insight would NOT be rediscovered in an hour of reading the codebase.
 
-- [ ] **Cross-project test:** A new engineer working on an unrelated project would benefit from this pattern.
-- [ ] **Non-obvious test:** The insight would NOT be rediscovered in an hour of reading the codebase.
+If both pass, route per Step 2.5: cross-project → shared INDEX; stack-specific-but-still-passing → subproject INDEX. If either fails: project-internal pattern → `memory/reference_{project}_internal_patterns.md`; obvious-from-code → no row (the doc is enough).
 
-If both pass, route the row using Step 2.5:
-- **Cross-project insight** → shared INDEX (e.g., `shared/lessons-learned/INDEX.md` if the workspace has one), OR if no shared layer exists, the closest project-wide INDEX.
-- **Stack-specific insight that still passes both gates** → subproject's INDEX (e.g., `app/docs/lessons-learned/INDEX.md`).
-
-If either gate fails:
-- **Project-internal pattern:** add a row to `memory/reference_{project}_internal_patterns.md` instead.
-- **Obvious from code:** no INDEX row. The lessons-learned doc is enough for archival.
-
-Every INDEX flows into the corresponding CLAUDE.md's context. Each row has a compliance cost. Over 30+ sessions, adding one row per session is how a CLAUDE.md grows from 100 lines to 335.
+Every INDEX row flows into a CLAUDE.md's context and carries a compliance cost. One row per session is how a CLAUDE.md grows from 100 to 335 lines.
 
 ### Step 5: Skill / Command Creation Gate (default: NO)
 
-Creating a skill costs context in every session. Default: **don't create**.
+Creating a skill costs context in every session. Default: **don't create.**
 
-Create a new skill only if ALL are true:
-
-- [ ] Will be used >3 times across unrelated features (extrapolate from evidence, not hope)
+Create a skill only if ALL hold:
+- [ ] Will be used >3 times across *unrelated* features (extrapolate from evidence, not hope)
 - [ ] No existing skill covers it (check `~/.claude/skills/`)
 - [ ] Workflow has decision points a bash script can't handle
 
-Make it a command instead if:
-- Single repeatable operation, expressible as a bash script or command sequence
-- Saves >2 minutes per use
+Make it a **command** instead when it's a single repeatable operation expressible as a script and saving >2 min/use. Skills: `~/.claude/skills/{name}/SKILL.md`. Commands: `.claude/commands/{name}.md`.
 
-Skills: `~/.claude/skills/{name}/SKILL.md`. Project commands: `.claude/commands/{name}.md`.
+### Step 6: Capture Memories (process + index)
 
-### Step 6: Update Memory Index
+Two memory jobs. Both matter; the first is the one this skill newly insists on.
 
-Read `MEMORY.md` and update to current truth:
+**1. Write the process/collaboration learning from Step 1** (if any) as a memory entry — this is how the *way we work together* compounds. Memory format:
 
-1. **Update stale entries** — commit counts, status dates, "remaining" items that are now done.
-2. **Add new memory file pointers** if you created memory files this session (keep each pointer under ~150 chars).
-3. **Remove obsolete entries** for completed/merged features that no longer need tracking. This is the most important update — MEMORY.md lines decay fast.
+```markdown
+---
+name: feedback_<short-slug>
+description: <one-line — used for recall>
+metadata:
+  type: feedback   # or: user | project | reference
+---
 
-MEMORY.md is loaded into every conversation. Stale entries = future sessions start with wrong assumptions.
+<the guidance in one or two sentences>
+**Why:** <the reason it matters — this is what makes it stick>
+**How to apply:** <the concrete behavior change next time>
+```
+
+- **Check for an existing memory to update first** (you scanned MEMORY.md in Step 1) — refine it rather than adding a near-duplicate. One fact per file.
+- After writing, add a one-line pointer to `MEMORY.md`. Link related memories with `[[other-slug]]`.
+- Only capture what was *non-obvious*. Don't memorialize what the code, git history, or CLAUDE.md already records.
+
+**2. Update the MEMORY.md index to current truth** — the most decay-prone always-loaded file:
+- Fix stale entries (commit counts, status dates, "remaining" items now done).
+- Add pointers for any memory files created this session (keep each <~150 chars).
+- **Remove obsolete entries** for completed/merged features that no longer need tracking. This is the most important update — stale MEMORY.md lines make future sessions start with wrong assumptions.
 
 ### Step 6.5: Cross-Cutting Fact Check ⭐
 
-If this session changed a feature, count, mode name, workflow name, deploy target, or any other product fact, check whether it shifts a fact recorded in a shared/source-of-truth file (e.g., `shared/product-facts.md`, `shared/deployment.md`, `shared/brand.md`).
+If this session changed a feature, count, mode name, workflow name, deploy target, or other product fact, check whether it shifts a fact recorded in a shared/source-of-truth file (`shared/product-facts.md`, `shared/deployment.md`, `shared/brand.md`).
 
 For each shared file the project maintains:
+1. Read the relevant section. Does the change make any line stale?
+2. If yes, update it in the same logical change. Update the "Last verified" date.
+3. Grep the rest of the workspace for stale references to the old fact (e.g., `grep -ri "7 criteria" website/`); list them in the commit message or a follow-up TODO. Don't leave silent drift.
+4. Each repo gets its own commit (shared edits are a separate commit in the shared repo).
 
-1. **Read the relevant section.** Does the change make any line stale?
-2. **If yes, update the shared file in the same logical change.** Update the "Last verified" date.
-3. **Search the rest of the workspace for stale references** to the old fact (e.g., `grep -ri "7 criteria" website/`). List them in your commit message or a follow-up TODO; don't silently leave drift behind.
-4. **Each repo gets its own commit.** If the workspace is multi-repo (subprojects + shared as siblings), the shared edit is a separate commit in the shared repo.
-
-This is the step that prevents fact drift like "marketing keeps saying 7 criteria when the product changed to 6." If the project has no shared facts file, skip this step.
+Skip if the project has no shared facts file.
 
 ### Step 7: PRUNE (net-zero check) ⭐
 
-The step most compounding workflows skip. Before committing, look for deletions:
+The step most compounding workflows skip. Before committing, actively look for deletions. For every candidate stale artifact, pick one outcome — don't default to Keep just because the general advice still sounds fine:
 
-- [ ] **CLAUDE.md size:** `wc -l CLAUDE.md`. Target <150. Over? Identify sections to cut or move to `@docs/...` imports.
-- [ ] **Pattern Index rows:** any rows that reference deleted code, superseded approaches, or are no longer relevant? Remove.
-- [ ] **Lessons-learned docs >6 months old** not referenced in current code or memory? Archive to `docs/lessons-learned/archived/`.
-- [ ] **Memory entries** for completed/merged features still marked "active"? Move to Completed or delete.
-- [ ] **Dead rules** in CLAUDE.md referencing renamed files, deleted features, or past projects? Delete.
+| Outcome | When |
+|---|---|
+| **Keep** | Still accurate and useful. No edit — don't leave a review breadcrumb. |
+| **Update** | Core is right, references drifted (paths, names, links). Fix in place. |
+| **Consolidate** | Two docs cover the same ground. Merge unique content into the canonical one, delete the other. |
+| **Replace** | Old guidance is now misleading and you have a verified successor. Write it, delete the old. |
+| **Delete** | Code/problem-domain gone, or fully redundant. Remove it. |
 
-A compound session that adds 0 INDEX rows and removes 1 stale one is a **WIN**. Net-negative compounding is the goal when the repo is already mature.
+Sweep:
+- [ ] **CLAUDE.md size:** `wc -l CLAUDE.md`. Target <150. Over? Cut or move sections to `@docs/...` imports.
+- [ ] **Pattern Index rows** referencing deleted code, superseded approaches, or moderate-overlap pairs from Step 2.7 → Update/Consolidate/Delete.
+- [ ] **Lessons-learned docs** that overlap (drift silently) or reference code that no longer exists → Consolidate or Delete.
+- [ ] **MEMORY.md entries** for merged features still marked "active" → Delete.
+- [ ] **Dead rules** in CLAUDE.md naming renamed files or past projects → Delete.
+
+**Delete, don't archive.** Git history *is* the archive (`git log --diff-filter=D` recovers anything). A `docs/lessons-learned/archived/` directory just accumulates docs nobody reads and pollutes search — skip it. A session that adds 0 INDEX rows and removes 1 stale one is a **WIN**. Net-negative compounding is the goal once a repo is mature.
 
 ### Step 8: Verify and Commit
 
-1. Review the lessons-learned doc for accuracy and terseness.
-2. Confirm CLAUDE.md / INDEX.md / MEMORY.md changes reflect reality (including deletions from Step 7).
+1. Review the doc / memory edits for accuracy and terseness.
+2. Confirm CLAUDE.md / INDEX / MEMORY.md reflect reality, including this session's deletions.
 3. Commit:
    ```
    docs: compound learnings from [feature name]
 
-   - Added [pattern/fix] documentation
+   - Updated [existing doc] with fresh context  (or: Added [doc])
+   - Captured [process learning] to memory
    - Removed [stale entry/rule] from [file]
-   - [Created new skill/command if applicable]
    ```
 
 ### Step 9: Sync Skills + Shared (if modified)
 
-If you created or modified skills this session:
-
+If you created/modified **skills** this session:
 ```bash
-cd ~/.claude/skills
-git add -A
-git diff --cached --quiet || git commit -m "Update skills from compound session"
-git push origin main
+cd ~/.claude/skills && git add -A && git diff --cached --quiet || git commit -m "Update skills from compound session" && git push origin main
 ```
 
-If you edited a shared/source-of-truth repo this session (e.g., `shared/product-facts.md`):
-
+If you edited a **shared/source-of-truth** repo:
 ```bash
-cd <project>/shared
-git add -A
-git diff --cached --quiet || git commit -m "compound: <what fact changed>"
-git push origin main 2>/dev/null || echo "Note: shared repo has no remote yet — skipping push"
+cd <project>/shared && git add -A && git diff --cached --quiet || git commit -m "compound: <what fact changed>" && git push origin main 2>/dev/null || echo "shared has no remote — skipping push"
 ```
 
-Do NOT auto-commit changes in the subproject repos themselves; those follow normal commit/PR rules per the subproject's CLAUDE.md. The skill commits only the meta-files (skills + shared knowledge).
+Do NOT auto-commit the subproject repos — those follow normal commit/PR rules per the subproject's CLAUDE.md. This skill commits only the meta-files (skills + shared knowledge + memory).
 
 ---
 
-## Integration with Other Skills
+## Where This Sits in the Loop
+
+Compound is the last step of the engineering loop, and the one that feeds the next pass:
 
 ```
-tech-research → Plan
-    ↓
-(coding)      → Work
-    ↓
-app-testing   → Verify
-    ↓
-deep-debug    → Fix (if needed)
-    ↓
-compound      → Learn + Prune + Codify (net-zero size goal)
-    ↓
-(next feature, now easier — without the file being bigger)
+tech-research → Plan        ui-design / coding → Work
+        ↓                            ↓
+   app-testing → Verify  ──→  deep-debug → Fix (if needed)
+        ↓                            ↓
+   code-review / simplify → Review & Polish
+        ↓
+   compound → Learn + Prune + Codify   (net-zero size goal)
+        ↓
+   next feature is easier — AND the collaboration is sharper —
+   without the always-loaded files getting bigger
 ```
 
-## Example Session
+`handoff-session` invokes this skill non-interactively as part of end-of-session wrap-up. When it does, run in non-interactive mode and return the compact report.
 
-**User:** "We just finished the issue labels feature. Let's compound."
+## Non-Interactive Report
 
-**Claude:**
-1. `git diff main...HEAD` — reviews changes.
-2. Identifies: testing was skipped initially (failure pattern).
-3. Writes `docs/lessons-learned/issue-labels-feature.md` using short template.
-4. **Step 4 gate:** "always run tests before shipping" is too obvious for INDEX — skip the row.
-5. **Step 5 gate:** no new skill — existing `app-testing` skill covers this.
-6. **Step 7 prune:** checks CLAUDE.md size (110 lines ✓); removes one stale Pattern Index row referencing a deleted feature.
-7. Commits.
+When run non-interactively, end with this instead of conversation:
 
-**Outcome:** one new lessons-learned doc (preserved), zero bloat in always-loaded files, one stale row removed. Net signal went up.
+```
+✓ Compound complete
+
+Doc:      <path> (created | updated — high overlap with <path>) | none
+Memory:   <feedback_slug captured | MEMORY.md: N updated, M removed | none>
+INDEX:    <none | +1 row to <path> | -N stale rows>
+Shared:   <none | updated <file> — fact: <what changed>>
+Pruned:   <0 | N deletions/consolidations: list>
+Net:      <+N / -M lines across always-loaded files>
+```
+
+## Example (compressed)
+
+"We finished issue labels. Compound." → `git diff`; testing was skipped initially (failure pattern) **and** Claude assumed the wrong filter scope twice (process learning). Step 2.7: an existing `issue-filtering.md` covers 4/5 dimensions → **update it**, don't create a new doc. Step 4 gate: "run tests before shipping" is too obvious for INDEX — skip. Step 6: capture `feedback_confirm_filter_scope` to memory. Step 7: CLAUDE.md is 110 lines ✓; remove one Pattern Index row for a deleted feature. **Outcome:** one doc refreshed (not added), one process memory, one stale row gone. Net signal up, net lines down.
 
 ---
 
 ## References
 
-- [Compound Engineering Plugin](https://github.com/EveryInc/compound-engineering-plugin) — Every's original workflow
-- [Compound Engineering: How Every Codes With Agents](https://every.to/chain-of-thought/compound-engineering-how-every-codes-with-agents) — Dan Shipper's explanation
-- [HumanLayer: Writing a Good CLAUDE.md](https://www.humanlayer.dev/blog/writing-a-good-claude-md) — on instruction budget and compliance degradation
-- [Anthropic: Claude Code Best Practices](https://code.claude.com/docs/en/best-practices) — on verification, hooks, and when rules become hooks
+- [Compound Engineering Guide](https://every.to/guides/compound-engineering) — Every's full methodology (Ideate→Brainstorm→Plan→Work→Review→Polish→Compound), updated 2026.
+- [compound-engineering-plugin](https://github.com/EveryInc/compound-engineering-plugin) — Every's `ce-compound` / `ce-compound-refresh` source; origin of the overlap-check, update-don't-duplicate, and delete-don't-archive patterns adopted here.
+- [Writing a Good CLAUDE.md](https://www.humanlayer.dev/blog/writing-a-good-claude-md) — instruction-budget and compliance degradation.
+- [Claude Code Best Practices](https://code.claude.com/docs/en/best-practices) — verification, hooks, when a rule becomes a hook.
 
-**Key insight:** The compound methodology inverts traditional engineering (where each feature makes the next harder). But it only works if compounding is net-additive on *useful signal*, not on *volume*. Pruning is half the job.
+**Key insight:** The compound methodology inverts traditional engineering, where each feature makes the next harder. But it only works if compounding is net-additive on *useful signal* — not on *volume*, and not only on *code*. Update before you duplicate; capture how-we-work alongside what-we-built; prune as much as you add. For frontier models, keep this skill's prescription lean: spell out the mechanical steps (paths, gates, commit flow), trust the model on judgment. Over-prescription degrades output.
