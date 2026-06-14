@@ -93,7 +93,7 @@ Run this self-test: *Can I write the end state as one concrete sentence? Can I n
 ### Step 2 — Lock the goal
 - Convert the (now-clear) objective into the six structured components and **restate the full goal back to the user for one go-ahead** before looping.
 - Set the turn cap (`--turns`, else default 30) and any token budget (`--tokens`).
-- **For code goals:** recommend a scratch branch and confirm the write boundary. A vague goal on a dirty tree can burn budget on off-target changes.
+- **For code goals:** `git fetch` and branch off **`origin/main`** (not a stale local `main` or old worktree), then confirm the write boundary. A stale base measures the verification surface against outdated source — silently invalidating coverage/benchmark numbers and producing a PR that conflicts with or regresses newer work. A vague goal on a dirty tree can also burn budget on off-target changes.
 
 ### Step 3 — Initialize state
 Write `<project>/.claude/goal-state.md` (format below) with the structured goal, `status: pursuing`, `turn: 0`, the cap, the budget, and an empty iteration log. This file is the durable record — it survives compaction, so on any later turn you can reload the goal and continue.
