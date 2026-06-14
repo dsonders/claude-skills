@@ -2,6 +2,8 @@
 
 Copy, fill, and pass to `/goal`. Every field should be objectively checkable — if you can't name the command or artifact that proves a line, it's not a finish line yet.
 
+**You can leave fields blank** — `/goal` will interview you (one focused question at a time) to fill them. But it won't start the loop until the **Outcome** (end state) and **Verification surface** (completion evidence) are unambiguous — that's the clarity gate.
+
 ```
 /goal <one-line objective>
 

@@ -1,6 +1,6 @@
 ---
 name: goal
-description: Run an autonomous, self-verifying goal loop — a Claude Code recreation of OpenAI Codex's /goal command. Claude turns an objective into a verifiable goal (outcome, verification surface, constraints, boundaries, iteration policy, blocked-stop), then repeatedly works → prints raw evidence → has an INDEPENDENT verification subagent judge achieved/unmet/blocked → iterates, until the finish line is verified, a turn/budget cap is hit, or it is blocked. Use when the user invokes /goal, or asks Claude to keep working autonomously toward a checkable finish line (tests pass, coverage threshold, every section filled, a benchmark target) without nudging every turn. Also handles lifecycle commands — /goal status, /goal pause, /goal resume, /goal clear, /goal complete. Skip for one-off edits, exploratory or subjective work, or any objective with no verifiable completion condition.
+description: Run an autonomous, self-verifying goal loop — a Claude Code recreation of OpenAI Codex's /goal command. Claude turns an objective into a verifiable goal (an outcome plus the evidence that proves it), then loops work → print raw evidence → an INDEPENDENT verification subagent judges achieved/unmet/blocked → iterate, until the finish line is verified, a turn/budget cap is hit, or it is blocked. Before executing it runs a clarity gate — when the objective or its completion criteria are underspecified, it interviews the user one question at a time to lock the end state and required evidence, and won't start the loop until that threshold is met. Use when the user invokes /goal, or asks Claude to work autonomously toward a checkable finish line (tests pass, coverage threshold, a benchmark target) without nudging every turn. Also handles lifecycle commands (status, pause, resume, clear, complete). Skip one-off edits, exploratory or subjective work, or objectives with no verifiable completion.
 ---
 
 # Goal: Autonomous Self-Verifying Objective Loop
@@ -27,17 +27,18 @@ Related skills: `/loop` (run a prompt on an interval — pair with this for very
 
 ## Core Principles
 
-1. **The agent does not grade its own homework.** An independent verification subagent (fresh context) reads ONLY the evidence you printed and rules achieved/unmet/blocked. Default to *unmet* when evidence is missing.
-2. **Evidence must be printed, not asserted.** The checker can't run commands or open files. Print raw proof into the conversation — test output, counts, the table, the diff, the benchmark number. "I verified it" is not evidence.
-3. **No guessing, no placeholders.** Never fabricate a result, fill a cell with a guess, or stub to make the check pass. A blocked condition is reported as blocked, not faked.
-4. **Bounded autonomy.** Every goal has a turn cap and (optionally) a token budget. Hitting a cap ends the run as *budget-limited* with an honest progress summary — it is not the same as achieving the goal.
-5. **Verifiable conditions only.** "Good", "clean", "better" are not finish lines. Every finish-line condition must be objectively checkable.
+1. **Clarity before autonomy.** Never start the loop on a fuzzy objective. The **end state** and the **evidence that proves it** must be unambiguous first — interview the user to that threshold (Step 1). A vague goal is the #1 way these loops waste budget and drift off-target.
+2. **The agent does not grade its own homework.** An independent verification subagent (fresh context) reads ONLY the evidence you printed and rules achieved/unmet/blocked. Default to *unmet* when evidence is missing.
+3. **Evidence must be printed, not asserted.** The checker can't run commands or open files. Print raw proof into the conversation — test output, counts, the table, the diff, the benchmark number. "I verified it" is not evidence.
+4. **No guessing, no placeholders.** Never fabricate a result, fill a cell with a guess, or stub to make the check pass. A blocked condition is reported as blocked, not faked.
+5. **Bounded autonomy.** Every goal has a turn cap and (optionally) a token budget. Hitting a cap ends the run as *budget-limited* with an honest progress summary — it is not the same as achieving the goal.
+6. **Verifiable conditions only.** "Good", "clean", "better" are not finish lines. Every finish-line condition must be objectively checkable.
 
 ## Command Surface
 
 | Command | Action |
 |---|---|
-| `/goal <objective>` | Draft + lock a goal, then start the loop. |
+| `/goal <objective>` | Interview to clarity (if needed), lock the goal, then start the loop. |
 | `/goal --turns N <objective>` | Same, with a turn cap of N (default 30, hard max 50). |
 | `/goal --tokens 250K <objective>` | Same, with a soft token budget (advisory; reported, not hard-enforced). |
 | `/goal` or `/goal status` | Show the current goal, its state, turn count, and last verdict. |
@@ -73,29 +74,44 @@ Read `<project>/.claude/goal-state.md` if it exists.
 - New objective + an *active* goal already exists → tell the user, offer to `clear` first. Don't silently stack goals (Codex allows one goal at a time).
 - New objective + no active goal → continue to Step 1.
 
-### Step 1 — Draft and lock the goal
-- Parse the objective into the six components. If the objective is **vague or missing a verification surface**, draft a tightened version and show it to the user for a quick confirm (the two-step "describe → draft → tighten" workflow). A drafted goal is almost always sharper than the user's first phrasing.
-- If the objective has **no checkable finish line**, say so and stop — don't start a loop you can't end.
+### Step 1 — Clarity gate (interview to threshold)
+
+**Do not start the loop until the goal is clear enough to verify.** Parse the objective, then test it against the clarity threshold — both must be true:
+
+- **End state** — you can state, in one unambiguous sentence, what is true when the work is done (no vague adjectives like "good", "clean", "robust", "better").
+- **Required completion evidence** — you can name the exact command / artifact / observable that *proves* the end state, say **what a passing result looks like** (the threshold or expected value), and confirm it's something you can actually produce and print.
+
+Run this self-test: *Can I write the end state as one concrete sentence? Can I name the evidence that proves it and what "passing" looks like? Can I produce that evidence?* If any answer is "no", **interview the user before doing anything else** — do not begin work, do not write state.
+
+**Interview rules:**
+- Ask **one focused question at a time**, conversationally — never a multi-question form or a wall of questions. **Lead with a recommended answer** the user can confirm or tweak (e.g. *"I'd verify this with `npm test -- --coverage` and call it done at ≥80% — good, or a different bar?"*), not an open-ended *"what do you want?"*.
+- Ask only about what's genuinely missing or ambiguous. If the objective already meets the threshold (e.g. a fully-filled template, or an already-precise goal), **skip the interview** and go to Step 2.
+- Resolve the **end state** and **completion evidence** first — those are the mandatory gate. Draft sensible defaults for the rest (constraints, boundaries, iteration policy, blocked-stop) and fold a quick confirm into the same flow.
+- Keep it tight: aim to clear the gate in **≤3–4 questions**. If it's still unclear after that, say exactly what's still ambiguous and ask the user to decide — never guess your way past the gate.
+- If it becomes clear the objective has **no verifiable completion condition**, stop and say so. Don't start a loop you can't end — offer to reframe it as a checkable goal, or to just do the work directly without `/goal`.
+
+### Step 2 — Lock the goal
+- Convert the (now-clear) objective into the six structured components and **restate the full goal back to the user for one go-ahead** before looping.
 - Set the turn cap (`--turns`, else default 30) and any token budget (`--tokens`).
 - **For code goals:** recommend a scratch branch and confirm the write boundary. A vague goal on a dirty tree can burn budget on off-target changes.
 
-### Step 2 — Initialize state
+### Step 3 — Initialize state
 Write `<project>/.claude/goal-state.md` (format below) with the structured goal, `status: pursuing`, `turn: 0`, the cap, the budget, and an empty iteration log. This file is the durable record — it survives compaction, so on any later turn you can reload the goal and continue.
 
-### Step 3 — Iterate (the loop)
-Repeat until a termination condition (Step 5):
+### Step 4 — Iterate (the loop)
+Repeat until a termination condition (Step 6):
 
 a. **Work** one focused increment toward the Outcome, within Boundaries, preserving Constraints, following the Iteration policy. Address the *top gap* from the previous verdict first.
 
 b. **Print evidence.** Run the Verification surface and print the **raw** result into the conversation — the actual test summary, the count, the rendered table, the benchmark number, the relevant diff. Print proof for *every* finish-line condition. If a condition can't be evidenced, say why (that's a blocked/unmet signal, not something to paper over).
 
-c. **Verify** — spawn the independent verification subagent (Step 4). It returns a structured verdict.
+c. **Verify** — spawn the independent verification subagent (Step 5). It returns a structured verdict.
 
 d. **Record** — append the iteration (what you did, evidence summary, verdict, top gap) to the state file; increment `turn`.
 
-e. **Decide** — `achieved` → Step 5 (success). `unmet` & under cap → loop with the top gap as the next target. `blocked` → Step 5 (blocked). cap/budget reached → Step 5 (budget-limited).
+e. **Decide** — `achieved` → Step 6 (success). `unmet` & under cap → loop with the top gap as the next target. `blocked` → Step 6 (blocked). cap/budget reached → Step 6 (budget-limited).
 
-### Step 4 — The verification subagent
+### Step 5 — The verification subagent
 Spawn a subagent (Agent tool; `Explore` or `general-purpose`) with a **fresh context** so it judges independently, not from your reasoning. Give it: the structured goal (all six components) and the **evidence text you printed this iteration** (paste it — the subagent can't see your conversation). Instruct it:
 
 > You are an adversarial completion checker. Judge ONLY from the evidence provided below — do not assume, do not run anything, do not give benefit of the doubt. For each finish-line condition, decide whether the printed evidence *proves* it. If a condition has no supporting evidence, it is UNMET (never "achieved"). If progress is structurally impossible from here, it is BLOCKED. Default to `unmet` when uncertain.
@@ -115,7 +131,7 @@ Require this verdict shape (use the `schema` option so it's validated):
 
 For a high-stakes goal, run 3 checkers in parallel and take the majority (adversarial-verify pattern) — see `reference.md`.
 
-### Step 5 — Terminate and report
+### Step 6 — Terminate and report
 - **Achieved:** state the goal met, list which conditions the checker confirmed, and print a budget report: `turns used / cap` and approximate tokens (or "budget N, soft limit not enforced"). Set `status: achieved`. Hand off whatever the goal's "show me" asked for.
 - **Blocked:** execute the Blocked stop condition. Report what you tried, the exact blocker, and what's needed to unblock. Never fake a result to escape. Set `status: blocked`.
 - **Budget-limited:** stop, set `status: budget-limited`, and give an honest progress summary — conditions met, conditions remaining, the current top gap, and a recommended next goal. This is explicitly *not* success.
@@ -167,6 +183,7 @@ More worked examples and a Codex feature-comparison are in `reference.md`.
 ## Success Criteria
 
 The skill run is complete when:
+- [ ] The clarity gate was satisfied before any execution — end state and required completion evidence were unambiguous (interviewed one question at a time if not).
 - [ ] The objective was hardened into the six structured components with a real verification surface (or rejected as un-verifiable).
 - [ ] State was persisted to `.claude/goal-state.md` and kept current each turn.
 - [ ] Each iteration printed raw evidence and was judged by an independent verification subagent.
@@ -177,6 +194,7 @@ The skill run is complete when:
 
 | Problem | Fix |
 |---|---|
+| Objective is vague / no clear finish line | Don't start the loop. Interview to the clarity threshold (Step 1) — lock the end state + the evidence that proves it — or decline and do the work directly. |
 | Loop won't end / keeps finding new work | Finish line is too broad. Pause, re-scope to a single checkable condition, restart. |
 | Checker keeps saying `unmet` but it looks done | You're asserting, not printing. Print the *raw* verification-surface output for the exact unmet condition. |
 | Burning budget fast | Lower `--turns`; tighten Boundaries; confirm you're on a scratch branch. |
