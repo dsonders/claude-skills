@@ -28,7 +28,7 @@ Related skills: `/loop` (run a prompt on an interval — pair with this for very
 ## Core Principles
 
 1. **Clarity before autonomy.** Never start the loop on a fuzzy objective. The **end state** and the **evidence that proves it** must be unambiguous first — interview the user to that threshold (Step 1). A vague goal is the #1 way these loops waste budget and drift off-target.
-2. **The agent does not grade its own homework.** An independent verification subagent (fresh context) reads ONLY the evidence you printed and rules achieved/unmet/blocked. Default to *unmet* when evidence is missing.
+2. **The agent does not grade its own homework.** An independent verification subagent (fresh context) rules achieved/unmet/blocked — and **re-runs the verification surface itself** when it's runnable (read/execute-only, so it can't fabricate or fix), falling back to reading your printed evidence only when the surface can't be re-run. Default to *unmet* when proof is missing.
 3. **Evidence must be printed, not asserted.** The checker can't run commands or open files. Print raw proof into the conversation — test output, counts, the table, the diff, the benchmark number. "I verified it" is not evidence.
 4. **No guessing, no placeholders.** Never fabricate a result, fill a cell with a guess, or stub to make the check pass. A blocked condition is reported as blocked, not faked.
 5. **Bounded autonomy.** Every goal has a turn cap and (optionally) a token budget. Hitting a cap ends the run as *budget-limited* with an honest progress summary — it is not the same as achieving the goal.
@@ -105,31 +105,41 @@ a. **Work** one focused increment toward the Outcome, within Boundaries, preserv
 
 b. **Print evidence.** Run the Verification surface and print the **raw** result into the conversation — the actual test summary, the count, the rendered table, the benchmark number, the relevant diff. Print proof for *every* finish-line condition. If a condition can't be evidenced, say why (that's a blocked/unmet signal, not something to paper over).
 
-c. **Verify** — spawn the independent verification subagent (Step 5). It returns a structured verdict.
+c. **Verify** — spawn the independent verification subagent (Step 5), passing it the verification command(s) so it can **re-run the surface itself** (the default for runnable surfaces). It returns a structured verdict.
 
 d. **Record** — append the iteration (what you did, evidence summary, verdict, top gap) to the state file; increment `turn`.
 
 e. **Decide** — `achieved` → Step 6 (success). `unmet` & under cap → loop with the top gap as the next target. `blocked` → Step 6 (blocked). cap/budget reached → Step 6 (budget-limited).
 
 ### Step 5 — The verification subagent
-Spawn a subagent (Agent tool; `Explore` or `general-purpose`) with a **fresh context** so it judges independently, not from your reasoning. Give it: the structured goal (all six components) and the **evidence text you printed this iteration** (paste it — the subagent can't see your conversation). Instruct it:
+Spawn a subagent with a **fresh context** so it judges independently, not from your reasoning. Pick the mode by the verification surface — **prefer re-run**:
 
-> You are an adversarial completion checker. Judge ONLY from the evidence provided below — do not assume, do not run anything, do not give benefit of the doubt. For each finish-line condition, decide whether the printed evidence *proves* it. If a condition has no supporting evidence, it is UNMET (never "achieved"). If progress is structurally impossible from here, it is BLOCKED. Default to `unmet` when uncertain.
+- **Mode A — Re-run (default when the surface is runnable).** Use this whenever the verification surface is a deterministic, reasonably cheap command (tests, coverage, build, lint, benchmark). The checker executes the surface *itself* and judges from what it observes — this catches a fabricated, stale, or cherry-picked paste, which evidence-only cannot. Spawn an **`Explore`** subagent: it can run Bash and read, but **cannot Edit/Write**, so it can't quietly make the goal pass. Give it the structured goal, the **exact** verification command(s), the pass threshold, and the boundary. Instruct it:
 
-Require this verdict shape (use the `schema` option so it's validated):
+  > You are an adversarial completion checker. Run the verification command(s) below yourself, exactly as written, and judge ONLY from the output you observe — ignore any result you were told to expect. Do NOT edit, write, or fix anything; you are read/execute-only. For each finish-line condition, decide whether your observed output proves it; if not, it is UNMET. If a command can't run (missing dep, blocked service), it is BLOCKED — report the error, do not guess. Default to `unmet` when uncertain. Put the raw output you saw in `observed`.
+
+- **Mode B — Evidence-only (fallback, Codex-parity).** Use when the surface is **not** independently runnable — a research artifact judged by reading it, or an expensive / flaky / network-bound command. Give the checker the structured goal + the **evidence text you printed** (paste it — the subagent can't see your conversation). Instruct it:
+
+  > You are an adversarial completion checker. Judge ONLY from the evidence provided — do not assume, do not give benefit of the doubt. For each finish-line condition, decide whether the printed evidence *proves* it. No supporting evidence → UNMET. Structurally impossible → BLOCKED. Default to `unmet` when uncertain.
+
+Require this verdict shape (use the `schema` option if your spawn path supports it; otherwise tell the subagent to return exactly this JSON):
 
 ```json
 {
   "status": "achieved | unmet | blocked",
-  "met": ["conditions the evidence proves"],
-  "unmet": ["conditions not proven by the evidence"],
+  "independent_run": true,
+  "met": ["conditions proven"],
+  "unmet": ["conditions not proven"],
   "top_gap": "the single most important thing to fix next (empty if achieved)",
   "evidence_gaps": ["claims that lacked printable proof"],
+  "observed": "raw output the checker ran (Mode A) or read (Mode B)",
   "reasoning": "1-3 sentences"
 }
 ```
 
-For a high-stakes goal, run 3 checkers in parallel and take the majority (adversarial-verify pattern) — see `reference.md`.
+`independent_run` is `true` only when the checker re-ran the surface (Mode A). **If a re-run verdict disagrees with your printed evidence, the checker is right** — trust its `observed` output (you likely pasted stale or partial results) and loop on the real gap.
+
+Cost note: re-run executes the surface a second time per iteration. If that's expensive, have the checker run a **scoped subset** (e.g. just the affected test file) rather than dropping to evidence-only. For a high-stakes goal, run 3 checkers in parallel and take the majority, each with a different lens — see `reference.md`.
 
 ### Step 6 — Terminate and report
 - **Achieved:** state the goal met, list which conditions the checker confirmed, and print a budget report: `turns used / cap` and approximate tokens (or "budget N, soft limit not enforced"). Set `status: achieved`. Hand off whatever the goal's "show me" asked for.
@@ -186,7 +196,7 @@ The skill run is complete when:
 - [ ] The clarity gate was satisfied before any execution — end state and required completion evidence were unambiguous (interviewed one question at a time if not).
 - [ ] The objective was hardened into the six structured components with a real verification surface (or rejected as un-verifiable).
 - [ ] State was persisted to `.claude/goal-state.md` and kept current each turn.
-- [ ] Each iteration printed raw evidence and was judged by an independent verification subagent.
+- [ ] Each iteration printed raw evidence and was judged by an independent verification subagent — which re-ran the verification surface itself when it was runnable (`independent_run: true`), not just read the paste.
 - [ ] The loop ended on a genuine verdict (achieved/blocked) or a cap (budget-limited) — never a self-declared "done".
 - [ ] The final report states which conditions were verified and the budget used.
 

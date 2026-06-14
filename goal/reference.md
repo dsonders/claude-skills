@@ -42,6 +42,19 @@ Migrations with a test suite · coverage expansion · TDD feature builds · flak
 ### When to skip
 One-off edits · vague/subjective finish lines · no reliable completion condition · work where uncertainty should stay visible for a human to weigh.
 
+## Verifier re-run vs evidence-only
+
+The verification subagent (Step 5) has two modes:
+
+- **Re-run (default for runnable surfaces).** The checker executes the verification command itself in a fresh, read/execute-only context (`Explore` — Bash + read, no Edit/Write) and judges from the output it observes. Strictly stronger than reading a paste: it catches a fabricated, stale, partial, or cherry-picked evidence block, and it can't "fix" the code to pass because it has no write tools. Use it for tests, coverage, builds, lint, benchmarks.
+- **Evidence-only (Codex-parity fallback).** The checker reads the evidence you printed. Use only when the surface can't be reproduced independently — a research artifact judged by reading it, or a command that's expensive, flaky, or network/credential-bound where a second run would be unreliable or costly.
+
+**Cost.** Re-run executes the surface twice per iteration (worker prints evidence, checker reproduces it). Negligible for a cheap deterministic command; for an expensive suite, have the checker run a **scoped subset** (the affected file/target) rather than dropping to evidence-only — a scoped independent run still catches fabrication.
+
+**Isolation.** The checker runs against the same working tree, so it sees the worker's (possibly uncommitted) changes — correct, it's verifying the real current state. It needs no git worktree of its own because it's read/execute-only. If a goal's worker mutates global state a re-run would disturb, prefer evidence-only or a scoped read.
+
+**Disagreement = checker wins.** If the re-run verdict contradicts the printed evidence, trust the checker's `observed` output and loop on the real gap — a contradiction usually means the paste was stale or partial.
+
 ## High-stakes verification: 3-checker majority
 
 For goals where a false "achieved" is expensive, run the verification subagent **3× in parallel** with the same evidence and take the majority verdict. Give each a slightly different lens (correctness / completeness / does-the-evidence-actually-prove-it) so they catch different failure modes rather than agreeing by rote. Treat `blocked` from any checker as a signal to investigate before continuing.
