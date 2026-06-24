@@ -93,6 +93,8 @@ For each fix in `plan.fixes`, change **every** location in `fix.locations` — n
 
 Do NOT silently override one of Codex's findings if it's actually Dave's explicit design decision — split it out and ask (per "gate blocks on the user's design call").
 
+If a swept sibling location is **provably dead** (no consumer of its output), leave it and say why in your report rather than churning dead code — the whole-class rule is about preventing *drift*, and dead output can't drift. Fixing it is noise.
+
 ### Step 5 — Run the local gates the plan named
 
 Run everything in `plan.sweepsToRun`, plus these by default:
@@ -117,14 +119,18 @@ git commit   # clear message naming the CLASS fixed, not just the symptom
 git push
 ```
 
-Then **respect the sensitive carve-out**:
-- `plan.sensitive === false` → push and let auto-merge + the re-run Codex gate decide. Report the PR link and what class you fixed. Do NOT ask Dave to merge (RULE #7 default flow).
-- `plan.sensitive === true` (auth / org-isolation / DB schema / migration / pricing / billing / destructive-bulk / customer-facing-leak) → push, then **explicitly ask Dave to review before merge** and surface the residual risks. Do not arm auto-merge.
+Then **respect the sensitive carve-out**. `plan.sensitive` is **advisory** — confirm it with your own one-line reasoning, don't obey it blindly (the synth agent over-flags: a client-side filter/sort/render over data that's *already fetched and already org-scoped server-side* is NOT sensitive even though it shows customer-related fields). State the reasoning either way, then:
+- **Not sensitive** → push and let auto-merge + the re-run Codex gate decide. Report the PR link and what class you fixed. Do NOT ask Dave to merge (RULE #7 default flow).
+- **Sensitive** — the *fix itself* changes auth / org-isolation query scoping / DB schema / migration / pricing / billing / destructive-bulk ops / a customer-facing surface (the Owner Page customers see, not an internal dashboard) → push, then **explicitly ask Dave to review before merge** and surface the residual risks. Do not arm auto-merge.
 
-Optionally watch the re-review instead of context-switching:
+Optionally watch the re-review instead of context-switching. **Don't whitespace-split `gh pr checks` output** — the check is named "Codex Review" (two words), so `awk '{print $2}'` reads the wrong column and you'll act on a stale verdict (this bit the first run). Use JSON selection, and read the verdict from the *latest* Codex comment, not the tabular state:
 
 ```bash
-gh pr checks "$PR" --watch
+gh pr checks "$PR" --watch                                   # blocks until checks settle
+gh pr checks "$PR" --json name,state \
+  --jq '.[] | select(.name=="Codex Review") | .state'        # pass | fail (robust to the space)
+gh pr view "$PR" --json comments \
+  --jq '[.comments[] | select(.body | contains("Codex independent review"))] | last | .body'
 ```
 
 If Codex blocks *again*, treat the new finding as a class miss in this pass — read why the sweep didn't catch it, widen the grep, and note it in Step 8.

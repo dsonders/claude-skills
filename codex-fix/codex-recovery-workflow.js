@@ -148,7 +148,7 @@ const PLAN_SCHEMA = {
       },
     },
     sweepsToRun: { type: 'array', items: { type: 'string' }, description: 'local gates/greps to run before pushing, e.g. "npm run check:org-scoping"' },
-    sensitive: { type: 'boolean', description: 'true if any fix touches auth/org-isolation, DB schema/migration, pricing/billing, destructive/bulk ops, or a customer-facing surface — RULE #7 carve-out, do NOT auto-push' },
+    sensitive: { type: 'boolean', description: 'RULE #7 carve-out. true ONLY if the FIX ITSELF changes: auth/access-control logic; server-side organization_id query scoping; DB/Firestore schema, a migration, or a backfill; pricing/billing/subscription math; a destructive or bulk data op; or a surface CUSTOMERS see (the Owner Page). It is NOT sensitive just because the code is in a data-heavy area: a client-side filter/sort/render over data that is ALREADY fetched and ALREADY org-scoped server-side is NOT sensitive, and an internal staff dashboard that merely DISPLAYS customer-related fields is NOT a customer-facing surface. When unsure between the two, set false but list it in residualRisks so the human confirms.' },
     residualRisks: { type: 'array', items: { type: 'string' } },
   },
 }
@@ -170,7 +170,7 @@ const DIMENSIONS = [
   },
   {
     key: 'wiring-regressions',
-    focus: `**Field wiring, data graveyards & regressions.** New Issue/RO field present at ALL layers (type → mapFirestoreToIssue → updateIssue allowlist → convertIssueToAPI → Zod) or it silently no-ops (data graveyard / write-allowlist). snake_case on raw Firestore reads, camelCase only in API. Broken callers of a changed signature. A denorm gate field set on one write path but not its siblings. Shadowed/duplicate routes after a delete.`,
+    focus: `**Field wiring, data graveyards, mode/role variants & regressions.** New Issue/RO field present at ALL layers (type → mapFirestoreToIssue → updateIssue allowlist → convertIssueToAPI → Zod) or it silently no-ops (data graveyard / write-allowlist). snake_case on raw Firestore reads, camelCase only in API. Broken callers of a changed signature. A denorm gate field set on one write path but not its siblings. Shadowed/duplicate routes after a delete. **Mode & role variants (a recurring blind spot):** does the change behave correctly in BOTH single_player and multi_player, and across roles (admin/advisor/tech/parts)? A control shown in one mode/role but hidden in another can leave STALE state silently applied with no visible way to clear it (e.g. a status filter chosen in multi_player still narrowing the list in single_player where the dropdown is hidden), and MP-only surfaces/columns (RICH vs SIMPLE) differ from SP. Check every mode/role the changed surface renders in.`,
   },
   {
     key: 'ai-customer-surface',
