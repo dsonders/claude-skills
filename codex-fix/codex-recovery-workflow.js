@@ -95,11 +95,13 @@ const FINDINGS_SCHEMA = {
       items: {
         type: 'object',
         additionalProperties: false,
-        required: ['severity', 'file', 'line', 'problem', 'fix', 'className', 'siblingLocations', 'diffIntroduced', 'reachable'],
+        required: ['severity', 'confidence', 'file', 'line', 'evidence', 'problem', 'fix', 'className', 'siblingLocations', 'diffIntroduced', 'reachable'],
         properties: {
           severity: { type: 'string', enum: ['P0', 'P1', 'P2', 'P3'] },
+          confidence: { type: 'string', enum: ['high', 'medium', 'low'], description: 'how sure you are this is a real defect (not how severe it is)' },
           file: { type: 'string' },
           line: { type: 'string' },
+          evidence: { type: 'string', description: 'the EXACT line(s) of code from the diff that exhibit the defect, quoted verbatim — not a paraphrase. A finding with no verbatim quote is not admissible.' },
           problem: { type: 'string' },
           fix: { type: 'string', description: 'concrete, specific fix' },
           className: { type: 'string', description: 'the systemic pattern this is one instance of' },
@@ -115,40 +117,55 @@ const FINDINGS_SCHEMA = {
 const VERDICT_SCHEMA = {
   type: 'object',
   additionalProperties: false,
-  required: ['isReal', 'severity', 'reason'],
+  required: ['isReal', 'severity', 'confidence', 'evidence', 'reason'],
   properties: {
     isReal: { type: 'boolean' },
     severity: { type: 'string', enum: ['P0', 'P1', 'P2', 'P3'] },
+    confidence: { type: 'string', enum: ['high', 'medium', 'low'] },
+    evidence: { type: 'string', description: 'the EXACT code you read that CONFIRMS the defect (if isReal) or that REFUTES it (if not) — quoted verbatim from the file/diff. A verdict with no verbatim quote defaults to refuted.' },
     reason: { type: 'string' },
-    refutedAs: { type: 'string', description: 'if not real: pre-existing | speculative | style | already-guarded | not-reachable', },
+    refutedAs: { type: 'string', description: 'if not real: pre-existing | speculative | style | already-guarded | not-reachable | cited-code-not-in-diff', },
+  },
+}
+
+const FIX_ITEM = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['severity', 'confidence', 'title', 'className', 'locations', 'problem', 'fix', 'regressionTest', 'origin'],
+  properties: {
+    severity: { type: 'string', enum: ['P0', 'P1', 'P2', 'P3'] },
+    confidence: { type: 'string', enum: ['high', 'medium', 'low'] },
+    title: { type: 'string' },
+    className: { type: 'string' },
+    locations: { type: 'array', items: { type: 'string' }, description: 'EVERY location to change (whole class), not just the flagged one' },
+    problem: { type: 'string' },
+    fix: { type: 'string' },
+    regressionTest: { type: 'string', description: 'a unit/API test that would FAIL before this fix and PASS after — the test to write first. "n/a — not unit-testable (UI/iOS feel)" if genuinely none applies; do NOT default to n/a to skip the test.' },
+    fixLayer: { type: 'string', description: 'the layer this fix changes: client-render | client-state | server-route | server-query-scope | schema | type. Used to flag layer-escalation under gate pressure.' },
+    origin: { type: 'string', enum: ['codex', 'internal-review'] },
   },
 }
 
 const PLAN_SCHEMA = {
   type: 'object',
   additionalProperties: false,
-  required: ['summary', 'fixes', 'sweepsToRun', 'sensitive', 'residualRisks'],
+  required: ['summary', 'fixes', 'advisory', 'sweepsToRun', 'sensitive', 'layerEscalations', 'residualRisks'],
   properties: {
     summary: { type: 'string' },
-    fixes: {
-      type: 'array',
-      items: {
-        type: 'object',
-        additionalProperties: false,
-        required: ['severity', 'title', 'className', 'locations', 'problem', 'fix', 'origin'],
-        properties: {
-          severity: { type: 'string', enum: ['P0', 'P1', 'P2', 'P3'] },
-          title: { type: 'string' },
-          className: { type: 'string' },
-          locations: { type: 'array', items: { type: 'string' }, description: 'EVERY location to change (whole class), not just the flagged one' },
-          problem: { type: 'string' },
-          fix: { type: 'string' },
-          origin: { type: 'string', enum: ['codex', 'internal-review'] },
-        },
-      },
-    },
+    // MUST-FIX before re-push: the Codex finding's whole class + any high-confidence P0/P1
+    // that is diff-introduced. Gating the re-push on THIS list (not every nit) keeps the
+    // fix focused and avoids the over-fix/churn that erodes trust and burns rounds.
+    fixes: { type: 'array', items: FIX_ITEM, description: 'MUST fix before re-push: high-confidence P0/P1 that is diff-introduced — the Codex class + anything that would itself BLOCK. Nothing else belongs here.' },
+    // ADVISORY: real but lower-severity/lower-confidence. Note them; fix only if cheap and
+    // in-scope. Do NOT let these expand the diff or the layer of the change.
+    advisory: { type: 'array', items: FIX_ITEM, description: 'P2/P3 or lower-confidence findings: worth noting, NOT required before re-push. Fix only if trivial and in the same layer.' },
     sweepsToRun: { type: 'array', items: { type: 'string' }, description: 'local gates/greps to run before pushing, e.g. "npm run check:org-scoping"' },
-    sensitive: { type: 'boolean', description: 'RULE #7 carve-out. true ONLY if the FIX ITSELF changes: auth/access-control logic; server-side organization_id query scoping; DB/Firestore schema, a migration, or a backfill; pricing/billing/subscription math; a destructive or bulk data op; or a surface CUSTOMERS see (the Owner Page). It is NOT sensitive just because the code is in a data-heavy area: a client-side filter/sort/render over data that is ALREADY fetched and ALREADY org-scoped server-side is NOT sensitive, and an internal staff dashboard that merely DISPLAYS customer-related fields is NOT a customer-facing surface. When unsure between the two, set false but list it in residualRisks so the human confirms.' },
+    sensitive: { type: 'boolean', description: 'RULE #7 carve-out. true ONLY if a MUST-FIX changes: auth/access-control logic; server-side organization_id query scoping; DB/Firestore schema, a migration, or a backfill; pricing/billing/subscription math; a destructive or bulk data op; or a surface CUSTOMERS see (the Owner Page). It is NOT sensitive just because the code is in a data-heavy area: a client-side filter/sort/render over data that is ALREADY fetched and ALREADY org-scoped server-side is NOT sensitive, and an internal staff dashboard that merely DISPLAYS customer-related fields is NOT a customer-facing surface. When unsure between the two, set false but list it in residualRisks so the human confirms.' },
+    // A fix that resolves a finding by changing a HARDER/deeper layer than the bug lives at
+    // (client gate → server query, soft guard → schema/type, local fix → migration) is a
+    // DESIGN decision, not a reflex remediation. Surface it so the human decides — don't
+    // silently over-encode under gate pressure.
+    layerEscalations: { type: 'array', items: { type: 'string' }, description: 'any fix that resolves the bug at a harder/deeper layer than where it occurs (client→server, soft-guard→schema/type) — flag for human sign-off, do not auto-apply' },
     residualRisks: { type: 'array', items: { type: 'string' } },
   },
 }
@@ -192,31 +209,49 @@ const reviewed = await pipeline(
   DIMENSIONS,
   (d) =>
     agent(
-      `${groundingBlock}${mapDigest}${wholeClassRule}\n\n## Your lens\n${d.focus}\n\nReview the FULL diff through THIS lens only. For every defect: read the real code, confirm it's introduced by this diff and reachable, give a concrete fix, name its class, and list EVERY sibling location repo-wide. Return [] if your lens is clean — do not manufacture P2/P3 padding.`,
+      `${groundingBlock}${mapDigest}${wholeClassRule}\n\n## Your lens\n${d.focus}\n\nReview the FULL diff through THIS lens only. For every defect you MUST: read the real code; QUOTE the exact offending line(s) verbatim into \`evidence\` (a finding with no verbatim quote from the actual diff is inadmissible — do not invent line numbers); confirm it is introduced by this diff (\`diffIntroduced\`) and reachable (\`reachable\`); give a concrete fix; name its class; list EVERY sibling location repo-wide; and rate your \`confidence\` (high only if you quoted code that unambiguously exhibits the defect). Return [] if your lens is clean — manufacturing P2/P3 padding lowers the signal and trains the maintainer to ignore you.`,
       { label: `review:${d.key}`, phase: 'Review', schema: FINDINGS_SCHEMA },
     ),
   (review, dim) =>
     parallel(
       ((review && review.findings) || []).map((f) => () =>
         agent(
-          `${verifierBias}\n\n## Finding to refute (from the ${dim.key} lens, PR #${prNumber})\n${JSON.stringify(f, null, 2)}\n\nRead the cited code (\`${DIFF_CMD} -- ${f.file}\` and the file itself). Is this a real, reachable, diff-introduced defect? Set isReal accordingly; if not, say what kind of non-issue it is in refutedAs.`,
+          `${verifierBias}\n\n## Finding to refute (from the ${dim.key} lens, PR #${prNumber})\n${JSON.stringify(f, null, 2)}\n\nIndependently re-derive this — do NOT trust the finding's own quote. Open the cited code yourself (\`${DIFF_CMD} -- ${f.file}\` and the file itself) and PASTE the exact line(s) you read into \`evidence\`. Then decide: is this a real, reachable, diff-INTRODUCED defect? If the cited code isn't actually in this diff, refute it as cited-code-not-in-diff. Free-form agreement without a verbatim quote = refuted by default. Set isReal + confidence accordingly; if not real, name the non-issue kind in refutedAs.`,
           { label: `verify:${f.file}`, phase: 'Verify', schema: VERDICT_SCHEMA },
         ).then((v) => ({ ...f, verdict: v })),
       ),
     ),
 )
 
-const confirmed = reviewed
+const verifiedReal = reviewed
   .flat()
   .filter(Boolean)
   .filter((f) => f.verdict && f.verdict.isReal)
 
-log(`${confirmed.length} verified finding(s) after adversarial filtering`)
+// Mechanical citation gate (deterministic, no model): a finding whose cited file is not in
+// the PR's changed-file set is either pre-existing (out of scope per Codex's own rubric) or
+// hallucinated — either way it must NOT gate the re-push. Partition rather than drop, so the
+// synthesizer can still note a genuine off-diff observation as advisory. Skip the gate only
+// if we weren't given a changed-file list (can't verify → don't silently discard).
+const norm = (p) => String(p || '').replace(/^\.?\/*/, '').trim()
+const changedSet = changedFiles.map(norm)
+const inDiff = (file) => {
+  if (!changedSet.length) return true // no list provided → can't gate, treat as in-diff
+  const f = norm(file)
+  return changedSet.some((cf) => cf === f || cf.endsWith('/' + f) || f.endsWith('/' + cf))
+}
+const confirmed = verifiedReal.filter((f) => inDiff(f.file))
+const offDiff = verifiedReal.filter((f) => !inDiff(f.file))
+
+log(
+  `${confirmed.length} verified in-diff finding(s) after adversarial + citation gating` +
+    (offDiff.length ? ` (${offDiff.length} dropped to advisory: cited file not in the diff)` : ''),
+)
 
 phase('Synthesize')
 const plan = await agent(
-  `${groundingBlock}\n\n## Verified findings (already adversarially confirmed real)\n${JSON.stringify(confirmed, null, 2)}\n\nProduce ONE ordered fix plan for PR #${prNumber}. Dedupe findings that are the same defect seen through different lenses (merge their sibling locations). For each fix, \`locations\` MUST list EVERY place to change (the whole class), not just the originally-flagged line. Order P0 → P1 → P2. List concrete local gates to run before pushing (always include "npm run check:org-scoping" if any org/auth fix; "npm run check" and the relevant "/test:safe"). Set \`sensitive: true\` if ANY fix touches auth/org-isolation, DB schema/migration, pricing/billing, destructive/bulk ops, or a customer-facing surface (RULE #7 carve-out). Note residual risks the fixes don't cover.`,
-  { label: 'synthesize-plan', schema: PLAN_SCHEMA },
+  `${groundingBlock}\n\n## Verified IN-DIFF findings (adversarially confirmed real, cited code is in this diff)\n${JSON.stringify(confirmed, null, 2)}\n\n## Off-diff observations (verified real but cited code is NOT in this diff — advisory at most, never a must-fix)\n${JSON.stringify(offDiff, null, 2)}\n\nProduce ONE fix plan for PR #${prNumber}, graded against the actual Codex finding above as the reference (does each fix resolve the cited P0/P1 and its whole class?).\n\nSplit findings into two buckets:\n- \`fixes\` = MUST fix before re-push: high-confidence, diff-introduced P0/P1 — the Codex class plus anything that would itself BLOCK. Dedupe defects seen through multiple lenses (merge their sibling locations). \`locations\` MUST list EVERY place to change (the whole class). Each needs a \`regressionTest\` (a test that fails before, passes after) unless genuinely not unit-testable.\n- \`advisory\` = real but P2/P3 or lower-confidence (incl. all off-diff observations): note them; do NOT require them before re-push and do NOT let them expand the diff.\n\nFor \`sweepsToRun\`: always include "npm run check" and the relevant "/test:safe"; add "npm run check:org-scoping" if any fix touches org/auth.\n\nSet \`sensitive\` per its definition (only a MUST-FIX in the carve-out categories). Populate \`layerEscalations\` with any fix that would resolve the bug at a HARDER/deeper layer than where it occurs (a client-side bug fixed by changing a server query or the schema, a soft guard turned into a type/DB constraint) — those are design calls for the human, not reflex remediations. Note residual risks the fixes don't cover.`,
+  { label: 'synthesize-plan', schema: PLAN_SCHEMA, effort: 'high' },
 )
 
-return { prNumber, plan, verifiedCount: confirmed.length, map }
+return { prNumber, plan, verifiedCount: confirmed.length, offDiffCount: offDiff.length, map }

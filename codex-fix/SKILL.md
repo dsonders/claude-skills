@@ -83,15 +83,24 @@ Workflow({
 })
 ```
 
-The workflow runs in the background and returns `{ plan, verifiedCount, map }`. The `plan` has: `fixes[]` (each with `locations[]` = **every** site to change, not just the flagged one), `sweepsToRun[]`, `sensitive` (boolean), and `residualRisks[]`.
+The workflow runs in the background and returns `{ plan, verifiedCount, offDiffCount, map }`. The `plan` separates work into two buckets — respect the split:
+- **`plan.fixes[]`** — MUST fix before re-push: high-confidence, diff-introduced P0/P1 (the Codex class + anything that would itself block). Each has `locations[]` = **every** site to change, a `confidence`, a `regressionTest`, and an optional `fixLayer`.
+- **`plan.advisory[]`** — real but P2/P3 or lower-confidence (and anything whose cited file wasn't in the diff). Note these; fix only if trivial and in the same layer. Do NOT let them expand the diff — over-fixing is what erodes the gate's signal and burns rounds.
+- **`plan.layerEscalations[]`** — fixes that would resolve the bug at a *harder/deeper* layer than where it lives (a client-side bug "fixed" by changing a server query or the schema; a soft guard turned into a type/DB constraint). These are **design calls** — surface them to Dave, don't auto-apply (ties to "gate blocks on the user's design call"; don't expand scope under gate pressure).
+
+The two findings-quality gates the workflow already applied for you: every finding had to **quote the offending code verbatim** (hallucinated line numbers are inadmissible) and was **independently re-verified** by a skeptic that defaults to "refuted"; findings citing a file outside the diff were dropped to advisory automatically.
 
 **Scale note:** for a tiny diff (a few lines, no auth/org/schema) you may skip the Workflow and do the map→review→whole-class-sweep inline — but default to running it. Thoroughness here is cheaper than another Codex round.
 
-### Step 4 — Apply the fixes, whole class at once
+### Step 4 — Reproduce, then fix the whole class
 
-For each fix in `plan.fixes`, change **every** location in `fix.locations` — not just the one Codex flagged. One coherent change per class. Keep edits surgical and in the surrounding code's style.
+Work `plan.fixes` (the must-fix bucket) only — leave `plan.advisory` for a note unless an item is trivial and same-layer.
 
-Do NOT silently override one of Codex's findings if it's actually Dave's explicit design decision — split it out and ask (per "gate blocks on the user's design call").
+**Test-first, where the finding is unit-testable.** For each fix with a real `regressionTest`, write that test first, run it to confirm it's **RED** (proves it reproduces the defect — a test you never saw fail proves nothing), then fix, then confirm it's **GREEN**, and keep it. This both bounds the fix's scope and converts the Codex class into a permanent regression guard so the gate never has to catch it again. Skip only for genuinely non-unit-testable findings (iOS feel, visual layout) — `regressionTest: "n/a"`; don't use that as an escape hatch.
+
+Then change **every** location in `fix.locations` — not just the one Codex flagged. One coherent change per class; prefer a single chokepoint over N scattered edits where one exists. Keep edits surgical and in the surrounding code's style.
+
+Do NOT silently override one of Codex's findings if it's actually Dave's explicit design decision — split it out and ask (per "gate blocks on the user's design call"). Same for anything in `plan.layerEscalations`.
 
 If a swept sibling location is **provably dead** (no consumer of its output), leave it and say why in your report rather than churning dead code — the whole-class rule is about preventing *drift*, and dead output can't drift. Fixing it is noise.
 
@@ -158,6 +167,8 @@ If `.github/codex/prompts/review.md` changes, glance at it and update the dimens
 - [ ] Confirmed the failing check is `Codex Review` (not Tests/CodeQL/Org-Scoping).
 - [ ] Captured the full Codex comment + the full diff before fixing.
 - [ ] Ran the multi-agent review (or justified an inline pass for a tiny diff).
+- [ ] Worked `plan.fixes` (must-fix); routed `plan.advisory` to notes; escalated `plan.layerEscalations` to Dave rather than over-encoding.
+- [ ] For each unit-testable fix: wrote the regression test, saw it RED, then GREEN, and kept it.
 - [ ] Fixed the **whole class** for every finding — every `locations[]` entry, not just the flagged line.
 - [ ] Local gates green: `check:org-scoping` (if org/auth), `check`, `/test:safe`.
 - [ ] Self-reviewed the fix diff against Codex's rubric.
