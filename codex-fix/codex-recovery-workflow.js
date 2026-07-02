@@ -179,7 +179,7 @@ const DIMENSIONS = [
   },
   {
     key: 'org-auth',
-    focus: `**RULE #1 org isolation + the three auth patterns (HIGHEST priority — most-blocked class).** Every user-data read/write MUST filter by organization_id and be a SCOPED QUERY, never \`doc(id).get()\`+post-check (that's a P0). Audit all THREE auth patterns for any new/changed route: authenticateWithOrganization middleware, inline getUserId routes, zero-auth/requireAuth-only sub-routes — a fix to one with a sibling left open is a bypass. Check that a removed/renamed route didn't un-shadow an unauthenticated duplicate. Flag any missing org filter as P0.`,
+    focus: `**RULE #1 org isolation + the three auth patterns (HIGHEST priority — most-blocked class).** Every user-data read/write MUST filter by organization_id and be a SCOPED QUERY, never \`doc(id).get()\`+post-check (that's a P0). Audit all THREE auth patterns for any new/changed route: authenticateWithOrganization middleware, inline getUserId routes, zero-auth/requireAuth-only sub-routes — a fix to one with a sibling left open is a bypass. Check that a removed/renamed route didn't un-shadow an unauthenticated duplicate. Flag any missing org filter as P0. When the diff adds a FIELD riding a PRE-EXISTING write funnel (a new key through PATCH → storage.updateIssue/updateRepairOrder), audit the funnel's OWN lookup scoping too — Codex treats the funnel as new attack surface for the new field, so a default unscoped by-id write lookup (e.g. updateIssue without \`scopeWritesToOrg: true\`) is a P0 even though the call site predates the diff (#905 r2).`,
   },
   {
     key: 'security-leak',
