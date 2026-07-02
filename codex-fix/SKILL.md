@@ -90,7 +90,11 @@ The workflow runs in the background and returns `{ plan, verifiedCount, offDiffC
 
 The two findings-quality gates the workflow already applied for you: every finding had to **quote the offending code verbatim** (hallucinated line numbers are inadmissible) and was **independently re-verified** by a skeptic that defaults to "refuted"; findings citing a file outside the diff were dropped to advisory automatically.
 
-**Scale note:** for a tiny diff (a few lines, no auth/org/schema) you may skip the Workflow and do the map→review→whole-class-sweep inline — but default to running it. Thoroughness here is cheaper than another Codex round.
+**Scale note (fail closed on sensitive PRs):** you may skip the Workflow and do the map→review→whole-class-sweep inline **ONLY when ALL of** these hold: the diff is genuinely tiny (a few lines), touches no auth/org/schema, AND the PR is **not** in a RULE #7 sensitive category (auth / access-control / `organization_id` isolation, DB/Firestore schema or migrations, pricing/billing/subscription, destructive-or-bulk data ops, customer-facing surfaces that can leak internal data — e.g. the Owner Page / customer-approval flow). If the PR is sensitive OR the diff is non-trivial, **run the Workflow — no exceptions.** Do not talk yourself out of it with "I already reviewed this in /code-review" or "Codex only flagged one line": Codex reports the first wall, not the whole wall (Principle #1), and a sensitive change is exactly where a missed class is most expensive. Thoroughness here is cheaper than another paid Codex round.
+
+Concretely: cart-model PR3 (#897) took **5 Codex rounds / 4 real blocks** because this exact skip was misapplied to a sensitive owner-page-approval diff — each round surfaced one more member of the same class (a return-submit clobber, a request-local total, a concurrent-tab conflict, a legacy-line bypass) that a single up-front whole-class review would have caught together.
+
+**When the fix REPLACES a coarse invariant with a fine-grained one, enumerate before you push.** A blunt guard ("once the customer responds, freeze the WHOLE report") is safe precisely because it covers states you never had to think about — concurrent tabs, legacy/decision-less rows, hidden lines. Swapping in a fine-grained guard ("freeze each DECIDED line") silently drops every state the fine predicate doesn't recognize, and Codex will find them one at a time. Before re-pushing such a change: (1) list every state the coarse guard covered, (2) confirm the fine guard covers each (or intentionally opens it), and (3) prefer resolving the new predicate through the SAME function the rest of the system already trusts (e.g. a shared `resolveLineDecision` used by both the rollup and the lock) rather than a fresh re-derivation that can drift.
 
 ### Step 4 — Reproduce, then fix the whole class
 
@@ -166,7 +170,7 @@ If `.github/codex/prompts/review.md` changes, glance at it and update the dimens
 
 - [ ] Confirmed the failing check is `Codex Review` (not Tests/CodeQL/Org-Scoping).
 - [ ] Captured the full Codex comment + the full diff before fixing.
-- [ ] Ran the multi-agent review (or justified an inline pass for a tiny diff).
+- [ ] Ran the multi-agent review (an inline pass is allowed ONLY for a tiny, non-auth/org/schema, NON-sensitive diff — sensitive PRs always run the Workflow).
 - [ ] Worked `plan.fixes` (must-fix); routed `plan.advisory` to notes; escalated `plan.layerEscalations` to Dave rather than over-encoding.
 - [ ] For each unit-testable fix: wrote the regression test, saw it RED, then GREEN, and kept it.
 - [ ] Fixed the **whole class** for every finding — every `locations[]` entry, not just the flagged line.
