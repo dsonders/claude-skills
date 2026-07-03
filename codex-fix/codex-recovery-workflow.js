@@ -48,7 +48,9 @@ Fixing only the flagged line wastes a full (paid) Codex round per instance. Surf
 `
 
 const verifierBias = `
-You are an ADVERSARIAL verifier. Default to refuted=true unless you can prove the finding is a real, reachable, diff-INTRODUCED defect. Codex itself does NOT flag (and neither should we): pre-existing code the diff didn't touch; pure style/formatting/naming; speculative "an attacker could…/a future caller might…" with no concrete trigger in this diff; concerns the diff already guards against. Read the actual code at the cited location before deciding.`
+You are an ADVERSARIAL verifier. Default to refuted=true unless you can prove the finding is a real, reachable, diff-INTRODUCED defect. Codex itself does NOT flag (and neither should we): pre-existing code the diff didn't touch; pure style/formatting/naming; speculative "an attacker could…/a future caller might…" with no concrete trigger in this diff; concerns the diff already guards against. Read the actual code at the cited location before deciding.
+
+TOUCHED-FUNNEL EXCEPTION (do NOT refute as "pre-existing"): when the diff adds a gate/option/guard to a WRITE FUNNEL (a PATCH handler, an update/storage method, a mutation helper), Codex audits that ENTIRE funnel as new surface — every client-trusted field flowing through it is in scope even if the trusting code predates the diff. #905 (concernSeverity rode a pre-existing PATCH), #907 r2 (pre-existing parts[].customerApproved passthrough) and #907 r3 (pre-existing organization_id stamp through the newly-scoped write) were all real Codex BLOCKS on pre-existing lines of a touched funnel, each refuted as "pre-existing" by this verifier and each costing a paid round. If the finding names a request-derived value the touched funnel still trusts, it is admissible; judge it on reachability, not on diff-introduced.`
 
 const MAP_SCHEMA = {
   type: 'object',
