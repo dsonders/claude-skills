@@ -185,6 +185,8 @@ If the post naturally pairs with a downloadable asset (checklist, template, calc
 
 > Give the user the prompt in a single paste-ready code block. Wait for them to run Nano Banana externally, paste results, and iterate. Provide follow-up edit prompts for refinements (blur background, shift focal plane, extend elements out of frame, fix text garble, etc.). Loop until the user says "good enough" or similar.
 
+**Dave often asks to see the post mocked up before the hero exists** ("mock this up and I'll review"), which inverts Phase 3 and Phase 4. That is fine. When it happens, build the mockup with a placeholder hero AND ship the image prompt inside the mockup itself — see Phase 4 step 2. Do not make him ask for the prompt as a separate step.
+
 ### Auto-steps (after image approved)
 
 3. **Process the hero image with sips**:
