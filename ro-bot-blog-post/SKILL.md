@@ -319,10 +319,17 @@ No checkpoint here — these are generated as output files for the user to pick 
    New post targeting {audience} on {angle}. Includes {infographic/
    hero/etc.} and {two-way internal linking to older post if applicable}.
 
-   Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
+   Co-Authored-By: {the model co-author line the current harness specifies}
    ```
-3. **Push to origin main** — `git push origin main`. Report the new commit SHA.
-4. **Remind the user** that Netlify will auto-deploy from the GitHub webhook in ~2 minutes. The post will be live at `https://ro-bot.io/blog/{slug}`.
+   Do not hardcode a model version here. Use whatever `Co-Authored-By` line the running harness tells you to use.
+3. **Push the branch and open a PR. Never push to `main`.** Website `CLAUDE.md` RULE #5 is explicit: new session = new branch, open a PR, let Dave merge. Recent history (#53 onward) is all PR-merged.
+   ```bash
+   git push -u origin {branch}
+   gh pr create --base main --head {branch} --title "..." --body "..."
+   ```
+   Report the PR URL.
+4. **If the session also produced an unrelated fix** (a layout bug, a stale link), that is its own branch and its own PR, per "PR per logical change." Push the fix PR too and tell Dave which to merge first. If the content branch has the fix as an ancestor, say so, since merging the fix first collapses the content diff to content only.
+5. **Remind the user** that Netlify auto-deploys from the GitHub webhook about 2 minutes **after he merges**, not on push. The post goes live at `https://ro-bot.io/blog/{slug}`.
 
 ---
 
@@ -394,5 +401,7 @@ Add {topic} blog post
 
 {1-2 sentence summary of what the post covers and who it targets}.
 
-Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
+Co-Authored-By: {the model co-author line the current harness specifies}
 ```
+
+Commit on a branch and open a PR. Never push to `main` (RULE #5). See Phase 5.
