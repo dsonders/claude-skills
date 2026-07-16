@@ -214,6 +214,17 @@ If the post naturally pairs with a downloadable asset (checklist, template, calc
      <img src="/blog-assets/{N}-{slug}/{filename}" alt="{alt with primary keyword if natural}" class="w-full rounded-lg" />
    </div>
    ```
+
+   **If the hero doesn't exist yet** (user asked to review the mockup before Phase 3), generate a placeholder JPEG at the real 16:9 size and save it to the FINAL path (`hero.jpg`), so the approved Nano Banana output later drops in with no markdown edit. Render the placeholder with Playwright + Chrome (`page.setContent` → `screenshot({type:'jpeg'})`); `sips` cannot rasterize SVG.
+
+   **Always pair the placeholder with the image prompt, in the mockup itself.** Dave reviews on localhost and should be able to copy the prompt straight off the page instead of asking for it. Put the full Nano Banana prompt in a selectable `<pre>` directly below the placeholder, wrapped in a clearly temporary block:
+   ```html
+   <div class="not-prose my-8 rounded-lg border-2 border-dashed border-teal bg-surface p-5" data-build-artifact="hero-prompt">
+     <p class="text-xs font-semibold uppercase tracking-widest text-teal">Hero prompt &middot; remove before deploy</p>
+     <pre class="mt-3 whitespace-pre-wrap text-xs text-navy">{full Nano Banana prompt}</pre>
+   </div>
+   ```
+   The `data-build-artifact="hero-prompt"` hook is what Phase 5 greps for. **Deploy pre-flight: `grep -r 'data-build-artifact' src/content/blog/` must return nothing before staging.** If it hits, the placeholder block never got removed.
 3. **Build the infographic inline** (if planned in Phase 2) using brand colors and `not-prose` wrapper. See existing example in `src/content/blog/warranty-audit-playbook.md` for a reference pattern.
 4. **Two-way internal linking** — identify 1-2 older posts that should link TO this new one. Propose specific sentences to add or edit. Add them.
 5. **Run `npm run build`** and verify:
@@ -294,6 +305,7 @@ No checkpoint here — these are generated as output files for the user to pick 
 
 ### Auto-steps
 
+0. **Pre-flight: `grep -rn 'data-build-artifact' src/content/blog/`** must return nothing. If it hits, remove the leftover hero-prompt placeholder block and rebuild before staging.
 1. **Stage specific files only** (never `-A` or `.`):
    - `src/content/blog/{slug}.md`
    - `public/blog-assets/{N}-{slug}/{filename}`
