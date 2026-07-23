@@ -17,7 +17,14 @@ export const meta = {
 //   changedFiles — array of changed file paths (from `gh pr view --json files`)
 const prNumber = (args && args.prNumber) || 'current'
 const baseRef = (args && args.baseRef) || 'origin/main'
-const codexFindings = (args && args.codexFindings) || '(Codex comment text was not captured — review the full diff against the rubric from scratch.)'
+const rawFindings = (args && args.codexFindings) || ''
+const codexFindings = rawFindings.trim() || '(Codex comment text was not captured — review the full diff against the rubric from scratch.)'
+if (!rawFindings.trim()) {
+  // No-silent-caps: reviewers grade against the actual Codex finding; running without
+  // it quietly weakens every downstream agent. Surface it so the invoker can re-run
+  // with the comment text from Step 2 unless it is genuinely unavailable.
+  log('⚠ codexFindings NOT provided — reviewers are running WITHOUT the actual Codex finding text (Step 2 gathers it; pass it via args.codexFindings)')
+}
 const changedFiles = (args && args.changedFiles) || []
 const fileList = changedFiles.length ? changedFiles.join('\n') : '(file list not provided — derive it from `git diff --name-only ' + baseRef + '...HEAD`)'
 
