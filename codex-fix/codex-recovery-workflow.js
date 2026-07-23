@@ -15,9 +15,16 @@ export const meta = {
 //   baseRef      — git ref to diff against (default 'origin/main'); agents run `git diff <baseRef>...HEAD`
 //   codexFindings— the raw text of the Codex review comment (the P0/P1 lines). May be '' if not captured.
 //   changedFiles — array of changed file paths (from `gh pr view --json files`)
-const prNumber = (args && args.prNumber) || 'current'
-const baseRef = (args && args.baseRef) || 'origin/main'
-const rawFindings = (args && args.codexFindings) || ''
+// The harness can deliver `args` as a JSON STRING rather than an object (seen
+// live on #1195: reviewers ran without the Codex findings and the plan missed
+// the actual flagged class). Parse defensively before reading any field.
+let a = args
+if (typeof a === 'string') {
+  try { a = JSON.parse(a) } catch { a = null }
+}
+const prNumber = (a && a.prNumber) || 'current'
+const baseRef = (a && a.baseRef) || 'origin/main'
+const rawFindings = (a && a.codexFindings) || ''
 const codexFindings = rawFindings.trim() || '(Codex comment text was not captured — review the full diff against the rubric from scratch.)'
 if (!rawFindings.trim()) {
   // No-silent-caps: reviewers grade against the actual Codex finding; running without
@@ -25,7 +32,7 @@ if (!rawFindings.trim()) {
   // with the comment text from Step 2 unless it is genuinely unavailable.
   log('⚠ codexFindings NOT provided — reviewers are running WITHOUT the actual Codex finding text (Step 2 gathers it; pass it via args.codexFindings)')
 }
-const changedFiles = (args && args.changedFiles) || []
+const changedFiles = (a && a.changedFiles) || []
 const fileList = changedFiles.length ? changedFiles.join('\n') : '(file list not provided — derive it from `git diff --name-only ' + baseRef + '...HEAD`)'
 
 const DIFF_CMD = 'git --no-pager diff ' + baseRef + '...HEAD'
