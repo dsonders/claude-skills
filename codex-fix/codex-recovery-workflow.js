@@ -215,7 +215,10 @@ const DIMENSIONS = [
 phase('Map')
 const map = await agent(
   `${groundingBlock}\n\nProduce a complete INVENTORY of this PR's diff: every changed file with the functions/classes/components it touches and a risk tag, plus — for EACH Codex finding above — the systemic CLASS it belongs to and every other place in the repo that class appears (grep the repo). This map grounds the reviewers; be exhaustive and accurate.`,
-  { label: 'map-diff', phase: 'Map', schema: MAP_SCHEMA },
+  // model pinned to opus: this fan-out inherits the session model by default, and a
+  // Fable-managed session burned ~2.5M Fable tokens on one recovery run (2026-07-23).
+  // Grep-and-verify review work is Opus-grade; the human session does final judgment.
+  { label: 'map-diff', phase: 'Map', schema: MAP_SCHEMA, model: 'opus' },
 )
 
 const mapDigest = `\n## Diff inventory (from the mapping pass)\n${JSON.stringify(map, null, 2)}\n`
@@ -226,14 +229,14 @@ const reviewed = await pipeline(
   (d) =>
     agent(
       `${groundingBlock}${mapDigest}${wholeClassRule}\n\n## Your lens\n${d.focus}\n\nReview the FULL diff through THIS lens only. For every defect you MUST: read the real code; QUOTE the exact offending line(s) verbatim into \`evidence\` (a finding with no verbatim quote from the actual diff is inadmissible — do not invent line numbers); confirm it is introduced by this diff (\`diffIntroduced\`) and reachable (\`reachable\`); give a concrete fix; name its class; list EVERY sibling location repo-wide; and rate your \`confidence\` (high only if you quoted code that unambiguously exhibits the defect). Return [] if your lens is clean — manufacturing P2/P3 padding lowers the signal and trains the maintainer to ignore you.`,
-      { label: `review:${d.key}`, phase: 'Review', schema: FINDINGS_SCHEMA },
+      { label: `review:${d.key}`, phase: 'Review', schema: FINDINGS_SCHEMA, model: 'opus' },
     ),
   (review, dim) =>
     parallel(
       ((review && review.findings) || []).map((f) => () =>
         agent(
           `${verifierBias}\n\n## Finding to refute (from the ${dim.key} lens, PR #${prNumber})\n${JSON.stringify(f, null, 2)}\n\nIndependently re-derive this — do NOT trust the finding's own quote. Open the cited code yourself (\`${DIFF_CMD} -- ${f.file}\` and the file itself) and PASTE the exact line(s) you read into \`evidence\`. Then decide: is this a real, reachable, diff-INTRODUCED defect? If the cited code isn't actually in this diff, refute it as cited-code-not-in-diff. Free-form agreement without a verbatim quote = refuted by default. Set isReal + confidence accordingly; if not real, name the non-issue kind in refutedAs.`,
-          { label: `verify:${f.file}`, phase: 'Verify', schema: VERDICT_SCHEMA },
+          { label: `verify:${f.file}`, phase: 'Verify', schema: VERDICT_SCHEMA, model: 'opus' },
         ).then((v) => ({ ...f, verdict: v })),
       ),
     ),
@@ -267,7 +270,7 @@ log(
 phase('Synthesize')
 const plan = await agent(
   `${groundingBlock}\n\n## Verified IN-DIFF findings (adversarially confirmed real, cited code is in this diff)\n${JSON.stringify(confirmed, null, 2)}\n\n## Off-diff observations (verified real but cited code is NOT in this diff — advisory at most, never a must-fix)\n${JSON.stringify(offDiff, null, 2)}\n\nProduce ONE fix plan for PR #${prNumber}, graded against the actual Codex finding above as the reference (does each fix resolve the cited P0/P1 and its whole class?).\n\nSplit findings into two buckets:\n- \`fixes\` = MUST fix before re-push: high-confidence, diff-introduced P0/P1 — the Codex class plus anything that would itself BLOCK. Dedupe defects seen through multiple lenses (merge their sibling locations). \`locations\` MUST list EVERY place to change (the whole class). Each needs a \`regressionTest\` (a test that fails before, passes after) unless genuinely not unit-testable.\n- \`advisory\` = real but P2/P3 or lower-confidence (incl. all off-diff observations): note them; do NOT require them before re-push and do NOT let them expand the diff.\n\nFor \`sweepsToRun\`: always include "npm run check" and the relevant "/test:safe"; add "npm run check:org-scoping" if any fix touches org/auth.\n\nSet \`sensitive\` per its definition (only a MUST-FIX in the carve-out categories). Populate \`layerEscalations\` with any fix that would resolve the bug at a HARDER/deeper layer than where it occurs (a client-side bug fixed by changing a server query or the schema, a soft guard turned into a type/DB constraint) — those are design calls for the human, not reflex remediations. Note residual risks the fixes don't cover.`,
-  { label: 'synthesize-plan', schema: PLAN_SCHEMA, effort: 'high' },
+  { label: 'synthesize-plan', schema: PLAN_SCHEMA, effort: 'high', model: 'opus' },
 )
 
 return { prNumber, plan, verifiedCount: confirmed.length, offDiffCount: offDiff.length, map }
