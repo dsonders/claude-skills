@@ -209,6 +209,14 @@ const DIMENSIONS = [
     key: 'ai-customer-surface',
     focus: `**AI output & customer-facing surfaces.** All AI-generated text funnels through removeMetaLanguage. AI must not fabricate diagnostic detail a tech didn't state (Strict/Standard/Enhanced modes). Pricing/billing math correct (null vs zero labor_hours → "Pricing to follow"; unpriced lines can't be approved). Destructive/bulk ops scoped and reversible. Mobile-first surfaces (iOS Safari) not broken for tech users.`,
   },
+  {
+    key: 'failure-paths',
+    focus: `**Failure-path state machines (blind spot that cost #1222 r3 — reviews audit happy paths and races, nobody walks the failure exits).** For EVERY user action the diff adds/changes, walk EVERY failure exit (empty result, thrown persistence, rejected network write, dead handle) and check: (a) ALL interaction state re-arms — locks/refs cleared, busy flags reset, stale handles nulled — so the user can retry (a button stuck on its in-progress label over a dead resource is the tell); (b) NO advance/navigation/success render happens before the persistence it claims has settled — an optimistic advance on a failed write is a FALSE SUCCESS (the #1046 class: UI claims a server fact its write never landed), and any optimistic cache write must roll back on failure; (c) a timer/timeout that arms an in-progress state has a settle path from EVERY intermediate state, not just the expected one.`,
+  },
+  {
+    key: 'stale-echo-monotonic',
+    focus: `**Stale-echo reversion of server-side progress (cost #1222 r1+r4).** Any client write that sends a WHOLE object/array rebuilt from its own cache can echo STALE values over fields the server (or another device) progressed AFTER that cache was taken — background-job outputs, another tab's flags, async stamps. For each client-editable field in a bulk write path ask: does anything server-side or cross-device advance this field, and does it only ever move ONE WAY (empty→filled, false→true)? One-way fields must LATCH at the server merge seam (client input can complete them, never revert them); also check whether any GATE/freeze/derivation reads the field — a stale echo that reverts it can dissolve the gate (an all-false echo un-froze #1222 r2's order lock until r4 latched it). And enforce structural freezes at the WRITE SITE on EVERY writer (PATCH and siblings like appends — an append that looks structurally safe still changes a completion DENOMINATOR any every-item predicate reads, #1222 r6).`,
+  },
 ]
 
 // --- run ---

@@ -163,6 +163,8 @@ The workflow's reviewer panel is lifted from `.github/codex/prompts/review.md` s
 | Security & leakage | priority 2, heightened | raw LLM-error/API-key leak, customer-surface internal fields, tainted input |
 | Field wiring & regressions | priority 1, 4 | data graveyards, write-allowlist no-ops, broken callers, sibling write paths |
 | AI output & customer surface | cardinal rules | removeMetaLanguage funnel, fabrication, pricing math, mobile-first |
+| Failure-path state machines | priority 1 (blind spot, #1222 r3) | every failure exit re-arms the UI; no advance/success before its write settles; optimistic writes roll back |
+| Stale-echo / monotonicity | priority 1 (blind spot, #1222 r1/r4/r6) | bulk client writes echoing stale cache over server-progressed fields; one-way fields latch at the merge seam; freezes enforced on EVERY writer |
 
 If `.github/codex/prompts/review.md` changes, glance at it and update the dimensions in `codex-recovery-workflow.js` to match.
 
@@ -193,7 +195,7 @@ The internal review missed a class. Read the new finding, find why the sweep did
 A clean PASS posts nothing, and the comment only appears on BLOCK/advisory/error. If the check is red but there's no comment, the review step errored (bad `OPENAI_API_KEY`) — the comment will say "produced no output"; that's an infra issue, not a code issue (rotate the secret), not something to fix in the diff.
 
 ### The "finding" is Dave's explicit design decision, not a bug
-Don't admin-override or silently flip it to satisfy the gate. Split it out, fix the real bugs, and ask Dave about the design call (per "gate blocks on the user's design call").
+Don't admin-override or silently flip it to satisfy the gate. Split it out, fix the real bugs, and ask Dave about the design call (per "gate blocks on the user's design call"). **One resolution needs no ask:** when the reviewer's own stated alternative IS the epic's next planned leg (e.g. #1222 r5 blocked a staged rollout's gated window and suggested "ship the read surfaces in this PR" — which was PR 3d), fold that planned work into the PR instead of arguing the window or seeking an override. The design doesn't change; only the PR boundary does, and the locked plan already approved the work.
 
 ### Workflow returns zero verified findings but Codex blocked
 Either the adversarial verifier was too aggressive, or Codex flagged something genuinely pre-existing/borderline. Re-read the Codex line directly against the code; if it's real, fix it by hand; if it's a Codex false positive, address it in the PR (a guard/comment/test) so the re-review passes — don't just re-push unchanged.
