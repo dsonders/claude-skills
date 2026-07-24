@@ -44,6 +44,14 @@ Don't use for:
 
 Both modes run the same steps and produce the same artifacts — non-interactive just stops asking and reports.
 
+## Delegation (token economics)
+
+When the main session runs a premium model (Fable) and cheaper capable agents exist (Opus 4.8), the read-heavy and draft-heavy steps delegate; every gate and judgment stays in the main loop. This also keeps the bulk reads OUT of the main session's context — which matters, since compound usually runs when that context is at its heaviest.
+
+- **Delegate to ONE background agent (Agent tool, `model: "opus"`)**: Step 1's `git diff`/`git log` gather (return a change summary, not the raw diff), Step 2.7's overlap grep (return candidate docs + their 5-dimension scores + quoted evidence), Step 7's prune sweep (return candidates + evidence — the agent never deletes), and — once the main session has decided what to capture — Step 3's doc drafting against the template (main session reviews for accuracy + terseness per Step 8).
+- **Keep in the main loop**: Step 1's process/collaboration reflection (it's about THIS conversation, which no agent can see), the Step 4/5 gates, Step 6 memory writes (small, high-precision, session-context-dependent), Step 6.5's fact-ripple judgment, and all deletions + commits (Steps 7–9).
+- Main session on a non-premium model → skip delegation; coordination overhead beats the savings.
+
 ---
 
 ## Workflow

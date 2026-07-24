@@ -27,11 +27,21 @@ Lands a long build session cleanly so work can continue in a fresh context windo
 3. **Leave nothing uncommitted**: every repo and worktree touched this session ends pushed (RULE #5). The handoff prompt should never say "there are uncommitted changes."
 4. **Handoff ≠ memory**: memory holds durable project facts (`/compound` updates it); the handoff prompt holds the immediate next move and this-session context. Don't duplicate — point.
 
+## Delegation & model economics
+
+A wrap-up is read-heavy (repo sweeps, doc reads) and lands exactly when the session's context is at its heaviest. When the main session runs a premium model (Fable) with cheaper capable agents available (Opus 4.8), delegate the mechanical work and keep only judgment in the main loop:
+
+- **Step 1 sweep + Step 2 doc drafting → ONE background agent (Agent tool, `model: "opus"`).** It returns: per-repo/worktree `git status` + current branch, untracked/scratch-file inventory with delete recommendations, stray-debug-code grep hits, and drafts for any doc updates it was briefed on. Two wins: agent tokens are cheaper AND the reads never enter the main session's context.
+- **Step 3 `/compound`** has its own delegation rules (see that skill's "Delegation" section) — same principle.
+- **Deletions, commits, pushes, and PR creation stay in the main loop** — destructive and outward-facing actions are the manager's job, applied from the agent's evidence.
+- **Steps 5–6 (debrief + handoff prompt) are NEVER delegated**: they distill THIS session's decisions and context, which no agent has. The main session authors them.
+- Main session already on a non-premium model → skip delegation; coordination overhead beats the savings.
+
 ## Workflow
 
 Make a todo list for these six steps and work through them in order.
 
-### Step 1: Tidy Up
+### Step 1: Tidy Up *(sweep delegable — see Delegation above)*
 
 Sweep every repo/worktree touched this session:
 
@@ -45,7 +55,7 @@ git branch --show-current     # verify before ANY git op — sibling sessions mo
 - **Worktrees**: note which are parked vs. active; stop dev servers you started unless the handoff needs them running.
 - **Branch hygiene**: anything sitting on `main` uncommitted is a red flag — move it to a branch.
 
-### Step 2: Update / Create Documentation
+### Step 2: Update / Create Documentation *(drafting delegable)*
 
 Only what this session made stale or necessary:
 
