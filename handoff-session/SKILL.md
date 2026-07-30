@@ -29,7 +29,7 @@ Lands a long build session cleanly so work can continue in a fresh context windo
 
 ## Delegation & model economics
 
-A wrap-up is read-heavy (repo sweeps, doc reads) and lands exactly when the session's context is at its heaviest. When the main session runs a premium model (Fable) with cheaper capable agents available (Opus 4.8), delegate the mechanical work and keep only judgment in the main loop:
+A wrap-up is read-heavy (repo sweeps, doc reads) and lands exactly when the session's context is at its heaviest. When the main session runs a premium model (Fable) with cheaper capable agents available (Opus), delegate the mechanical work and keep only judgment in the main loop:
 
 - **Step 1 sweep + Step 2 doc drafting → ONE background agent (Agent tool, `model: "opus"`).** It returns: per-repo/worktree `git status` + current branch, untracked/scratch-file inventory with delete recommendations, stray-debug-code grep hits, and drafts for any doc updates it was briefed on. Two wins: agent tokens are cheaper AND the reads never enter the main session's context.
 - **Step 3 `/compound`** has its own delegation rules (see that skill's "Delegation" section) — same principle.
