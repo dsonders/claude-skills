@@ -167,6 +167,7 @@ The workflow's reviewer panel is lifted from `.github/codex/prompts/review.md` s
 | AI output & customer surface | cardinal rules | removeMetaLanguage funnel, fabrication, pricing math, mobile-first |
 | Failure-path state machines | priority 1 (blind spot, #1222 r3) | every failure exit re-arms the UI; no advance/success before its write settles; optimistic writes roll back |
 | Stale-echo / monotonicity | priority 1 (blind spot, #1222 r1/r4/r6) | bulk client writes echoing stale cache over server-progressed fields; one-way fields latch at the merge seam; freezes enforced on EVERY writer |
+| Population-render matrix + accepted holes | priorities 1, 5 (blind spot, #1324 r2/r3) | a widened membership predicate admits a population no render surface handles (generic titles, empty bodies, double-rendered fallbacks); a diff comment documenting an "accepted hole" is what the gate blocks on — close one-line holes, don't essay them |
 
 If `.github/codex/prompts/review.md` changes, glance at it and update the dimensions in `codex-recovery-workflow.js` to match.
 
