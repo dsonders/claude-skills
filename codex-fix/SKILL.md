@@ -138,7 +138,12 @@ Then **respect the sensitive carve-out**. `plan.sensitive` is **advisory** — c
 - **Not sensitive** → push and let auto-merge + the re-run Codex gate decide. Report the PR link and what class you fixed. Do NOT ask Dave to merge (RULE #7 default flow).
 - **Sensitive** — the *fix itself* changes auth / org-isolation query scoping / DB schema / migration / pricing / billing / destructive-bulk ops / a customer-facing surface (the Owner Page customers see, not an internal dashboard) → push, then **explicitly ask Dave to review before merge** and surface the residual risks. Do not arm auto-merge.
 
-Optionally watch the re-review instead of context-switching. **Don't whitespace-split `gh pr checks` output** — the check is named "Codex Review" (two words), so `awk '{print $2}'` reads the wrong column and you'll act on a stale verdict (this bit the first run). Use JSON selection, and read the verdict from the *latest* Codex comment, not the tabular state:
+Optionally watch the re-review instead of context-switching. **Don't whitespace-split `gh pr checks` output** — the check is named "Codex Review" (two words), so `awk '{print $2}'` reads the wrong column and you'll act on a stale verdict (this bit the first run). **And before reading ANY verdict, confirm the check run's `headSha` is your new commit** — right after a push, `gh pr checks`/`--watch` can settle on the PREVIOUS commit's runs (a re-block that is really the old round's result; #1357 burned a cycle on this — the "failing" Codex run predated the fix push, and a clean PASS posts no new comment, so the stale BLOCK comment stays the `last` one). Use JSON selection, and read the verdict from the *latest* Codex comment, not the tabular state:
+
+```bash
+gh run list --branch "$(git branch --show-current)" --limit 5 \
+  --json databaseId,name,conclusion,headSha       # match runs to YOUR sha first
+```
 
 ```bash
 gh pr checks "$PR" --watch                                   # blocks until checks settle
