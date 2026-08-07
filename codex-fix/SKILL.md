@@ -200,6 +200,8 @@ If `.github/codex/prompts/review.md` changes, glance at it and update the dimens
 ### Codex blocked again after the fix
 The internal review missed a class. Read the new finding, find why the sweep didn't reach it (usually a grep too narrow, or a sibling in a file the map didn't tag), widen it, re-run from Step 3 on the new diff. One repeat is a tuning signal, not a loop — note it in Step 8.
 
+**Stop-loss (~round 3) — recognize NON-CONVERGENCE (#1361, 6 rounds):** a destructive multi-system sequence (e.g. Firestore docs + Auth accounts — no atomicity) always has SOME abort window leaving partial state under a success line, so surgical fixes just relocate the window and each round finds the next one — even with a full verification Workflow before every push. When round ~3 arrives and the findings are still partial-state/false-success variants of the same destructive sequence, STOP fixing: (1) size the newest finding against LIVE data (a read-only query showing zero instances reframes it), (2) check whether it describes PRE-EXISTING behavior the diff merely sits near, then (3) present the user the real options — full convergent redesign, scope-reset to the never-flagged feature subset, park, or admin-merge over the gate. On #1361 the user chose scope-reset then admin-merge, three rounds after the pattern was visible; the feature subset itself had never been flagged once.
+
 ### `gh pr view --json comments` returns no Codex comment
 A clean PASS posts nothing, and the comment only appears on BLOCK/advisory/error. If the check is red but there's no comment, the review step errored (bad `OPENAI_API_KEY`) — the comment will say "produced no output"; that's an infra issue, not a code issue (rotate the secret), not something to fix in the diff.
 
