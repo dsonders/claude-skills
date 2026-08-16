@@ -41,6 +41,8 @@ The Codex review gate is a PAID adversarial reviewer that reports the first wall
 
 Invoke `/code-review high` on the branch diff (vs `origin/main`). Let it complete; it mirrors Codex's rubric (correctness → org/auth → security/leakage → wiring/regressions → failure-path and unattended-write contracts).
 
+**Stall watch (known harness bug, hit twice 2026-08-15):** a backgrounded /code-review fork's final VERIFIER notification can be delivered to the MAIN session instead of back to the fork — the fork then reports "waiting on the final verifier" and sleeps forever while its verdicts sit in your transcript. If the review is quiet well past ~30 min: `ListAgents` (the fork won't be live), then `SendMessage` the fork its verifier's result verbatim and tell it to assemble the final findings from its transcript — do NOT re-run the review. Set yourself a check-in when you launch it; don't wait for the user to notice.
+
 ### Step 3 — Triage every finding (the rules that make this work)
 
 | Finding type | Action |
