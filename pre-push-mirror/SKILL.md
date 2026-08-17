@@ -8,7 +8,7 @@ argument-hint: [none — operates on the current branch's unpushed diff]
 
 The Codex review gate is a PAID adversarial reviewer that reports the first wall, not the whole wall — each block costs a round. This skill runs an internal review that mirrors Codex's rubric over the unpushed diff, fixes what it finds by explicit triage rules, and pushes once.
 
-**Track record:** #1418 skipped it → 2 paid rounds. #1419, #1420, #1421 ran it → each passed Codex first-try, and the mirror surfaced real defects Codex never demanded (a missing Storage-existence proof, a fail-open wiring test proven by meta-probe, an unconverted sibling class).
+**Track record:** #1418 skipped it → 2 paid rounds. #1419, #1420, #1421 ran it → each passed Codex first-try, and the mirror surfaced real defects Codex never demanded (a missing Storage-existence proof, a fail-open wiring test proven by meta-probe, an unconverted sibling class). #1431 (pricing + background writes) → 6 real defects fixed pre-push (a torn two-clock read that rendered a clean finish as failure, a blur-storm from a healthy-path arm, an unhandled-rejection tail, a burned pass budget), Codex first-try green. **If the `/code-review` orchestrator dies mid-run (model limit), its finder agents' notifications still carry every finding — triage from those directly; don't re-run.**
 
 **This is not gaming the gate.** Codex reviews the identical final diff either way; the mirror adds a partially-uncorrelated review before it, and deferrals are documented in the PR body where both Codex and Dave see them. Nothing is hidden, split, or crafted to evade the rubric.
 
