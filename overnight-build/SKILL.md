@@ -66,6 +66,9 @@ Make a todo list and work through it.
 - Note which PRs will be review-first anyway (un-ruled edges you already know about).
 
 ### Step 2 — Write the durable brief
+- Source of items: `docs/overnight/BACKLOG.md` in the app repo — consume the **Queued** section
+  only (Queued = every question carries a ⛔ ruling). After the run, remove shipped items in a
+  doc commit; git history is the archive.
 - Copy `templates/brief-template.md` → session scratchpad (`overnight-<date>-brief.md`).
 - One section per workstream: the rulings VERBATIM (mark each ⛔ don't-re-decide), files/
   lesson-docs to read, sensitivity notes, merge instruction per PR, prod-verify sentinel.
