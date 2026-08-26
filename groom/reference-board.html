@@ -1257,25 +1257,15 @@
         <div class="viz-foot">All four ask the same question today and all four move to the same better one &mdash; nothing else about them changes.</div>
       </figure>
     </article>
-  </section>
-
-  <!-- ============ 2. TO GROOM · UX ============ -->
-  <section class="section">
-    <div class="sec-head">
-      <span class="node next"></span>
-      <h2>To groom &middot; UX</h2>
-      <p class="sec-sub">Needs your decisions before it can run</p>
-    </div>
-
     <!-- Card A -->
     <article class="card">
       <div class="card-head">
-        <span class="key">A</span>
+        <span class="key queued">Queued</span><span class="key">A</span>
         <h3>Parts queue: OK&rsquo;d-but-not-pulled keeps the RO in the queue</h3>
         <span class="rank">#1 overall</span>
         <span class="status">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-          groomed &mdash; vote by letter
+          ruled 26 Aug &mdash; runs tonight on your word
         </span>
       </div>
       <p class="sub">A part added after the RO is already Ready gets approved &mdash; but the RO never returns to the parts queue, so nobody pulls it.</p>
@@ -1592,13 +1582,23 @@
       <div class="ballot">
         <div class="ballot-head">Ballot</div>
         <ol>
-          <li><span class="opt">A1</span><span>Keep the RO in the queue whatever its status, as long as it isn&rsquo;t closed. <span class="rec">rec: yes</span><span class="why">Why: the part is owed no matter where the RO sits.</span></span></li>
-          <li><span class="opt">A2</span><span>Show the &ldquo;2 to pull&rdquo; marker in the Lines column. <span class="rec">rec: yes</span><span class="why">Why: without it the RO reappears and parts can&rsquo;t tell why.</span></span></li>
-          <li><span class="opt">A3</span><span>ROs already stuck like this today &mdash; McGrath has some. Fix those too, or only new ones from here on? <span class="rec">rec: fix them too</span><span class="why">Why: forward&#8209;only leaves the ROs that caused the complaint exactly where they are; it&rsquo;s a one&#8209;time cleanup you run after the deploy.</span></span></li>
-          <li><span class="opt">A4</span><span>This needs one new piece of stored information on each RO &mdash; &ldquo;has OK&rsquo;d parts not yet pulled&rdquo;. Build it as part of this. <span class="rec">rec: yes</span><span class="why">Why: it&rsquo;s the only way the queue can know.</span></span></li>
+          <li><span class="opt">A1</span><span>Keep the RO in the queue whatever its status, as long as it isn&rsquo;t closed. <span class="rec">ruled: yes</span><span class="why">Why: the part is owed no matter where the RO sits.</span></span></li>
+          <li><span class="opt">A2</span><span>Show the &ldquo;2 to pull&rdquo; marker in the Lines column. <span class="rec">ruled: yes</span><span class="why">Why: without it the RO reappears and parts can&rsquo;t tell why.</span></span></li>
+          <li><span class="opt">A3</span><span>ROs already stuck like this today &mdash; McGrath has some. Fix those too, or only new ones from here on? <span class="rec">ruled: fix them</span><span class="why">Why: forward&#8209;only leaves the ROs that caused the complaint exactly where they are; it&rsquo;s a one&#8209;time cleanup you run after the deploy.</span></span></li>
+          <li><span class="opt">A4</span><span>This needs one new piece of stored information on each RO &mdash; &ldquo;has OK&rsquo;d parts not yet pulled&rdquo;. Build it as part of this. <span class="rec">ruled: yes</span><span class="why">Why: it&rsquo;s the only way the queue can know.</span></span></li>
         </ol>
       </div>
     </article>
+
+  </section>
+
+  <!-- ============ 2. TO GROOM · UX ============ -->
+  <section class="section">
+    <div class="sec-head">
+      <span class="node next"></span>
+      <h2>To groom &middot; UX</h2>
+      <p class="sec-sub">Needs your decisions before it can run</p>
+    </div>
 
     <!-- Card B -->
     <article class="card">
@@ -1610,7 +1610,7 @@
           groomed &mdash; vote by letter
         </span>
       </div>
-      <p class="sub">The counter reads &ldquo;0 of 4&rdquo; on an RO where only two lines are OK&rsquo;d &mdash; the other two aren&rsquo;t parts&rsquo; job yet.</p>
+      <p class="sub">The counter reads &ldquo;0 of 4&rdquo; on an RO where only two <b>lines</b> are OK&rsquo;d &mdash; the parts on the other two aren&rsquo;t parts&rsquo; job yet.</p>
 
       <ul class="dims">
         <li class="hi">
@@ -1662,6 +1662,21 @@
       .as-lrow .tail { flex: none; font-size: 9.5px; color: #94a3b8; }
       .as-lrow.count { background: #eff6ff; border-color: #93c5fd; }
       .as-lrow.count .tail { color: #1d4ed8; font-weight: 600; }
+      /* a LINE row with its part(s) nested under it (card B) */
+      .as-lgroup { display: grid; gap: 3px; }
+      .as-lgroup + .as-lgroup { margin-top: 6px; }
+      .as-lrow .lstate { color: #94a3b8; font-weight: 400; }
+      .as-lrow .lname { font-weight: 600; color: #1e293b; }
+      .as-prow {
+        display: flex; align-items: center; gap: 6px;
+        margin-left: 15px; padding: 2px 8px 2px 10px;
+        border-left: 2px solid #e2e8f0;
+        font-size: 10px; color: #64748b;
+      }
+      .as-prow .grow { flex: 1 1 auto; min-width: 0; }
+      .as-prow .tag { flex: none; font-size: 9.5px; color: #94a3b8; }
+      .as-prow .tag.on { color: #1d4ed8; font-weight: 600; }
+
       .as-cb { flex: none; font-size: 10.5px; color: #334155; }
       .as-cb.off { color: #cbd5e1; }
       .as-cb.gone { color: #cbd5e1; font-style: italic; }
@@ -1796,7 +1811,7 @@
               <span class="n">1</span>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 5.5h15M4.5 12h15M4.5 18.5h15"/></svg>
             </span>
-            <p>An RO has <b>4 lines</b>: two the advisor has OK&rsquo;d, two still waiting on him.</p>
+            <p>An RO has <b>4 lines</b>: the advisor OK&rsquo;d two, two are still waiting on him.</p>
           </li>
           <li>
             <span class="stephead">
@@ -1829,14 +1844,23 @@
                   <div class="as-boxes"><span class="as-box"></span><span class="as-box"></span><span class="as-box"></span><span class="as-box"></span></div>
                 </div>
                 <div class="as-linelist">
-                  <div class="as-lrow count"><span class="mark ok">&#10003;</span><span class="grow">Brake pads</span><span class="tail">counted</span></div>
-                  <div class="as-lrow count"><span class="mark ok">&#10003;</span><span class="grow">Rotors</span><span class="tail">counted</span></div>
-                  <div class="as-lrow count"><span class="mark">&#8987;</span><span class="grow">Cabin filter</span><span class="tail">counted</span></div>
-                  <div class="as-lrow count"><span class="mark">&#8987;</span><span class="grow">Wiper blades</span><span class="tail">counted</span></div>
+                  <div class="as-lgroup">
+                    <div class="as-lrow"><span class="mark ok">&#10003;</span><span class="grow"><span class="lname">Front brakes</span> <span class="lstate">&mdash; approved</span></span></div>
+                    <div class="as-prow"><span class="grow">Brake pads</span><span class="tag on">counted</span></div>
+                    <div class="as-prow"><span class="grow">Rotors</span><span class="tag on">counted</span></div>
+                  </div>
+                  <div class="as-lgroup">
+                    <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow"><span class="lname">Cabin filter</span> <span class="lstate">&mdash; waiting on the advisor</span></span></div>
+                    <div class="as-prow"><span class="grow">Cabin filter</span><span class="tag on">counted</span></div>
+                  </div>
+                  <div class="as-lgroup">
+                    <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow"><span class="lname">Wipers</span> <span class="lstate">&mdash; waiting on the advisor</span></span></div>
+                    <div class="as-prow"><span class="grow">Wiper blades</span><span class="tag on">counted</span></div>
+                  </div>
                 </div>
               </div>
             </div>
-            <p class="scap"><b>Today</b> &mdash; every line counts, decided or not.</p>
+            <p class="scap"><b>Today</b> &mdash; every part counts, whether its line was decided or not.</p>
           </div>
 
           <div class="screen-col">
@@ -1848,24 +1872,34 @@
                   <div class="as-boxes"><span class="as-box"></span><span class="as-box"></span></div>
                 </div>
                 <div class="as-linelist">
-                  <div class="as-lrow count"><span class="mark ok">&#10003;</span><span class="grow">Brake pads</span><span class="tail">counted</span></div>
-                  <div class="as-lrow count"><span class="mark ok">&#10003;</span><span class="grow">Rotors</span><span class="tail">counted</span></div>
-                  <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow">Cabin filter</span><span class="tail">waiting on the advisor</span></div>
-                  <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow">Wiper blades</span><span class="tail">waiting on the advisor</span></div>
+                  <div class="as-lgroup">
+                    <div class="as-lrow"><span class="mark ok">&#10003;</span><span class="grow"><span class="lname">Front brakes</span> <span class="lstate">&mdash; approved</span></span></div>
+                    <div class="as-prow"><span class="grow">Brake pads</span><span class="tag on">counted</span></div>
+                    <div class="as-prow"><span class="grow">Rotors</span><span class="tag on">counted</span></div>
+                  </div>
+                  <div class="as-lgroup">
+                    <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow"><span class="lname">Cabin filter</span> <span class="lstate">&mdash; waiting on the advisor</span></span></div>
+                    <div class="as-prow"><span class="grow">Cabin filter</span><span class="tag">line not decided</span></div>
+                  </div>
+                  <div class="as-lgroup">
+                    <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow"><span class="lname">Wipers</span> <span class="lstate">&mdash; waiting on the advisor</span></span></div>
+                    <div class="as-prow"><span class="grow">Wiper blades</span><span class="tag">line not decided</span></div>
+                  </div>
                 </div>
               </div>
             </div>
-            <p class="scap"><b>Proposed</b> &mdash; only the parts someone has said yes to.</p>
+            <p class="scap"><b>Proposed</b> &mdash; only parts whose <b>line</b> the advisor approved (or that don&rsquo;t need approval &mdash; warranty / recall).</p>
           </div>
 
         </div>
+        <div class="viz-foot">One exception the rule already handles: a part added to a line <b>after</b> the advisor decided it needs its own OK &mdash; it counts only once it has one. Today the counter gets both cases wrong.</div>
         <div class="dirs">
           <div class="dir pick">
             <div class="pred-lbl"><span>B2-a &middot; leave it</span><span>rec</span></div>
             <!-- app frame: literal light colours on purpose -->
             <div class="app-screen">
               <div class="as-body">
-                <span class="as-caption">Waiting on the advisor</span>
+                <span class="as-caption">Line waiting on the advisor</span>
                 <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow">Cabin filter</span><span class="as-cb">&#9744; Pulled</span></div>
               </div>
             </div>
@@ -1876,7 +1910,7 @@
             <!-- app frame: literal light colours on purpose -->
             <div class="app-screen">
               <div class="as-body">
-                <span class="as-caption">Waiting on the advisor</span>
+                <span class="as-caption">Line waiting on the advisor</span>
                 <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow">Cabin filter</span><span class="as-cb off">&#9744; Pulled</span></div>
               </div>
             </div>
@@ -1887,7 +1921,7 @@
             <!-- app frame: literal light colours on purpose -->
             <div class="app-screen">
               <div class="as-body">
-                <span class="as-caption">Waiting on the advisor</span>
+                <span class="as-caption">Line waiting on the advisor</span>
                 <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow">Cabin filter</span><span class="as-cb gone">no checkbox</span></div>
               </div>
             </div>
@@ -1896,12 +1930,14 @@
         </div>
       </figure>
 
-      <p class="conseq">The dashboard&rsquo;s Lines hover and the parts page show the same number, and it only counts parts someone has actually said yes to.</p>
+      <p class="conseq">The dashboard&rsquo;s Lines hover and the parts page show the same number, and it only counts parts on lines someone has actually said yes to.</p>
+
+      <p class="note cluster"><b>Shares a rule with A</b>A&rsquo;s &ldquo;OK&rsquo;d parts not yet pulled&rdquo; must use this exact definition, or the queue and the counter will disagree.</p>
 
       <div class="ballot">
         <div class="ballot-head">Ballot</div>
         <ol>
-          <li><span class="opt">B1</span><span>Count only parts on lines that are approved (or warranty / recall). <span class="rec">rec: yes</span><span class="why">Why: it&rsquo;s the same rule the tech&rsquo;s work-done ring already uses.</span></span></li>
+          <li><span class="opt">B1</span><span>Count only parts on lines the advisor approved (or warranty / recall) &mdash; and, for a part added after the decision, only once it has its own OK. <span class="rec">rec: yes</span><span class="why">Why: same rule the tech&rsquo;s work-done ring uses, and the same rule the queue fix (A) will use.</span></span></li>
           <li><span class="opt">B2</span><span>The Pulled checkbox on a not-yet-approved line: leave it <span class="rec">rec</span> &middot; grey it out &middot; hide it.<span class="why">Why: this is a count fix, not a lock &mdash; parts sometimes pull ahead.</span></span></li>
           <li><span class="opt">B3</span><span>Refresh the stored counts on existing ROs after deploy &mdash; a one-time cleanup you run. <span class="rec">rec: yes</span><span class="why">Why: otherwise old ROs show old numbers until someone edits them.</span></span></li>
         </ol>
