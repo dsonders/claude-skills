@@ -1625,7 +1625,7 @@
           touches data
         </li>
       </ul>
-      <p class="pop"><b>Who hits it</b>Parts users on any RO that still has a line waiting on the advisor. Nobody has reported it &mdash; it was spotted on a test RO.</p>
+      <p class="pop"><b>Who hits it</b>Parts users on any RO that still has a line waiting on an OK. Nobody has reported it &mdash; it was spotted on a test RO.</p>
 
       <style>
       /* ---- shared by cards B–H --------------------------------------------
@@ -1811,7 +1811,7 @@
               <span class="n">1</span>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 5.5h15M4.5 12h15M4.5 18.5h15"/></svg>
             </span>
-            <p>An RO has <b>4 lines</b>: the advisor OK&rsquo;d two, two are still waiting on him.</p>
+            <p>An RO has <b>4 lines</b>: two have their OK, two are still waiting on the customer or advisor.</p>
           </li>
           <li>
             <span class="stephead">
@@ -1828,7 +1828,7 @@
             <p><b>Today:</b> parts is being measured against parts it isn&rsquo;t allowed to pull yet.</p>
           </li>
         </ol>
-        <div class="viz-foot">Two of those lines aren&rsquo;t parts&rsquo; job until the advisor decides them.</div>
+        <div class="viz-foot">Two of those lines aren&rsquo;t parts&rsquo; job until the customer (or, for warranty/internal, the advisor) says yes.</div>
       </figure>
 
       <figure class="viz">
@@ -1850,11 +1850,11 @@
                     <div class="as-prow"><span class="grow">Rotors</span><span class="tag on">counted</span></div>
                   </div>
                   <div class="as-lgroup">
-                    <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow"><span class="lname">Cabin filter</span> <span class="lstate">&mdash; waiting on the advisor</span></span></div>
+                    <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow"><span class="lname">Cabin filter</span> <span class="lstate">&mdash; waiting on an OK</span></span></div>
                     <div class="as-prow"><span class="grow">Cabin filter</span><span class="tag on">counted</span></div>
                   </div>
                   <div class="as-lgroup">
-                    <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow"><span class="lname">Wipers</span> <span class="lstate">&mdash; waiting on the advisor</span></span></div>
+                    <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow"><span class="lname">Wipers</span> <span class="lstate">&mdash; waiting on an OK</span></span></div>
                     <div class="as-prow"><span class="grow">Wiper blades</span><span class="tag on">counted</span></div>
                   </div>
                 </div>
@@ -1878,28 +1878,28 @@
                     <div class="as-prow"><span class="grow">Rotors</span><span class="tag on">counted</span></div>
                   </div>
                   <div class="as-lgroup">
-                    <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow"><span class="lname">Cabin filter</span> <span class="lstate">&mdash; waiting on the advisor</span></span></div>
+                    <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow"><span class="lname">Cabin filter</span> <span class="lstate">&mdash; waiting on an OK</span></span></div>
                     <div class="as-prow"><span class="grow">Cabin filter</span><span class="tag">line not decided</span></div>
                   </div>
                   <div class="as-lgroup">
-                    <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow"><span class="lname">Wipers</span> <span class="lstate">&mdash; waiting on the advisor</span></span></div>
+                    <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow"><span class="lname">Wipers</span> <span class="lstate">&mdash; waiting on an OK</span></span></div>
                     <div class="as-prow"><span class="grow">Wiper blades</span><span class="tag">line not decided</span></div>
                   </div>
                 </div>
               </div>
             </div>
-            <p class="scap"><b>Proposed</b> &mdash; only parts whose <b>line</b> the advisor approved (or that don&rsquo;t need approval &mdash; warranty / recall).</p>
+            <p class="scap"><b>Proposed</b> &mdash; only parts whose <b>line</b> has its OK (or that don&rsquo;t need approval &mdash; warranty / recall).</p>
           </div>
 
         </div>
-        <div class="viz-foot">One exception the rule already handles: a part added to a line <b>after</b> the advisor decided it needs its own OK &mdash; it counts only once it has one. Today the counter gets both cases wrong.</div>
+        <div class="viz-foot">One more case: when a part is added to a line <b>after</b> that line was already approved, the earlier yes didn&rsquo;t cover it, so the app flags that part &ldquo;needs customer OK&rdquo; on its own. It should count only once it has that OK. Today the counter counts both kinds too early.</div>
         <div class="dirs">
           <div class="dir pick">
             <div class="pred-lbl"><span>B2-a &middot; leave it</span><span>rec</span></div>
             <!-- app frame: literal light colours on purpose -->
             <div class="app-screen">
               <div class="as-body">
-                <span class="as-caption">Line waiting on the advisor</span>
+                <span class="as-caption">Line waiting on an OK</span>
                 <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow">Cabin filter</span><span class="as-cb">&#9744; Pulled</span></div>
               </div>
             </div>
@@ -1910,7 +1910,7 @@
             <!-- app frame: literal light colours on purpose -->
             <div class="app-screen">
               <div class="as-body">
-                <span class="as-caption">Line waiting on the advisor</span>
+                <span class="as-caption">Line waiting on an OK</span>
                 <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow">Cabin filter</span><span class="as-cb off">&#9744; Pulled</span></div>
               </div>
             </div>
@@ -1921,7 +1921,7 @@
             <!-- app frame: literal light colours on purpose -->
             <div class="app-screen">
               <div class="as-body">
-                <span class="as-caption">Line waiting on the advisor</span>
+                <span class="as-caption">Line waiting on an OK</span>
                 <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow">Cabin filter</span><span class="as-cb gone">no checkbox</span></div>
               </div>
             </div>
@@ -1937,7 +1937,7 @@
       <div class="ballot">
         <div class="ballot-head">Ballot</div>
         <ol>
-          <li><span class="opt">B1</span><span>Count only parts on lines the advisor approved (or warranty / recall) &mdash; and, for a part added after the decision, only once it has its own OK. <span class="rec">rec: yes</span><span class="why">Why: same rule the tech&rsquo;s work-done ring uses, and the same rule the queue fix (A) will use.</span></span></li>
+          <li><span class="opt">B1</span><span>Count only parts on lines that have their OK &mdash; customer or advisor (or warranty / recall) &mdash; and, for a part added after the decision, only once it has its own OK. <span class="rec">rec: yes</span><span class="why">Why: same rule the tech&rsquo;s work-done ring uses, and the same rule the queue fix (A) will use.</span></span></li>
           <li><span class="opt">B2</span><span>The Pulled checkbox on a not-yet-approved line: leave it <span class="rec">rec</span> &middot; grey it out &middot; hide it.<span class="why">Why: this is a count fix, not a lock &mdash; parts sometimes pull ahead.</span></span></li>
           <li><span class="opt">B3</span><span>Refresh the stored counts on existing ROs after deploy &mdash; a one-time cleanup you run. <span class="rec">rec: yes</span><span class="why">Why: otherwise old ROs show old numbers until someone edits them.</span></span></li>
         </ol>
