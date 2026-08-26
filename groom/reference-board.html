@@ -2370,6 +2370,55 @@
       @media (max-width: 760px)  { .story.s5, .story.s3 { grid-template-columns: repeat(2, 1fr); } }
       @media (max-width: 430px)  { .story.s5, .story.s3 { grid-template-columns: 1fr; } }
       @media (max-width: 430px) { table.kl th, table.kl td { padding: 8px 9px; font-size: 12.5px; } }
+
+      /* ---- C8 / C9: a finished line that is still waiting on an OK -------
+         The tab strip reuses the shared line-tab classes (same ones card D
+         draws); everything else here is the line panel and the advisor row. */
+      /* stays clipped (so the strip can never widen the board on a phone);
+         the top/right padding is what leaves room for the corner badge. */
+      .as-tabs.mini { padding: 14px 12px 0; }
+      .as-tab.badged { position: relative; }
+      /* named .okdot, not .dot — the board already owns .dot on its timeline. */
+      .as-tab .okdot { flex: none; width: 6px; height: 6px; border-radius: 999px; background: #f59e0b; }
+      .as-tab .corner {
+        position: absolute; top: -8px; right: -5px; z-index: 2;
+        background: #f59e0b; color: #ffffff; border-radius: 999px;
+        padding: 1px 5px; font-size: 8.5px; font-weight: 700; line-height: 1.45;
+      }
+      .as-tab.needsok { background: #fffbeb; color: #b45309; border: 2px solid #f59e0b; font-weight: 600; }
+
+      .as-panel-t { padding: 11px 10px 0; font-size: 12px; font-weight: 600; color: #0f172a; }
+      .as-done-bar {
+        display: flex; align-items: center; gap: 6px; margin: 9px 10px 0;
+        border: 1px solid #6ee7b7; border-radius: 8px; background: #ecfdf5;
+        color: #065f46; padding: 7px 10px; font-size: 11px; font-weight: 700;
+      }
+      .as-ask { margin: 8px 10px 11px; border-radius: 9px; padding: 9px 10px; display: grid; gap: 7px; }
+      .as-ask.hold { border: 1px solid #fde68a; background: #fef9c3; }
+      .as-ask.fyi  { border: 1px solid #fcd34d; background: #fffbeb; }
+      .as-ask-t { font-size: 11px; font-weight: 700; color: #854d0e; }
+      .as-ask.fyi .as-ask-t { color: #b45309; }
+      .as-ask-s { font-size: 10px; line-height: 1.45; color: #a16207; }
+      .as-ask-btns { display: flex; gap: 6px; }
+      .as-ask-btns .as-btn { flex: 1 1 0; min-width: 0; }
+      .as-btn.amber { background: #d97706; color: #ffffff; }
+      .as-btn.plain { background: #ffffff; color: #475569; border-color: #cbd5e1; }
+
+      /* the board's grid tracks must be allowed to go narrower than the app
+         frames inside them, or a phone-width board grows a sideways scroll. */
+      .c-pairs { grid-template-columns: minmax(0, 1fr); }
+      .c-pairs > div { min-width: 0; }
+      /* on a narrow board the strip swipes, exactly as it does on the phone,
+         instead of silently hiding the tab the panel below is about. */
+      .c-pairs .as-tabs { overflow-x: auto; scrollbar-width: none; }
+      .c-pairs .as-tabs::-webkit-scrollbar { display: none; }
+      .c-strips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; min-width: 0; }
+      .c-rows { padding: 6px; }
+      .c-row {
+        display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+        padding: 7px 8px; border-radius: 8px; border: 1px solid #e2e8f0; background: #ffffff;
+      }
+      @media (max-width: 760px) { .c-strips { grid-template-columns: minmax(0, 1fr); } }
       </style>
 
       <figure class="viz">
@@ -2641,6 +2690,128 @@
       </figure>
 
       <figure class="viz">
+        <figcaption class="viz-cap"><span>C8 + C9 &mdash; the finished line that still needs an OK</span><span>McGrath RO 832805</span></figcaption>
+        <div class="pairs c-pairs">
+
+          <div>
+            <p class="pair-lbl">Today &middot; the oil change line, a week after the work was finished</p>
+            <!-- app frame: literal light colours on purpose -->
+            <div class="app-screen">
+              <div class="as-plate">
+                <div class="as-plate-row">
+                  <span class="as-ymm">2024 Audi S5</span>
+                  <span class="as-chev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+                </div>
+                <div class="as-plate-row">
+                  <span class="as-ronum">RO 832805</span>
+                  <span class="as-amber">Attention Tech &ndash; S&hellip; <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+                </div>
+              </div>
+              <div class="as-deck edge">
+                <div class="as-tabs">
+                  <span class="as-tab done">Inspection &#10003;</span>
+                  <span class="as-tab done">Wheel locks &#10003;</span>
+                  <span class="as-tab done">Navi &#10003;</span>
+                  <span class="as-tab sel">Oil change &#10003;</span>
+                  <span class="as-tab done">Tire service &#10003;</span>
+                  <span class="as-tab done">Detail &#10003;</span>
+                  <span class="as-tab done">Dash &#10003;</span>
+                </div>
+              </div>
+              <div class="as-done-bar">&#10003; Completed</div>
+              <div class="as-ask hold">
+                <span class="as-ask-t">&#8987; Awaiting approval</span>
+                <span class="as-ask-s">Labor / parts changed by Jay Alita &middot; Aug 20</span>
+                <div class="as-ask-btns">
+                  <span class="as-btn primary">Approve work</span>
+                  <span class="as-btn plain">Decline</span>
+                </div>
+              </div>
+            </div>
+            <p class="pair-cap">The tab says done. The ask is only visible if you open the line &mdash; and reads like the work is on hold.</p>
+          </div>
+
+          <div>
+            <p class="pair-lbl">Proposed C8 &middot; put the pending OK on the tab (oil change and detail are the two)</p>
+            <div class="c-strips">
+
+              <div class="screen-col">
+                <!-- app frame: literal light colours on purpose -->
+                <div class="app-screen">
+                  <div class="as-deck">
+                    <div class="as-tabs mini">
+                      <span class="as-tab done badged">Oil change &#10003; <em class="okdot"></em><b class="corner">OK?</b></span>
+                      <span class="as-tab done">Navi &#10003;</span>
+                      <span class="as-tab done badged">Detail &#10003; <em class="okdot"></em><b class="corner">OK?</b></span>
+                    </div>
+                  </div>
+                </div>
+                <p class="scap"><b>C8&#8209;A &mdash; badge on the ticked tab.</b> Quiet, and the line still looks done.</p>
+              </div>
+
+              <div class="screen-col">
+                <!-- app frame: literal light colours on purpose -->
+                <div class="app-screen">
+                  <div class="as-deck">
+                    <div class="as-tabs mini">
+                      <span class="as-tab needsok">Oil change &#10003; &middot; needs OK</span>
+                      <span class="as-tab done">Navi &#10003;</span>
+                      <span class="as-tab needsok">Detail &#10003; &middot; needs OK</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="scap"><b>C8&#8209;B &mdash; amber tab.</b> Impossible to miss, but it&rsquo;s one more tab colour to learn.</p>
+              </div>
+
+            </div>
+          </div>
+
+          <div>
+            <p class="pair-lbl">Proposed C9 &middot; the same ask, worded as news rather than a hold</p>
+            <div class="pair">
+
+              <div class="screen-col">
+                <!-- app frame: literal light colours on purpose -->
+                <div class="app-screen">
+                  <div class="as-panel-t">Oil change</div>
+                  <div class="as-done-bar">&#10003; Completed</div>
+                  <div class="as-ask fyi">
+                    <span class="as-ask-t">Price changed after the work was done</span>
+                    <span class="as-ask-s">$98.44 in parts added by Jay Alita &middot; Aug 20</span>
+                    <div class="as-ask-btns">
+                      <span class="as-btn amber">Acknowledge</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="scap"><b>The line panel.</b> The line stays complete and one button clears it &mdash; nothing says the car is waiting.</p>
+              </div>
+
+              <div class="screen-col">
+                <!-- app frame: literal light colours on purpose -->
+                <div class="app-screen">
+                  <div class="as-bar">
+                    <span class="as-search">Search RO, VIN, customer</span>
+                  </div>
+                  <div class="c-rows">
+                    <div class="c-row fam-pricing">
+                      <span class="as-ro">832805</span>
+                      <span class="as-veh"><span>2024 Audi S5</span></span>
+                      <span class="as-status">Attention Tech &ndash; See Notes</span>
+                      <span class="as-pill wait">2 need internal OK</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="scap"><b>The advisor&rsquo;s list.</b> Same pill, same count; only the words and the button change.</p>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+        <div class="viz-foot">Nothing new gets pushed to the advisor here &mdash; that&rsquo;s the notifications item (G).</div>
+      </figure>
+
+      <figure class="viz">
         <figcaption class="viz-cap"><span>What stays and what goes</span></figcaption>
         <div class="scroller">
           <table class="kl">
@@ -2714,7 +2885,7 @@
           <li><span class="opt">C5</span><span>Ship in one PR <span class="rec">ruled</span> vs one PR per role.<span class="why">Why: one shared &ldquo;next move&rdquo; rule; splitting it re&#8209;creates the drift.</span></span></li>
           <li><span class="opt">C6</span><span>Parts page with nothing to price: show &ldquo;Nothing to price &mdash; N lines waiting on the advisor&rdquo; and no Send button <span class="rec">ruled: yes</span> vs leave the button.<span class="why">Why: Thursday&rsquo;s tap had nowhere useful to go.</span></span></li>
           <li><span class="opt">C7</span><span>A part added with <b>no price</b> (a placeholder) should not knock the line back to &ldquo;needs OK&rdquo; <span class="rec">ruled: yes</span> vs keep today&rsquo;s rule (any change re&#8209;asks).<span class="why">Why: five of the six re&#8209;asks on this RO were placeholders and oil; you kept the re&#8209;ask for real money changes in July &mdash; this keeps that.</span></span></li>
-          <li><span class="opt">C8</span><span>A line that still needs an OK shows that <strong>over</strong> the work-done &#10003; on its tab &mdash; today the &#10003; hides it (that&rsquo;s how oil change and detail on 832805 sat waiting a week). <span class="rec">rec: yes</span><span class="why">Why: the advisor can&rsquo;t answer a question he can&rsquo;t see.</span></span></li>
+          <li><span class="opt">C8</span><span>Show the pending OK <strong>over</strong> the work-done &#10003; on the tab &mdash; today the &#10003; hides it (that&rsquo;s how oil change and detail on 832805 sat waiting a week): <strong>C8&#8209;A</strong> badge on the ticked tab <span class="rec">rec</span> &middot; <strong>C8&#8209;B</strong> amber tab &middot; leave as is.<span class="why">Why: the advisor can&rsquo;t answer a question he can&rsquo;t see.</span></span></li>
           <li><span class="opt">C9</span><span>When parts adds money to a line the tech has <strong>already finished</strong> (832805&rsquo;s oil change: $98 added four hours after the work), the advisor is still asked &mdash; but it never reads as a hold: the line stays complete, nothing looks blocked. <span class="rec">rec: yes</span> &middot; don&rsquo;t ask at all &middot; keep today&rsquo;s wording.<span class="why">Why: someone should see the $98; nobody should think the car is waiting.</span></span></li>
         </ol>
       </div>
