@@ -1965,7 +1965,7 @@
         <h3>One way to advance an RO: the big buttons become shortcuts into the status picker</h3>
         <span class="status">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-          direction ruled 26 Aug &mdash; details to vote
+          direction ruled 26 Aug &mdash; C4/C6/C7 to vote
         </span>
       </div>
       <p class="sub">Five big buttons each move the RO with their own private rules, so one can tell you the wrong thing (the parts ping&#8209;pong). Agreed: keep the buttons and their words &mdash; but each one only shows up, and only goes, where the status picker&rsquo;s own rule says it can.</p>
@@ -2049,42 +2049,74 @@
       table.kl thead th:nth-child(2) { color: var(--danger); }
 
       @media (max-width: 760px) { .pair { grid-template-columns: 1fr; } .pairs { padding: 10px; gap: 14px; } }
+
+      /* the event-trace strip: five boxes, a mono timestamp instead of an icon */
+      .story.s5 { grid-template-columns: repeat(5, 1fr); }
+      .story .when { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10.5px; font-weight: 600; letter-spacing: .04em; }
+
+      /* "what fixes it" reuses the keep/lose table as a fix / decided-where pair */
+      table.kl.fx thead th:nth-child(1),
+      table.kl.fx thead th:nth-child(2) { color: var(--muted); }
+      table.kl.fx th:nth-child(1), table.kl.fx td:nth-child(1) { width: 64%; }
+      table.kl.fx th:nth-child(2), table.kl.fx td:nth-child(2) { width: 36%; }
+      table.kl.fx b { color: var(--ink); font-weight: 600; }
+
+      @media (max-width: 1000px) { .story.s5 { grid-template-columns: repeat(3, 1fr); } }
+      @media (max-width: 760px)  { .story.s5, .story.s3 { grid-template-columns: repeat(2, 1fr); } }
+      @media (max-width: 430px)  { .story.s5, .story.s3 { grid-template-columns: 1fr; } }
       @media (max-width: 430px) { table.kl th, table.kl td { padding: 8px 9px; font-size: 12.5px; } }
       </style>
 
       <figure class="viz">
-        <figcaption class="viz-cap"><span>What happens today, step by step</span></figcaption>
-        <ol class="story">
+        <figcaption class="viz-cap"><span>What actually happened on McGrath RO 832805</span><span>times Central</span></figcaption>
+        <ol class="story s5">
           <li>
-            <span class="stephead">
-              <span class="n">1</span>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="6" rx="2"/><rect x="3" y="14" width="11" height="5" rx="2"/></svg>
-            </span>
-            <p>Five big buttons around the app each move the RO: <b>Send to advisor</b> &middot; Send back to tech &middot; Mark Ready for Tech &middot; Mark Ready for Customer &middot; Close RO.</p>
+            <span class="stephead"><span class="n">1</span><span class="when">Wed 4:15 PM</span></span>
+            <p>Parts prices the job. Adding a part to a line &mdash; even a &ldquo;NO PART&rdquo; placeholder &mdash; knocks that line back to <b>needs the advisor&rsquo;s OK</b>. Six of seven lines are now waiting. Parts taps <b>Send to advisor</b>.</p>
           </li>
           <li>
-            <span class="stephead">
-              <span class="n">2</span>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="4"/></svg>
-            </span>
-            <p>Each carries <b>its own rules</b> for when it shows and where it sends the RO &mdash; separate from the status picker.</p>
+            <span class="stephead"><span class="n">2</span><span class="when">Thu 9:16 AM</span></span>
+            <p>Advisor OKs five lines, misses two (oil change, detail). Nothing on his page says <b>2 still waiting</b>. He moves the RO back to Parts Pricing.</p>
           </li>
           <li class="bad">
-            <span class="stephead">
-              <span class="n">3</span>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4 3.5 8.5 8 13"/><path d="M3.5 8.5h13a4 4 0 0 1 4 4v7"/></svg>
-            </span>
-            <p><b>Today:</b> a button can be wrong. Parts re&#8209;sends an RO the advisor already decided &mdash; McGrath RO 832805 <b>bounced 3&times;</b>.</p>
+            <span class="stephead"><span class="n">3</span><span class="when">Thu 4:35 PM</span></span>
+            <p>Parts has nothing left to price. The only big button is <b>Send to advisor</b>. Taps it.</p>
           </li>
-          <li class="good">
-            <span class="stephead">
-              <span class="n">4</span>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.4 12.3l2.4 2.4 4.8-5"/></svg>
-            </span>
-            <p><b>Proposed:</b> one rule &mdash; the picker&rsquo;s. The button keeps its words but <b>can only offer a move the picker would</b>.</p>
+          <li class="bad">
+            <span class="stephead"><span class="n">4</span><span class="when">Fri 9:42 AM</span></span>
+            <p>Advisor sends it back again &mdash; still no decisions. Parts gives up and sends it to the tech instead.</p>
+          </li>
+          <li>
+            <span class="stephead"><span class="n">5</span><span class="when">Mon</span></span>
+            <p>Two new lines, one more round trip; the advisor parks the RO in a holding status. Oil change and detail are <b>still waiting for his OK today</b>.</p>
           </li>
         </ol>
-        <div class="viz-foot">Buttons that record something else (Confirm decisions, Copy link, Mark viewed, Reopen, Dispatch) stay &mdash; the status change there is a by&#8209;product, not the point.</div>
+        <div class="viz-foot">Three round trips; two of them carried no information at all. Nobody was told a line was still waiting, and nobody was told the RO had moved.</div>
+      </figure>
+
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>What this is &mdash; a design gap, not a McGrath process problem</span></figcaption>
+        <ol class="story s3">
+          <li>
+            <span class="stephead">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 2 22 22"/><path d="M6.7 6.8C4.1 8.3 3 10.7 3 12c0 1.8 4 7 9 7 1.4 0 2.7-.3 3.8-.8"/><path d="M9.9 4.6A9.7 9.7 0 0 1 12 5c5 0 9 5.2 9 7 0 1-1 2.7-2.7 4.1"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/></svg>
+            </span>
+            <p>The advisor&rsquo;s page never said <b>&ldquo;2 lines still need your OK&rdquo;</b> &mdash; he thought he was done.</p>
+          </li>
+          <li>
+            <span class="stephead">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+            </span>
+            <p>The parts page never said <b>&ldquo;nothing to price here &mdash; the advisor sent this back&rdquo;</b> &mdash; it offered the same big button as always.</p>
+          </li>
+          <li>
+            <span class="stephead">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 2 20 20"/><path d="M18 8a6 6 0 0 0-9.3-5"/><path d="M6 8.6C6 15 3 17 3 17h13"/><path d="M10.3 20a2 2 0 0 0 3.4 0"/></svg>
+            </span>
+            <p>Every move was <b>silent</b> &mdash; the RO changed hands four times with no on&#8209;screen notice on either side.</p>
+          </li>
+        </ol>
+        <div class="viz-foot">A silent status change + a button that&rsquo;s always available = a loop.</div>
       </figure>
 
       <figure class="viz">
@@ -2329,6 +2361,40 @@
         <div class="viz-foot">Nothing a user relies on today disappears &mdash; what goes is the second set of rules behind the buttons.</div>
       </figure>
 
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>What fixes it</span></figcaption>
+        <div class="scroller">
+          <table class="kl fx">
+            <thead>
+              <tr><th scope="col">The fix</th><th scope="col">Decided where</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>R1 &middot; The shortcut rule.</b> &ldquo;Send to advisor&rdquo; appears only when there&rsquo;s something to send &mdash; on Thursday afternoon there wasn&rsquo;t, so the button wouldn&rsquo;t have been there.</td>
+                <td>This card &mdash; ruled.</td>
+              </tr>
+              <tr>
+                <td><b>R2 &middot; Advisor page: a visible count.</b> &ldquo;2 lines still need your OK&rdquo; &mdash; and a check when he moves the RO out of Advisor Review with lines still waiting.</td>
+                <td>Ballot C4 below.</td>
+              </tr>
+              <tr>
+                <td><b>R3 &middot; Parts page: say when there&rsquo;s nothing to price.</b> &ldquo;Nothing to price &mdash; 2 lines are waiting on the advisor&rdquo;, instead of the usual button.</td>
+                <td>Follows from R1 &mdash; ballot C6.</td>
+              </tr>
+              <tr>
+                <td><b>R4 &middot; Announce every status change on screen.</b></td>
+                <td>New backlog item &mdash; groomed separately.</td>
+              </tr>
+              <tr>
+                <td><b>R5 &middot; A placeholder with no price shouldn&rsquo;t re&#8209;ask.</b> Parts adding a part with no price doesn&rsquo;t knock the line back to &ldquo;needs OK&rdquo;.</td>
+                <td>Ballot C7.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="viz-foot">Only R1 is this card. The rest are the signals that would have stopped the loop before it started.</div>
+      </figure>
+
       <p class="conseq">Whatever you tap, the RO goes where the status picker says it can go &mdash; and the shortcut only ever shows the picker&rsquo;s own next move.</p>
 
       <p class="note cluster"><b>Cluster</b>F and G ride on top of this &mdash; they add the signal that reaches parts; this decides how the RO moves.</p>
@@ -2339,8 +2405,10 @@
           <li><span class="opt">C1</span><span>Button labels stay verbs &mdash; &ldquo;Send to advisor&rdquo;, &ldquo;Mark Ready for Customer&rdquo;, &ldquo;Close RO&rdquo;; after all lines are decided the parts button reads &ldquo;Move to Waiting for Parts&rdquo;. <span class="rec">ruled</span><span class="why">Ruled 26 Aug.</span></span></li>
           <li><span class="opt">C2</span><span>Tech&rsquo;s phone: keep the full&#8209;width dock button <span class="rec">ruled</span> vs a smaller control.<span class="why">Why: it&rsquo;s the tech&rsquo;s one&#8209;tap exit; don&rsquo;t shrink it.</span></span></li>
           <li><span class="opt">C3</span><span>Keep the hand&#8209;off animation and &ldquo;back to your queue&rdquo; on tech and parts moves <span class="rec">ruled: yes</span> vs a plain status change.<span class="why">Why: it&rsquo;s the moment that tells them they&rsquo;re done.</span></span></li>
-          <li><span class="opt">C4</span><span>Ask Jay only where a decided RO should land &mdash; Waiting for Parts, or something else <span class="rec">rec</span> vs don&rsquo;t ask.<span class="why">Why: that&rsquo;s a store&#8209;process setting now, not a button question.</span></span></li>
+          <li><span class="opt">C4</span><span>When the advisor moves an RO out of Advisor Review with lines still waiting on him: warn with the count &mdash; &ldquo;2 lines still need your OK. Move anyway?&rdquo; <span class="rec">rec</span> vs block the move vs nothing.<span class="why">Why: it catches the miss without taking the decision away from him.</span></span></li>
           <li><span class="opt">C5</span><span>Ship in one PR <span class="rec">ruled</span> vs one PR per role.<span class="why">Why: one shared &ldquo;next move&rdquo; rule; splitting it re&#8209;creates the drift.</span></span></li>
+          <li><span class="opt">C6</span><span>Parts page with nothing to price: show &ldquo;Nothing to price &mdash; N lines waiting on the advisor&rdquo; and no Send button <span class="rec">rec: yes</span> vs leave the button.<span class="why">Why: Thursday&rsquo;s tap had nowhere useful to go.</span></span></li>
+          <li><span class="opt">C7</span><span>A part added with <b>no price</b> (a placeholder) should not knock the line back to &ldquo;needs OK&rdquo; <span class="rec">rec: yes</span> vs keep today&rsquo;s rule (any change re&#8209;asks).<span class="why">Why: five of the six re&#8209;asks on this RO were placeholders and oil; you kept the re&#8209;ask for real money changes in July &mdash; this keeps that.</span></span></li>
         </ol>
       </div>
     </article>
