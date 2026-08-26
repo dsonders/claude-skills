@@ -43,11 +43,20 @@ the bad outcome occurs.
 1. Read `docs/overnight/BACKLOG.md` + any new items Dave names (Notion cards, chat, memory
    follow-ups). Investigate the code enough to fill the dimensions honestly — delegate repo
    sweeps to an Opus Explore/general agent; never guess a dimension.
-2. Build/refresh the board (Opus agent builds the HTML; load `artifact-design` before
-   writing it): sections = Ready to run (Queued) / To groom — UX / To groom — behind the
-   scenes / Icebox. Each item = a CARD: name, the dimension row, and ONE cheap visual —
+2. **Prioritize by judgment BEFORE building the board** — every groomable item ranked most→
+   least important, top to bottom of the artifact; the ORDER is the recommendation. Weigh, in
+   roughly this order: (a) UX impact, with reliability/perf implications outranking polish;
+   (b) population — how many real users hit it, how often; (c) risk-grid position for
+   bugs/risks (likelihood × impact); (d) anything Dave flagged urgent or a customer reported;
+   (e) cluster/sequencing dependencies (an item that unblocks others rises). State the #1
+   item's why in one line on its card. Section structure stays (Ready to run / To groom UX /
+   To groom behind-the-scenes / Icebox) but WITHIN sections the order is the ranking — and if
+   a behind-the-scenes item genuinely outranks a UX item, say so on its card rather than
+   silently reshuffling sections.
+3. Build/refresh the board in that order (Opus agent builds the HTML; load `artifact-design`
+   before writing it). Each item = a CARD: name, the dimension row, and ONE cheap visual —
    a screenshot crop, a mini table, a 5-box flow, or its dot on the risk grid. No mockups yet.
-3. Publish (same URL), hand Dave the link + a one-line ask: "pick what advances."
+4. Publish (same URL), hand Dave the link + a one-line ask: "pick what advances."
 
 ### Pass 2 — Groom (deep, only what Dave picked)
 For each advanced item, extend its card on the SAME board:
