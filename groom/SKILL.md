@@ -68,6 +68,10 @@ For each advanced item, extend its card on the SAME board:
 - **Behind-the-scenes items:** current situation vs proposed as a diagram/table (before/after
   boxes, the write path, the gate that's missing) — slightly visual beats prose. Include the
   risk-grid dot and the one-line scenario.
+- **Data provenance check:** every datum a mockup RENDERS (a name, timestamp, count) gets a
+  one-word check — field exists / derivable / MISSING. MISSING → its own ballot line ("needs a
+  new stored field — build it too?"), never a build-time surprise (the #1564 completion-stamp
+  lesson: an approved banner's payoff line had no data behind it).
 - Every card ends with its BALLOT: the specific questions, lettered, with a recommendation
   first (recommendation = the manager's, argued in one line).
 5. Dave votes by letter in chat → write each ruling VERBATIM (⛔) into BACKLOG.md, move the
