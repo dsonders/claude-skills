@@ -1590,7 +1590,8 @@
       </div>
     </article>
 
-  </section>
+    <!-- Card B -->
+      </section>
 
   <!-- ============ 2. TO GROOM · UX ============ -->
   <section class="section">
@@ -1600,14 +1601,13 @@
       <p class="sec-sub">Needs your decisions before it can run</p>
     </div>
 
-    <!-- Card B -->
-    <article class="card">
+<article class="card">
       <div class="card-head">
-        <span class="key">B</span>
+        <span class="key queued">Queued</span><span class="key">B</span>
         <h3>&ldquo;N of N parts pulled&rdquo; counts lines still awaiting approval</h3>
         <span class="status">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-          groomed &mdash; vote by letter
+          ruled 26 Aug &mdash; runs tonight on your word
         </span>
       </div>
       <p class="sub">The counter reads &ldquo;0 of 4&rdquo; on an RO where only two <b>lines</b> are OK&rsquo;d &mdash; the parts on the other two aren&rsquo;t parts&rsquo; job yet.</p>
@@ -1937,9 +1937,9 @@
       <div class="ballot">
         <div class="ballot-head">Ballot</div>
         <ol>
-          <li><span class="opt">B1</span><span>Count only parts on lines that have their OK &mdash; customer or advisor (or warranty / recall) &mdash; and, for a part added after the decision, only once it has its own OK. <span class="rec">rec: yes</span><span class="why">Why: same rule the tech&rsquo;s work-done ring uses, and the same rule the queue fix (A) will use.</span></span></li>
-          <li><span class="opt">B2</span><span>The Pulled checkbox on a not-yet-approved line: leave it <span class="rec">rec</span> &middot; grey it out &middot; hide it.<span class="why">Why: this is a count fix, not a lock &mdash; parts sometimes pull ahead.</span></span></li>
-          <li><span class="opt">B3</span><span>Refresh the stored counts on existing ROs after deploy &mdash; a one-time cleanup you run. <span class="rec">rec: yes</span><span class="why">Why: otherwise old ROs show old numbers until someone edits them.</span></span></li>
+          <li><span class="opt">B1</span><span>Count only parts on lines that have their OK &mdash; customer or advisor (or warranty / recall) &mdash; and, for a part added after the decision, only once it has its own OK. <span class="rec">ruled: yes</span><span class="why">Why: same rule the tech&rsquo;s work-done ring uses, and the same rule the queue fix (A) will use.</span></span></li>
+          <li><span class="opt">B2</span><span>The Pulled checkbox on a not-yet-approved line: leave it <span class="rec">ruled</span> &middot; grey it out &middot; hide it.<span class="why">Why: this is a count fix, not a lock &mdash; parts sometimes pull ahead.</span></span></li>
+          <li><span class="opt">B3</span><span>Refresh the stored counts on existing ROs after deploy &mdash; a one-time cleanup you run. <span class="rec">ruled: no</span><span class="why">Why: otherwise old ROs show old numbers until someone edits them.</span></span></li>
         </ol>
       </div>
     </article>
@@ -1948,13 +1948,13 @@
     <article class="card">
       <div class="card-head">
         <span class="key">C</span>
-        <h3>Parts RO page: the big button after the advisor already decided</h3>
+        <h3>One way to advance an RO: the status picker &mdash; the big blue buttons become shortcuts into it</h3>
         <span class="status">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-          groomed &mdash; vote by letter
+          direction ruled 26 Aug &mdash; details to vote
         </span>
       </div>
-      <p class="sub">The big blue &ldquo;Send to advisor&rdquo; stays the main button even once every line is decided, so parts sends it back and the RO ping-pongs.</p>
+      <p class="sub">Five big buttons each move the RO with their own private rules, so one can tell you the wrong thing (the parts ping&#8209;pong). Direction agreed: keep one &ldquo;next step&rdquo; shortcut per role and phase, but it just fires the status picker&rsquo;s own move &mdash; it can never disagree with it.</p>
 
       <ul class="dims">
         <li class="hi">UX High</li>
@@ -1962,7 +1962,92 @@
         <li>Codex 2&ndash;3</li>
         <li class="safe">revert-cheap</li>
       </ul>
-      <p class="pop"><b>Who hits it</b>McGrath &mdash; RO 832805 bounced parts&harr;advisor 3&times; in 4 days.</p>
+      <p class="pop"><b>Who hits it</b>Every role &mdash; tech, parts, advisor.</p>
+
+      <style>
+      /* ---- card C only: pieces the merged item needs -----------------------
+         Same scoped exception as cards A–H: everything inside an .app-screen
+         carries its OWN literal light-app colours, board chrome around it uses
+         the board's tokens. Added here: a "good" story step, the paired
+         today/proposed layout, the next-step chip, the tech's dark dock with
+         its work-done ring, and the advisor's close card. ----------------- */
+
+      .story li.good { border-color: var(--teal); background: var(--teal-soft); }
+      .story li.good .stephead { color: var(--teal); }
+
+      .pairs { display: grid; gap: 16px; padding: 13px; }
+      .pair-lbl {
+        font-family: "IBM Plex Mono", ui-monospace, monospace;
+        font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase;
+        color: var(--muted); margin: 0 0 8px;
+      }
+      .pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+      .pair-cap { margin: 9px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+
+      /* the next-step shortcut chip */
+      .as-next {
+        display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+        border: 1px solid #bfdbfe; background: #eff6ff; color: #1d4ed8;
+        border-radius: 999px; padding: 5px 12px;
+        font-size: 10.5px; font-weight: 600; white-space: nowrap;
+      }
+      .as-next.wide { width: 100%; min-height: 44px; border-radius: 10px; font-size: 12px; }
+      .as-next.green { border-color: #86efac; background: #16a34a; color: #ffffff; }
+      .as-quietlink { text-align: center; font-size: 10px; font-weight: 500; color: #64748b; text-decoration: underline; }
+
+      /* the status picker, open */
+      .as-menu { margin: 6px 10px 0; border: 1px solid #e2e8f0; border-radius: 8px; background: #ffffff; padding: 4px; box-shadow: 0 6px 14px -6px rgba(15,23,42,.25); }
+      .as-menu-opt { border-radius: 6px; padding: 5px 8px; font-size: 10.5px; color: #334155; }
+      .as-menu-opt.on { background: #eff6ff; color: #1d4ed8; font-weight: 600; }
+      .as-menu-opt.cur { color: #94a3b8; }
+
+      /* the tech's dark dock at the bottom of his page */
+      .as-dock { background: linear-gradient(160deg, #0f172a 0%, #16202f 55%, #1e293b 100%); color: #ffffff; }
+      .as-dockbar { display: flex; align-items: center; gap: 9px; min-height: 46px; padding: 7px 12px; background: rgba(255,255,255,.05); }
+      .as-ring {
+        flex: none; width: 26px; height: 26px; border-radius: 999px;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: conic-gradient(#34d399 360deg, rgba(52,211,153,.25) 0deg);
+      }
+      .as-ring i {
+        width: 21px; height: 21px; border-radius: 999px; background: #16a34a; color: #ffffff;
+        display: inline-flex; align-items: center; justify-content: center; font-style: normal;
+        font-size: 9px; font-weight: 700;
+      }
+      .as-docktitle { font-size: 11.5px; font-weight: 700; color: #f1f5f9; }
+      .as-dockctx { font-size: 10.5px; color: #94a3b8; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .as-dockchev {
+        margin-left: auto; flex: none; width: 22px; height: 22px; border-radius: 6px;
+        border: 1px solid #55657B; background: #1B2635; color: #cbd5e1;
+        display: inline-flex; align-items: center; justify-content: center;
+      }
+      .as-dockdrawer { border-top: 1px solid rgba(255,255,255,.06); background: rgba(255,255,255,.05); padding: 8px 12px 12px; display: grid; gap: 6px; }
+      .as-dockrow { display: flex; align-items: center; gap: 7px; font-size: 10.5px; color: #cbd5e1; }
+      .as-dockrow .tick { flex: none; width: 13px; height: 13px; border-radius: 3px; background: #16a34a; color: #ffffff; display: inline-flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; }
+      .as-ready {
+        margin-top: 3px; width: 100%; min-height: 44px; border-radius: 10px;
+        background: #16a34a; color: #ffffff; font-size: 12px; font-weight: 700;
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+      }
+
+      /* the advisor's close card */
+      .as-cta { margin: 11px 10px; border: 2px solid #6ee7b7; border-radius: 10px; background: #ecfdf5; padding: 10px; display: flex; align-items: flex-start; gap: 9px; }
+      .as-cta-icon { flex: none; width: 26px; height: 26px; border-radius: 999px; background: #059669; color: #ffffff; display: inline-flex; align-items: center; justify-content: center; }
+      .as-cta-txt { min-width: 0; }
+      .as-cta-t { display: block; font-size: 11px; font-weight: 700; color: #064e3b; }
+      .as-cta-s { display: block; margin-top: 3px; font-size: 10px; line-height: 1.4; color: #047857; }
+      .as-cta-btn { flex: none; align-self: center; background: #059669; color: #ffffff; border-radius: 6px; padding: 8px 12px; font-size: 10.5px; font-weight: 700; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
+
+      /* keep / lose — a plain 2-col mini table that WRAPS on a phone rather
+         than side-scrolling (the board's default table carries a 560px floor). */
+      table.kl { min-width: 0; font-size: 13px; }
+      table.kl th, table.kl td { width: 50%; }
+      table.kl thead th:nth-child(1) { color: var(--teal); }
+      table.kl thead th:nth-child(2) { color: var(--danger); }
+
+      @media (max-width: 760px) { .pair { grid-template-columns: 1fr; } .pairs { padding: 10px; gap: 14px; } }
+      @media (max-width: 430px) { table.kl th, table.kl td { padding: 8px 9px; font-size: 12.5px; } }
+      </style>
 
       <figure class="viz">
         <figcaption class="viz-cap"><span>What happens today, step by step</span></figcaption>
@@ -1970,116 +2055,276 @@
           <li>
             <span class="stephead">
               <span class="n">1</span>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 4 3 10.6l7.2 2.6L13 20l8-16z"/></svg>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="6" rx="2"/><rect x="3" y="14" width="11" height="5" rx="2"/></svg>
             </span>
-            <p>Parts prices the lines and taps <b>Send to advisor</b>.</p>
+            <p>Five big buttons around the app each move the RO: <b>Send to advisor</b> &middot; Send back to tech &middot; Mark Ready for Tech &middot; Mark Ready for Customer &middot; Close RO.</p>
           </li>
           <li>
             <span class="stephead">
               <span class="n">2</span>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.4 12.3l2.4 2.4 4.8-5"/></svg>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="4"/></svg>
             </span>
-            <p>The advisor <b>decides every line</b> &mdash; some OK&rsquo;d, some declined.</p>
+            <p>Each carries <b>its own rules</b> for when it shows and where it sends the RO &mdash; separate from the status picker.</p>
           </li>
           <li class="bad">
             <span class="stephead">
               <span class="n">3</span>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="8" width="17" height="8" rx="2"/><path d="M12 4v4M12 16v4"/></svg>
-            </span>
-            <p><b>Today:</b> the parts page still shows the big blue <b>Send to advisor</b>.</p>
-          </li>
-          <li class="bad">
-            <span class="stephead">
-              <span class="n">4</span>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4 3.5 8.5 8 13"/><path d="M3.5 8.5h13a4 4 0 0 1 4 4v7"/></svg>
             </span>
-            <p>Parts taps it. The RO bounces back to the advisor &mdash; <b>3 bounces in 4 days</b>.</p>
+            <p><b>Today:</b> a button can be wrong. Parts re&#8209;sends an RO the advisor already decided &mdash; McGrath RO 832805 <b>bounced 3&times;</b>.</p>
+          </li>
+          <li class="good">
+            <span class="stephead">
+              <span class="n">4</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.4 12.3l2.4 2.4 4.8-5"/></svg>
+            </span>
+            <p><b>Proposed:</b> one rule &mdash; the picker&rsquo;s. The button becomes a <b>shortcut that says what&rsquo;s next</b>.</p>
           </li>
         </ol>
-        <div class="viz-foot">Nothing on the page tells parts that the answer already came back.</div>
+        <div class="viz-foot">Buttons that record something else (Confirm decisions, Copy link, Mark viewed, Reopen, Dispatch) stay &mdash; the status change there is a by&#8209;product, not the point.</div>
       </figure>
 
       <figure class="viz">
-        <figcaption class="viz-cap"><span>The action row &mdash; today, then three directions</span><span class="hint">screens scroll &rarr;</span></figcaption>
-        <div class="screens">
+        <figcaption class="viz-cap"><span>The three places it shows up &mdash; today vs proposed</span></figcaption>
+        <div class="pairs">
 
-          <div class="screen-col">
-            <!-- app frame: literal light colours on purpose — see the note in card B's style block -->
-            <div class="app-screen">
-              <div class="as-actions">
-                <div class="as-sum">3 approved &middot; 0 waiting</div>
-                <div class="as-btn primary">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 4 3 10.6l7.2 2.6L13 20l8-16z"/></svg>
-                  Send to advisor
+          <div>
+            <p class="pair-lbl">1 &middot; Parts &mdash; the RO page action row</p>
+            <div class="pair">
+              <div class="screen-col">
+                <!-- app frame: literal light colours on purpose -->
+                <div class="app-screen">
+                  <div class="as-plate">
+                    <div class="as-plate-row">
+                      <span class="as-ronum">RO #4482</span>
+                      <span class="as-amber">
+                        Parts Pricing
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="as-actions">
+                    <div class="as-sum">3 approved &middot; 0 waiting</div>
+                    <div class="as-btn primary">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 4 3 10.6l7.2 2.6L13 20l8-16z"/></svg>
+                      Send to advisor
+                    </div>
+                    <div class="as-btn outline">Send back to tech</div>
+                  </div>
                 </div>
-                <div class="as-btn outline">Send back to tech</div>
+                <p class="scap"><b>Today</b> &mdash; the same big button whether the advisor has answered or not.</p>
               </div>
-            </div>
-            <p class="scap"><b>Today</b> &mdash; the same big button whether the advisor has answered or not.</p>
-          </div>
 
-          <div class="screen-col">
-            <!-- app frame: literal light colours on purpose -->
-            <div class="app-screen">
-              <div class="as-actions">
-                <span class="as-caption">Some lines still waiting</span>
-                <div class="as-btn primary">Send to advisor</div>
-                <span class="as-caption">All lines decided, some approved</span>
-                <div class="as-btn primary">Move to Waiting for Parts &rarr;</div>
-                <span class="as-caption">Everything declined</span>
-                <div class="as-btn none">no big button &mdash; only &ldquo;Send back to tech&rdquo;</div>
-              </div>
-            </div>
-            <p class="scap"><b>C-A &mdash; the button follows the lines.</b> Clearest next step, but it picks the destination for the store.</p>
-          </div>
-
-          <div class="screen-col">
-            <!-- app frame: literal light colours on purpose -->
-            <div class="app-screen">
-              <div class="as-actions">
-                <span class="as-caption">Before sending</span>
-                <div class="as-btn primary">Send to advisor</div>
-                <span class="as-caption">After sending</span>
-                <div class="as-btn inert">Waiting on advisor &middot; 2 lines</div>
-                <div class="as-textlink">Resend</div>
-              </div>
-            </div>
-            <p class="scap"><b>C-B &mdash; goes quiet once sent.</b> Stops the re-send, but never says what parts should do next.</p>
-          </div>
-
-          <div class="screen-col">
-            <!-- app frame: literal light colours on purpose -->
-            <div class="app-screen">
-              <div class="as-plate">
-                <div class="as-plate-row">
-                  <span class="as-ronum">RO #4482</span>
-                  <span class="as-amber">
-                    Parts Pricing
-                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-                  </span>
+              <div class="screen-col">
+                <!-- app frame: literal light colours on purpose -->
+                <div class="app-screen">
+                  <div class="as-plate">
+                    <div class="as-plate-row">
+                      <span class="as-ronum">RO #4482</span>
+                      <span class="as-amber">
+                        Parts Pricing
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="as-menu">
+                    <div class="as-menu-opt cur">Parts Pricing &middot; now</div>
+                    <div class="as-menu-opt on">Advisor Review</div>
+                    <div class="as-menu-opt">Holding</div>
+                  </div>
+                  <div class="as-actions">
+                    <div class="as-sum">3 approved &middot; 0 waiting</div>
+                    <div class="as-next wide">Next: &rarr; Advisor Review</div>
+                    <div class="as-quietlink">Send back to tech</div>
+                  </div>
                 </div>
-              </div>
-              <div class="as-actions">
-                <div class="as-hint">&uarr; All lines decided &mdash; set the RO status</div>
-                <div class="as-btn none">no big button</div>
+                <p class="scap"><b>Proposed</b> &mdash; the chip says the move the picker is already offering. Once every line is decided the same chip reads <b>Next: &rarr; Waiting for Parts</b>; when the picker offers nothing, no chip.</p>
               </div>
             </div>
-            <p class="scap"><b>C-C &mdash; no big button once decided.</b> Nothing new to build, but it relies on parts noticing the status picker.</p>
+            <p class="pair-cap">Same tap, same place &mdash; but the label and whether it appears come from the picker&rsquo;s rule, not the button&rsquo;s own.</p>
+          </div>
+
+          <div>
+            <p class="pair-lbl">2 &middot; Tech &mdash; the dock at the bottom of the phone</p>
+            <div class="pair">
+              <div class="screen-col">
+                <!-- app frame: literal colours on purpose — the tech's plate and dock are dark in the real app -->
+                <div class="as-phone">
+                  <div class="as-plate">
+                    <div class="as-plate-row">
+                      <span class="as-ymm">2021 Silverado 1500</span>
+                      <span class="as-chev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+                    </div>
+                    <div class="as-plate-row">
+                      <span class="as-ronum">RO #4482</span>
+                      <span class="as-amber">
+                        In Progress
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="as-sheet">
+                    <div class="as-sheet-title">Brake noise</div>
+                    <div class="as-sheet-line"></div>
+                    <div class="as-sheet-line short"></div>
+                  </div>
+                  <div class="as-dock">
+                    <div class="as-dockbar">
+                      <span class="as-ring"><i>&#10003;</i></span>
+                      <span class="as-docktitle">All work complete</span>
+                      <span class="as-dockctx">4 of 4 lines</span>
+                      <span class="as-dockchev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></span>
+                    </div>
+                    <div class="as-dockdrawer">
+                      <div class="as-dockrow"><span class="tick">&#10003;</span>Brake noise</div>
+                      <div class="as-dockrow"><span class="tick">&#10003;</span>Oil service</div>
+                      <div class="as-ready">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.4 12.3l2.4 2.4 4.8-5"/></svg>
+                        Mark Ready for Customer
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <p class="scap"><b>Today</b> &mdash; the dock&rsquo;s own button, with its own rule for when it appears.</p>
+              </div>
+
+              <div class="screen-col">
+                <!-- app frame: literal colours on purpose -->
+                <div class="as-phone">
+                  <div class="as-plate">
+                    <div class="as-plate-row">
+                      <span class="as-ymm">2021 Silverado 1500</span>
+                      <span class="as-chev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+                    </div>
+                    <div class="as-plate-row">
+                      <span class="as-ronum">RO #4482</span>
+                      <span class="as-amber">
+                        In Progress
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="as-sheet">
+                    <div class="as-sheet-title">Brake noise</div>
+                    <div class="as-sheet-line"></div>
+                    <div class="as-sheet-line short"></div>
+                  </div>
+                  <div class="as-dock">
+                    <div class="as-dockbar">
+                      <span class="as-ring"><i>&#10003;</i></span>
+                      <span class="as-docktitle">All work complete</span>
+                      <span class="as-dockctx">4 of 4 lines</span>
+                      <span class="as-dockchev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></span>
+                    </div>
+                    <div class="as-dockdrawer">
+                      <div class="as-dockrow"><span class="tick">&#10003;</span>Brake noise</div>
+                      <div class="as-dockrow"><span class="tick">&#10003;</span>Oil service</div>
+                      <div class="as-next wide green">Next: &rarr; Ready for Customer</div>
+                    </div>
+                  </div>
+                </div>
+                <p class="scap"><b>Proposed</b> &mdash; same slot, same full&#8209;width tap target. Only the label and the rule behind it change.</p>
+              </div>
+            </div>
+            <p class="pair-cap">Techs keep their one&#8209;tap exit &mdash; and the hand&#8209;off animation with &ldquo;back to your queue&rdquo; stays exactly as it is.</p>
+          </div>
+
+          <div>
+            <p class="pair-lbl">3 &middot; Advisor &mdash; the close card on the RO page</p>
+            <div class="pair">
+              <div class="screen-col">
+                <!-- app frame: literal light colours on purpose -->
+                <div class="app-screen">
+                  <div class="as-plate">
+                    <div class="as-plate-row">
+                      <span class="as-ronum">RO #4482</span>
+                      <span class="as-amber">
+                        Ready for Pickup
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="as-cta">
+                    <span class="as-cta-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.4 12.3l2.4 2.4 4.8-5"/></svg></span>
+                    <span class="as-cta-txt">
+                      <span class="as-cta-t">Ready to close &mdash; all approved work finished</span>
+                      <span class="as-cta-s">The car was released and every approved line is complete.</span>
+                    </span>
+                    <span class="as-cta-btn">Close RO</span>
+                  </div>
+                </div>
+                <p class="scap"><b>Today</b> &mdash; its own card with its own rule for when it appears.</p>
+              </div>
+
+              <div class="screen-col">
+                <!-- app frame: literal light colours on purpose -->
+                <div class="app-screen">
+                  <div class="as-plate">
+                    <div class="as-plate-row">
+                      <span class="as-ronum">RO #4482</span>
+                      <span class="as-amber">
+                        Ready for Pickup
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="as-cta">
+                    <span class="as-cta-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.4 12.3l2.4 2.4 4.8-5"/></svg></span>
+                    <span class="as-cta-txt">
+                      <span class="as-cta-t">Ready to close &mdash; all approved work finished</span>
+                      <span class="as-cta-s">The car was released and every approved line is complete.</span>
+                    </span>
+                    <span class="as-next">Next: &rarr; Closed</span>
+                  </div>
+                </div>
+                <p class="scap"><b>Proposed</b> &mdash; the same card, and the chip only appears when the car is released and nothing is still open.</p>
+              </div>
+            </div>
+            <p class="pair-cap">Same tap, same place &mdash; but the label and whether it appears come from the picker&rsquo;s rule, not the button&rsquo;s own.</p>
           </div>
 
         </div>
-        <div class="viz-foot">There&rsquo;s no &ldquo;Recs Approved&rdquo; status &mdash; in the app the approved destination is called <strong>Waiting for Parts</strong> (stores can rename it).</div>
+        <div class="viz-foot">Status names are the shop&rsquo;s own &mdash; a store that renamed &ldquo;Waiting for Parts&rdquo; sees its own name on the chip, because the chip reads the picker.</div>
       </figure>
 
-      <p class="conseq">Parts stops sending a decided RO back, and the button on the page says what actually happens next.</p>
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>What stays and what goes</span></figcaption>
+        <div class="scroller">
+          <table class="kl">
+            <thead>
+              <tr><th scope="col">Keep</th><th scope="col">Lose</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>The hand&#8209;off animation and the redirect &mdash; the tech back to his queue, parts back to the parts queue.</td>
+                <td>Each button&rsquo;s private copy of the rules.</td>
+              </tr>
+              <tr>
+                <td>The &ldquo;any unpriced parts?&rdquo; check, still asked before anything is touched.</td>
+                <td>Two mounts of the same button on one page.</td>
+              </tr>
+              <tr>
+                <td>The note prompt when sending an RO back to the tech.</td>
+                <td>A button that can contradict the picker.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="viz-foot">Nothing a user relies on today disappears &mdash; what goes is the second set of rules behind the buttons.</div>
+      </figure>
 
-      <p class="note cluster"><b>Cluster</b>Decide the main signal here &mdash; F and G become complements or drops once this lands.</p>
+      <p class="conseq">Whatever you tap, the RO goes where the status picker says it can go &mdash; and the shortcut only ever shows the picker&rsquo;s own next move.</p>
+
+      <p class="note cluster"><b>Cluster</b>F and G ride on top of this &mdash; they add the signal that reaches parts; this decides how the RO moves.</p>
 
       <div class="ballot">
         <div class="ballot-head">Ballot</div>
         <ol>
-          <li><span class="opt">C1</span><span>Ask Jay at McGrath where they want the RO to go after a decision, showing him A / B / C. <span class="rec">rec</span> vs decide now.<span class="why">Why: that&rsquo;s a store-process question, not a design one.</span></span></li>
-          <li><span class="opt">C2</span><span>If we build without waiting: <strong>C-A</strong> <span class="rec">rec</span> &middot; C-B &middot; C-C.<span class="why">Why: only A tells parts what to do next.</span></span></li>
+          <li><span class="opt">C1</span><span>Shortcut label: <strong>&ldquo;Next: &rarr; Advisor Review&rdquo;</strong>, the status name <span class="rec">rec</span> vs a verb (&ldquo;Send to advisor&rdquo;).<span class="why">Why: the name matches what the picker shows, so the two can&rsquo;t read differently.</span></span></li>
+          <li><span class="opt">C2</span><span>Tech&rsquo;s phone: keep the full&#8209;width dock button look, just re&#8209;labelled <span class="rec">rec</span> vs a small chip.<span class="why">Why: it&rsquo;s the tech&rsquo;s one&#8209;tap exit; don&rsquo;t shrink it.</span></span></li>
+          <li><span class="opt">C3</span><span>Keep the hand&#8209;off animation and &ldquo;back to your queue&rdquo; on tech and parts moves <span class="rec">rec: yes</span> vs a plain status change.<span class="why">Why: it&rsquo;s the moment that tells them they&rsquo;re done.</span></span></li>
+          <li><span class="opt">C4</span><span>Ask Jay only where a decided RO should land &mdash; Waiting for Parts, or something else <span class="rec">rec</span> vs don&rsquo;t ask.<span class="why">Why: that&rsquo;s a store&#8209;process setting now, not a button question.</span></span></li>
+          <li><span class="opt">C5</span><span>Ship in one PR <span class="rec">rec</span> vs one PR per role.<span class="why">Why: one shared &ldquo;next move&rdquo; rule; splitting it re&#8209;creates the drift.</span></span></li>
         </ol>
       </div>
     </article>
