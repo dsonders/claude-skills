@@ -1209,7 +1209,7 @@
           groomed &mdash; runs tonight on your word
         </span>
       </div>
-      <p class="sub">Four surfaces treat a <em>failed</em> settings lookup as an answer: the lookup errors, the code reads &ldquo;not loading any more&rdquo; and shows multi-player controls to a single-player shop.</p>
+      <p class="sub">Four screens treat &ldquo;couldn&rsquo;t load this shop&rsquo;s settings&rdquo; as &ldquo;this is a multi&#8209;player shop&rdquo; and show multi&#8209;player controls to a single&#8209;player shop.</p>
 
       <ul class="dims">
         <li class="hi">
@@ -1221,40 +1221,40 @@
         <li>Codex 0&ndash;1</li>
         <li class="safe">revert-cheap</li>
       </ul>
-      <p class="pop"><b>Who hits it</b>Any org, during a rare settings-fetch failure.</p>
+      <p class="pop"><b>Who hits it</b>Any shop, in the moment a settings lookup fails.</p>
 
       <figure class="viz">
-        <figcaption class="viz-cap"><span>The gate on each surface &mdash; before / after</span><span class="hint">scroll &rarr;</span></figcaption>
+        <figcaption class="viz-cap"><span>Each screen &mdash; before / after</span><span class="hint">scroll &rarr;</span></figcaption>
         <div class="scroller">
           <table>
             <thead>
-              <tr><th scope="col">Surface</th><th scope="col">Today &mdash; shows when</th><th scope="col">After &mdash; shows when</th></tr>
+              <tr><th scope="col">Screen</th><th scope="col">Today &mdash; shows when</th><th scope="col">After &mdash; shows when</th></tr>
             </thead>
             <tbody>
               <tr>
-                <td class="surface-name">Work-complete strip<span class="code">TechWorkCompleteStrip</span></td>
-                <td class="gate-now"><span class="gate bad">not loading</span></td>
-                <td class="gate-next"><span class="gate good">confirmed multi-player</span></td>
+                <td class="surface-name">Tech&rsquo;s work-done bar</td>
+                <td class="gate-now"><span class="gate bad">settings stopped loading &mdash; even if they failed</span></td>
+                <td class="gate-next"><span class="gate good">settings loaded and say multi-player</span></td>
               </tr>
               <tr>
-                <td class="surface-name">Pending internal-auth badge<span class="code">PendingInternalAuthBadge</span></td>
-                <td class="gate-now"><span class="gate bad">not loading</span></td>
-                <td class="gate-next"><span class="gate good">confirmed multi-player</span></td>
+                <td class="surface-name">&ldquo;Needs internal OK&rdquo; badge</td>
+                <td class="gate-now"><span class="gate bad">settings stopped loading &mdash; even if they failed</span></td>
+                <td class="gate-next"><span class="gate good">settings loaded and say multi-player</span></td>
               </tr>
               <tr>
-                <td class="surface-name">Pending customer-OK badge<span class="code">PendingCustomerOkBadge</span></td>
-                <td class="gate-now"><span class="gate bad">not loading</span></td>
-                <td class="gate-next"><span class="gate good">confirmed multi-player</span></td>
+                <td class="surface-name">&ldquo;Needs customer OK&rdquo; badge</td>
+                <td class="gate-now"><span class="gate bad">settings stopped loading &mdash; even if they failed</span></td>
+                <td class="gate-next"><span class="gate good">settings loaded and say multi-player</span></td>
               </tr>
               <tr>
-                <td class="surface-name">Parts page spot<span class="code">parts-repair-order.tsx:237</span></td>
-                <td class="gate-now"><span class="gate bad">not loading</span></td>
-                <td class="gate-next"><span class="gate good">confirmed multi-player</span></td>
+                <td class="surface-name">Parts RO page</td>
+                <td class="gate-now"><span class="gate bad">settings stopped loading &mdash; even if they failed</span></td>
+                <td class="gate-next"><span class="gate good">settings loaded and say multi-player</span></td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="viz-foot">4 of 4 surfaces confirmed still on <code>isLoading</code>. The replacement signal already ships &mdash; <code>useWorkflowMode().isSettled</code> (<code>useOrgFeatures.ts:164</code>), so this is a gate swap, not new plumbing.</div>
+        <div class="viz-foot">All four ask the same question today and all four move to the same better one &mdash; nothing else about them changes.</div>
       </figure>
     </article>
   </section>
@@ -1610,7 +1610,7 @@
           groomed &mdash; vote by letter
         </span>
       </div>
-      <p class="sub">The ring reads &ldquo;0 of 4&rdquo; on an RO where only two lines are approved &mdash; the other two aren&rsquo;t parts&rsquo; job yet.</p>
+      <p class="sub">The counter reads &ldquo;0 of 4&rdquo; on an RO where only two lines are OK&rsquo;d &mdash; the other two aren&rsquo;t parts&rsquo; job yet.</p>
 
       <ul class="dims">
         <li class="hi">
@@ -1625,69 +1625,285 @@
           touches data
         </li>
       </ul>
-      <p class="pop"><b>Who hits it</b>Parts users on any RO with a pending-approval line. Not user-reported yet &mdash; spotted in a fixture screenshot.</p>
+      <p class="pop"><b>Who hits it</b>Parts users on any RO that still has a line waiting on the advisor. Nobody has reported it &mdash; it was spotted on a test RO.</p>
+
+      <style>
+      /* ---- shared by cards B–H --------------------------------------------
+         Card A introduced the .app-screen frame: the mock-ups are meant to read
+         as the REAL app, and the app is light in either board theme, so they
+         carry their OWN LITERAL colours (stock Tailwind values copied from the
+         real screens) and the app's system-sans. Everything below extends that
+         same scoped exception with the pieces cards B–H need — a progress
+         card, an action row, the phone plate + line-tab strip, and a notes
+         badge. Board chrome around them still uses the board's tokens. ---- */
+
+      .story.s3 { grid-template-columns: repeat(3, 1fr); }
+      .story.s2 { grid-template-columns: repeat(2, 1fr); }
+
+      .as-body { padding: 10px; display: grid; gap: 9px; }
+      .as-panel { border: 1px solid #e5e7eb; border-radius: 6px; background: #ffffff; padding: 10px; }
+      .as-panel-lbl { font-size: 11.5px; font-weight: 600; color: #1f2937; margin-bottom: 8px; }
+      .as-boxes { display: flex; flex-wrap: wrap; gap: 5px; }
+      .as-box {
+        width: 22px; height: 22px; border-radius: 5px; background: #e2e8f0;
+        display: inline-flex; align-items: center; justify-content: center; color: #ffffff;
+      }
+      .as-box.done { background: #2563eb; }
+
+      .as-linelist { display: grid; gap: 4px; }
+      .as-lrow {
+        display: flex; align-items: center; gap: 6px;
+        border: 1px solid #e2e8f0; border-radius: 6px; background: #ffffff;
+        padding: 6px 8px; font-size: 10.5px; color: #334155;
+      }
+      .as-lrow .mark { flex: none; width: 12px; text-align: center; color: #94a3b8; }
+      .as-lrow .mark.ok { color: #059669; }
+      .as-lrow .grow { flex: 1 1 auto; min-width: 0; }
+      .as-lrow .tail { flex: none; font-size: 9.5px; color: #94a3b8; }
+      .as-lrow.count { background: #eff6ff; border-color: #93c5fd; }
+      .as-lrow.count .tail { color: #1d4ed8; font-weight: 600; }
+      .as-cb { flex: none; font-size: 10.5px; color: #334155; }
+      .as-cb.off { color: #cbd5e1; }
+      .as-cb.gone { color: #cbd5e1; font-style: italic; }
+      .as-caption { font-size: 9px; letter-spacing: .07em; text-transform: uppercase; color: #94a3b8; }
+
+      /* ---- action row (card C) ---- */
+      .as-actions { padding: 11px 10px; display: grid; gap: 7px; }
+      .as-sum { font-size: 10px; color: #64748b; text-align: center; }
+      .as-btn {
+        border-radius: 6px; padding: 9px 12px; text-align: center;
+        font-size: 11px; font-weight: 600; border: 1px solid transparent;
+        display: flex; align-items: center; justify-content: center; gap: 5px;
+      }
+      .as-btn.primary { background: #2563eb; color: #ffffff; }
+      .as-btn.inert { background: #f1f5f9; color: #94a3b8; border-color: #e2e8f0; font-weight: 500; }
+      .as-btn.outline {
+        border-color: #e2e8f0; background: #ffffff; color: #4b5563;
+        font-weight: 500; padding: 6px 12px; font-size: 10.5px; width: auto; margin: 0 auto;
+      }
+      .as-btn.none {
+        border-style: dashed; border-color: #e2e8f0; background: none;
+        color: #94a3b8; font-weight: 400; font-size: 10px;
+      }
+      .as-textlink { text-align: center; font-size: 10px; font-weight: 500; color: #2563eb; }
+      .as-hint { text-align: center; font-size: 10px; color: #64748b; }
+
+      /* ---- phone: dark spec plate + line-tab strip (card D) ---- */
+      .phones { display: flex; flex-wrap: wrap; gap: 13px; padding: 13px; justify-content: center; }
+      .phone-col { width: 390px; max-width: 100%; min-width: 0; }
+      .as-phone { border-radius: 12px; overflow: hidden; border: 1px solid #cbd5e1; background: #ffffff; }
+      .as-plate {
+        color: #ffffff; padding: 8px 12px 9px;
+        border-top: 2px solid #2563eb;
+        background:
+          radial-gradient(600px 220px at 78% -40%, rgba(37,99,235,.22), rgba(37,99,235,0) 70%),
+          linear-gradient(160deg, #0f172a 0%, #16202f 46%, #1e293b 100%);
+      }
+      .as-plate-row { display: flex; align-items: center; gap: 7px; min-height: 26px; }
+      .as-ymm { font-size: 14px; font-weight: 700; letter-spacing: -.01em; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .as-chev {
+        margin-left: auto; flex: none; width: 22px; height: 22px; border-radius: 6px;
+        border: 1px solid #3f4d61; background: #1b2635; color: #94a3b8;
+        display: inline-flex; align-items: center; justify-content: center;
+      }
+      .as-ronum { font-size: 11px; font-weight: 600; color: #cbd5e1; font-variant-numeric: tabular-nums; }
+      .as-amber {
+        margin-left: auto; flex: none; display: inline-flex; align-items: center; gap: 4px;
+        border: 1px solid #fde68a; background: #fef3c7; color: #b45309;
+        border-radius: 7px; padding: 3px 9px; font-size: 11px; font-weight: 700;
+        box-shadow: 0 0 0 4px rgba(245,158,11,.10);
+      }
+      .as-leftpill {
+        margin-left: auto; flex: none; background: #1e293b; color: #ffffff;
+        border: 1px solid #3f4d61; border-radius: 999px; padding: 3px 10px;
+        font-size: 10.5px; font-weight: 700; white-space: nowrap;
+      }
+      .as-leftpill + .as-amber { margin-left: 0; }
+
+      .as-deck {
+        position: relative; background: #f1f5f9;
+        border-top: 3px solid #e5e7eb; border-bottom: 3px solid #38bdf8;
+        padding-top: 8px;
+      }
+      .as-deck.edge::after {
+        content: ""; position: absolute; right: 0; top: 0; bottom: 3px; width: 54px;
+        background: linear-gradient(90deg, rgba(241,245,249,0), #f1f5f9 72%);
+      }
+      .as-tabs { display: flex; align-items: flex-end; gap: 5px; padding: 0 0 0 10px; overflow: hidden; }
+      .as-tile {
+        flex: none; width: 42px; height: 42px; border-radius: 8px 8px 0 0;
+        background: #facc15; color: #1e293b; margin-bottom: 3px;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+        font-size: 7.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+      }
+      .as-tab {
+        flex: none; min-height: 32px; display: inline-flex; align-items: center; gap: 5px;
+        padding: 6px 11px; border-radius: 8px 8px 0 0; margin-bottom: 3px;
+        font-size: 11px; white-space: nowrap;
+      }
+      .as-tab.todo { background: #1e293b; color: #ffffff; border: 1px solid #1e293b; }
+      .as-tab.done { background: #ffffff; color: #1e293b; border: 2px solid #1e293b; }
+      .as-tab.waiting { background: #ffffff; color: #64748b; border: 1px dashed #cbd5e1; }
+      .as-tab.notneeded { background: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0; text-decoration: line-through; }
+      .as-tab.sel {
+        background: #ffffff; color: #1e293b; font-weight: 500;
+        border: 3px solid #38bdf8; border-bottom: none; border-radius: 10px 10px 0 0;
+        padding: 7px 14px 10px; margin-bottom: 0; position: relative; z-index: 2;
+      }
+      .as-edgechip {
+        position: absolute; right: 7px; top: 50%; transform: translateY(-50%); z-index: 3;
+        background: #1e293b; color: #ffffff; border-radius: 999px; padding: 3px 9px;
+        font-size: 10px; font-weight: 700; white-space: nowrap;
+      }
+      .as-underline { height: 3px; background: #e2e8f0; }
+      .as-underline i { display: block; height: 3px; width: 40%; background: #2563eb; }
+      .as-sheet { padding: 11px 12px 13px; display: grid; gap: 6px; }
+      .as-sheet-title { font-size: 12px; font-weight: 600; color: #0f172a; }
+      .as-sheet-line { height: 7px; border-radius: 4px; background: #eef2f7; }
+      .as-sheet-line.short { width: 62%; }
+      .as-footbar {
+        display: flex; align-items: center; justify-content: space-between; gap: 9px;
+        padding: 9px 12px; border-top: 1px solid #e2e8f0; background: #f8fafc;
+        font-size: 11px; color: #334155;
+      }
+      .as-footbar .go { background: #2563eb; color: #ffffff; border-radius: 6px; padding: 6px 11px; font-size: 10.5px; font-weight: 600; white-space: nowrap; }
+
+      /* ---- notes badge + system note (card F) ---- */
+      .as-notes { position: relative; display: inline-flex; align-items: center; justify-content: center; color: #2563eb; }
+      .as-notes.quiet { color: #94a3b8; }
+      .as-notes b {
+        position: absolute; right: -6px; top: -6px; min-width: 14px; height: 14px;
+        border-radius: 999px; border: 1px solid #ffffff; background: #ef4444; color: #ffffff;
+        font-size: 8.5px; font-weight: 700; line-height: 1;
+        display: grid; place-items: center; padding: 0 3px;
+      }
+      .as-notecard {
+        border: 1px solid #e2e8f0; border-left: 3px solid #2563eb; border-radius: 6px;
+        background: #f8fafc; padding: 8px 10px; display: grid; gap: 3px;
+      }
+      .as-notecard .who { display: flex; gap: 7px; align-items: baseline; font-size: 9px; letter-spacing: .06em; text-transform: uppercase; color: #94a3b8; }
+      .as-notecard p { margin: 0; font-size: 11px; color: #1e293b; }
+
+      @media (max-width: 760px) { .story.s3, .story.s2 { grid-template-columns: repeat(2, 1fr); } }
+      @media (max-width: 430px) { .story.s3, .story.s2 { grid-template-columns: 1fr; } .phones { padding: 10px; } }
+      </style>
 
       <figure class="viz">
-        <figcaption class="viz-cap"><span>Same RO, two denominators</span><span class="hint">scroll &rarr;</span></figcaption>
-        <div class="scroller">
-          <table>
-            <thead>
-              <tr><th scope="col">On the RO</th><th scope="col">Today &mdash; counts</th><th scope="col">After &mdash; counts</th></tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="surface-name">Approved line<span class="code">2 parts &middot; in scope</span></td>
-                <td class="gate-now"><span class="gate bad">both counted</span></td>
-                <td class="gate-next"><span class="gate good">both counted</span></td>
-              </tr>
-              <tr>
-                <td class="surface-name">Pending line<span class="code">2 parts &middot; awaiting approval</span></td>
-                <td class="gate-now"><span class="gate bad">both counted</span></td>
-                <td class="gate-next"><span class="gate good">out of scope</span></td>
-              </tr>
-              <tr>
-                <td class="surface-name">Ring shows<span class="code">header ring + dashboard LINES hover</span></td>
-                <td class="gate-now"><span class="gate bad">0 of 4</span></td>
-                <td class="gate-next"><span class="gate good">0 of 2</span></td>
-              </tr>
-            </tbody>
-          </table>
+        <figcaption class="viz-cap"><span>What happens today, step by step</span></figcaption>
+        <ol class="story s3">
+          <li>
+            <span class="stephead">
+              <span class="n">1</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 5.5h15M4.5 12h15M4.5 18.5h15"/></svg>
+            </span>
+            <p>An RO has <b>4 lines</b>: two the advisor has OK&rsquo;d, two still waiting on him.</p>
+          </li>
+          <li>
+            <span class="stephead">
+              <span class="n">2</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="9" width="4" height="6" rx="1.2"/><rect x="8.5" y="9" width="4" height="6" rx="1.2"/><rect x="14.5" y="9" width="4" height="6" rx="1.2"/><path d="M21.5 9v6"/></svg>
+            </span>
+            <p>The parts page counter reads <b>&ldquo;0 of 4 parts pulled&rdquo;</b>.</p>
+          </li>
+          <li class="bad">
+            <span class="stephead">
+              <span class="n">3</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 1.6"/></svg>
+            </span>
+            <p><b>Today:</b> parts is being measured against parts it isn&rsquo;t allowed to pull yet.</p>
+          </li>
+        </ol>
+        <div class="viz-foot">Two of those lines aren&rsquo;t parts&rsquo; job until the advisor decides them.</div>
+      </figure>
+
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>The pulled counter &mdash; today vs proposed</span><span class="hint">screens scroll &rarr;</span></figcaption>
+        <div class="screens">
+
+          <div class="screen-col">
+            <!-- app frame: literal light colours on purpose — see the note in the style block -->
+            <div class="app-screen">
+              <div class="as-body">
+                <div class="as-panel">
+                  <div class="as-panel-lbl">0 of 4 parts pulled</div>
+                  <div class="as-boxes"><span class="as-box"></span><span class="as-box"></span><span class="as-box"></span><span class="as-box"></span></div>
+                </div>
+                <div class="as-linelist">
+                  <div class="as-lrow count"><span class="mark ok">&#10003;</span><span class="grow">Brake pads</span><span class="tail">counted</span></div>
+                  <div class="as-lrow count"><span class="mark ok">&#10003;</span><span class="grow">Rotors</span><span class="tail">counted</span></div>
+                  <div class="as-lrow count"><span class="mark">&#8987;</span><span class="grow">Cabin filter</span><span class="tail">counted</span></div>
+                  <div class="as-lrow count"><span class="mark">&#8987;</span><span class="grow">Wiper blades</span><span class="tail">counted</span></div>
+                </div>
+              </div>
+            </div>
+            <p class="scap"><b>Today</b> &mdash; every line counts, decided or not.</p>
+          </div>
+
+          <div class="screen-col">
+            <!-- app frame: literal light colours on purpose — see the note in the style block -->
+            <div class="app-screen">
+              <div class="as-body">
+                <div class="as-panel">
+                  <div class="as-panel-lbl">0 of 2 parts pulled</div>
+                  <div class="as-boxes"><span class="as-box"></span><span class="as-box"></span></div>
+                </div>
+                <div class="as-linelist">
+                  <div class="as-lrow count"><span class="mark ok">&#10003;</span><span class="grow">Brake pads</span><span class="tail">counted</span></div>
+                  <div class="as-lrow count"><span class="mark ok">&#10003;</span><span class="grow">Rotors</span><span class="tail">counted</span></div>
+                  <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow">Cabin filter</span><span class="tail">waiting on the advisor</span></div>
+                  <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow">Wiper blades</span><span class="tail">waiting on the advisor</span></div>
+                </div>
+              </div>
+            </div>
+            <p class="scap"><b>Proposed</b> &mdash; only the parts someone has said yes to.</p>
+          </div>
+
         </div>
         <div class="dirs">
           <div class="dir pick">
-            <div class="pred-lbl"><span>B2 &middot; as-is</span><span>rec</span></div>
-            <div class="lrow"><span>Pending line</span><span>Brake pads</span><span class="cb">&#9744; Pulled</span></div>
-            <p class="tradeoff">Parts can still pull ahead of the decision (#1468).</p>
+            <div class="pred-lbl"><span>B2-a &middot; leave it</span><span>rec</span></div>
+            <!-- app frame: literal light colours on purpose -->
+            <div class="app-screen">
+              <div class="as-body">
+                <span class="as-caption">Waiting on the advisor</span>
+                <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow">Cabin filter</span><span class="as-cb">&#9744; Pulled</span></div>
+              </div>
+            </div>
+            <p class="tradeoff">Parts can still pull ahead of the decision, which they do.</p>
           </div>
           <div class="dir">
-            <div class="pred-lbl"><span>B2 &middot; greyed</span></div>
-            <div class="lrow"><span>Pending line</span><span>Brake pads</span><span class="cb off">&#9744; Pulled</span></div>
-            <p class="tradeoff">Blocks pre-pull &mdash; an edit lock bolted onto a counting bug.</p>
+            <div class="pred-lbl"><span>B2-b &middot; grey it out</span></div>
+            <!-- app frame: literal light colours on purpose -->
+            <div class="app-screen">
+              <div class="as-body">
+                <span class="as-caption">Waiting on the advisor</span>
+                <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow">Cabin filter</span><span class="as-cb off">&#9744; Pulled</span></div>
+              </div>
+            </div>
+            <p class="tradeoff">Stops the early pull &mdash; a new lock bolted onto a counting fix.</p>
           </div>
           <div class="dir">
-            <div class="pred-lbl"><span>B2 &middot; hidden</span></div>
-            <div class="lrow"><span>Pending line</span><span>Brake pads</span><span class="cb gone">no checkbox</span></div>
-            <p class="tradeoff">Cleanest row &mdash; parts loses a control it uses today.</p>
+            <div class="pred-lbl"><span>B2-c &middot; hide it</span></div>
+            <!-- app frame: literal light colours on purpose -->
+            <div class="app-screen">
+              <div class="as-body">
+                <span class="as-caption">Waiting on the advisor</span>
+                <div class="as-lrow"><span class="mark">&#8987;</span><span class="grow">Cabin filter</span><span class="as-cb gone">no checkbox</span></div>
+              </div>
+            </div>
+            <p class="tradeoff">Tidiest row &mdash; parts loses a control it uses today.</p>
           </div>
-        </div>
-        <div class="viz-foot"><code>summarizeLineApproval</code> counts every deliverable part regardless of line state (<code>line-approval-summary.ts:205&ndash;214</code>, on purpose today). Proposed: count parts only where <code>isLineInScope(&hellip;)</code> is true &mdash; the same predicate the tech ring and the server gate use (<code>parts-rollup.ts:159/599</code>). Both surfaces move together: the parts RO header ring (<code>parts-repair-order.tsx ~1146</code>) and the dashboard LINES hover read the same numbers.</div>
-        <div class="prov">
-          <span class="plbl">Provenance</span>
-          <span class="p exists">line_approval_summary.parts_total / parts_pulled <em>exists</em></span>
-          <span class="p exists">isLineInScope <em>exists</em></span>
-          <span class="p exists">resolveLineApprovalState <em>exists</em></span>
         </div>
       </figure>
 
+      <p class="conseq">The dashboard&rsquo;s Lines hover and the parts page show the same number, and it only counts parts someone has actually said yes to.</p>
+
       <div class="ballot">
-        <div class="ballot-head">
-          Ballot
-          <span class="pending">3 to vote</span>
-        </div>
+        <div class="ballot-head">Ballot</div>
         <ol>
-          <li><span class="opt">B1</span><span>Denominator = parts on in-scope lines only &mdash; approved + warranty/recall/internal-authorized. <span class="rec">rec</span><span class="why">Why: mirrors D4 and the tech ring exactly; one shared predicate.</span></span></li>
-          <li><span class="opt">B2</span><span>Pending-line Pulled checkbox stays as-is <span class="rec">rec</span> vs greyed vs hidden.<span class="why">Why: it&rsquo;s a COUNT fix, not an edit lock &mdash; parts sometimes pull ahead (#1468).</span></span></li>
-          <li><span class="opt">B3</span><span>Re-run <code>backfill:line-approval</code> after deploy &mdash; you run it. <span class="rec">rec</span><span class="why">Why: stored denorm; the dashboard hover shows old numbers until each RO is touched.</span></span></li>
+          <li><span class="opt">B1</span><span>Count only parts on lines that are approved (or warranty / recall). <span class="rec">rec: yes</span><span class="why">Why: it&rsquo;s the same rule the tech&rsquo;s work-done ring already uses.</span></span></li>
+          <li><span class="opt">B2</span><span>The Pulled checkbox on a not-yet-approved line: leave it <span class="rec">rec</span> &middot; grey it out &middot; hide it.<span class="why">Why: this is a count fix, not a lock &mdash; parts sometimes pull ahead.</span></span></li>
+          <li><span class="opt">B3</span><span>Refresh the stored counts on existing ROs after deploy &mdash; a one-time cleanup you run. <span class="rec">rec: yes</span><span class="why">Why: otherwise old ROs show old numbers until someone edits them.</span></span></li>
         </ol>
       </div>
     </article>
@@ -1696,13 +1912,13 @@
     <article class="card">
       <div class="card-head">
         <span class="key">C</span>
-        <h3>Parts RO page: primary CTA after the advisor already decided</h3>
+        <h3>Parts RO page: the big button after the advisor already decided</h3>
         <span class="status">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
           groomed &mdash; vote by letter
         </span>
       </div>
-      <p class="sub">The big blue &ldquo;Send to advisor&rdquo; stays primary even once every line is decided, so parts sends it back and the RO ping-pongs.</p>
+      <p class="sub">The big blue &ldquo;Send to advisor&rdquo; stays the main button even once every line is decided, so parts sends it back and the RO ping-pongs.</p>
 
       <ul class="dims">
         <li class="hi">UX High</li>
@@ -1713,68 +1929,121 @@
       <p class="pop"><b>Who hits it</b>McGrath &mdash; RO 832805 bounced parts&harr;advisor 3&times; in 4 days.</p>
 
       <figure class="viz">
-        <figcaption class="viz-cap"><span>The pricing-actions row &mdash; today, then three directions</span><span class="hint">scroll &rarr;</span></figcaption>
-        <div class="preds">
-          <div class="pred">
-            <div class="pred-lbl"><span>Today</span><span>SendToAdvisorCTA.tsx:288</span></div>
-            <div class="pane-line">All 4 lines already decided by the advisor</div>
-            <div class="btn-mock primary">Send to advisor</div>
-            <div class="btn-mock text">Send back to tech</div>
-            <div class="outcome bad">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
-              Always primary, no inert variant &mdash; PATCHes <code>workflowStatus: 'advisor_review'</code> and re-sends
-            </div>
-          </div>
-        </div>
-        <div class="dirs">
-          <div class="dir pick">
-            <div class="pred-lbl"><span>C-A &middot; label follows the lines</span><span>rec</span></div>
-            <div class="mini-lbl">waiting &gt; 0</div>
-            <div class="btn-mock primary sm">Send to advisor</div>
-            <div class="mini-lbl">waiting = 0 &middot; approved &gt; 0</div>
-            <div class="btn-mock good sm">Move to Waiting for Parts &rarr;</div>
-            <div class="mini-lbl">all declined</div>
-            <div class="btn-mock gone">no primary &mdash; only &ldquo;Send back to tech&rdquo;</div>
-            <p class="tradeoff">Clearest next step &mdash; but it picks a destination for the store.</p>
-          </div>
-          <div class="dir">
-            <div class="pred-lbl"><span>C-B &middot; inert while waiting</span></div>
-            <div class="mini-lbl">stage = parts_pricing</div>
-            <div class="btn-mock primary sm">Send to advisor</div>
-            <div class="mini-lbl">stage = advisor_review / awaiting_customer</div>
-            <div class="btn-mock inert sm">Waiting on advisor &middot; 2 lines</div>
-            <div class="btn-mock text">Resend</div>
-            <p class="tradeoff">Stops the re-send &mdash; doesn&rsquo;t tell parts what&rsquo;s next.</p>
-          </div>
-          <div class="dir">
-            <div class="pred-lbl"><span>C-C &middot; no big button once decided</span></div>
-            <div class="mini-lbl">waiting = 0 &mdash; the CTA row collapses</div>
-            <div class="btn-mock gone">&mdash;</div>
-            <div class="dir-note">All lines decided &mdash; set the RO status &uarr;</div>
-            <div class="lrow"><span>Job status</span><span class="pill new">Ready for Pickup &#9662;</span></div>
-            <p class="tradeoff">Zero new status logic &mdash; relies on parts noticing the plate&rsquo;s picker (#1569).</p>
-          </div>
-        </div>
-        <div class="viz-foot">The signal is already on the page &mdash; <code>summarizeLineApproval</code> at <code>parts-repair-order.tsx:1030</code> (<code>approved / waiting / declined</code>). Any status change resolves through <code>getStatusOptions</code> and renders via <code>getStatusLabel</code>, never a literal &mdash; orgs rename their statuses.</div>
-        <div class="prov">
-          <span class="plbl">Provenance</span>
-          <span class="p exists">approved / waiting / declined <em>exists</em></span>
-          <span class="p exists">waiting_for_parts label <em>exists</em></span>
-          <span class="p exists">&ldquo;sent to advisor&rdquo; stage <em>exists</em></span>
-          <span class="p missing">&ldquo;Recs Approved&rdquo; status <em>missing</em></span>
-        </div>
+        <figcaption class="viz-cap"><span>What happens today, step by step</span></figcaption>
+        <ol class="story">
+          <li>
+            <span class="stephead">
+              <span class="n">1</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 4 3 10.6l7.2 2.6L13 20l8-16z"/></svg>
+            </span>
+            <p>Parts prices the lines and taps <b>Send to advisor</b>.</p>
+          </li>
+          <li>
+            <span class="stephead">
+              <span class="n">2</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.4 12.3l2.4 2.4 4.8-5"/></svg>
+            </span>
+            <p>The advisor <b>decides every line</b> &mdash; some OK&rsquo;d, some declined.</p>
+          </li>
+          <li class="bad">
+            <span class="stephead">
+              <span class="n">3</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="8" width="17" height="8" rx="2"/><path d="M12 4v4M12 16v4"/></svg>
+            </span>
+            <p><b>Today:</b> the parts page still shows the big blue <b>Send to advisor</b>.</p>
+          </li>
+          <li class="bad">
+            <span class="stephead">
+              <span class="n">4</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4 3.5 8.5 8 13"/><path d="M3.5 8.5h13a4 4 0 0 1 4 4v7"/></svg>
+            </span>
+            <p>Parts taps it. The RO bounces back to the advisor &mdash; <b>3 bounces in 4 days</b>.</p>
+          </li>
+        </ol>
+        <div class="viz-foot">Nothing on the page tells parts that the answer already came back.</div>
       </figure>
 
-      <p class="note cluster"><b>Cluster</b>Decide the primary signal here &mdash; F and G are complements or drops once this lands.</p>
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>The action row &mdash; today, then three directions</span><span class="hint">screens scroll &rarr;</span></figcaption>
+        <div class="screens">
+
+          <div class="screen-col">
+            <!-- app frame: literal light colours on purpose — see the note in card B's style block -->
+            <div class="app-screen">
+              <div class="as-actions">
+                <div class="as-sum">3 approved &middot; 0 waiting</div>
+                <div class="as-btn primary">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 4 3 10.6l7.2 2.6L13 20l8-16z"/></svg>
+                  Send to advisor
+                </div>
+                <div class="as-btn outline">Send back to tech</div>
+              </div>
+            </div>
+            <p class="scap"><b>Today</b> &mdash; the same big button whether the advisor has answered or not.</p>
+          </div>
+
+          <div class="screen-col">
+            <!-- app frame: literal light colours on purpose -->
+            <div class="app-screen">
+              <div class="as-actions">
+                <span class="as-caption">Some lines still waiting</span>
+                <div class="as-btn primary">Send to advisor</div>
+                <span class="as-caption">All lines decided, some approved</span>
+                <div class="as-btn primary">Move to Waiting for Parts &rarr;</div>
+                <span class="as-caption">Everything declined</span>
+                <div class="as-btn none">no big button &mdash; only &ldquo;Send back to tech&rdquo;</div>
+              </div>
+            </div>
+            <p class="scap"><b>C-A &mdash; the button follows the lines.</b> Clearest next step, but it picks the destination for the store.</p>
+          </div>
+
+          <div class="screen-col">
+            <!-- app frame: literal light colours on purpose -->
+            <div class="app-screen">
+              <div class="as-actions">
+                <span class="as-caption">Before sending</span>
+                <div class="as-btn primary">Send to advisor</div>
+                <span class="as-caption">After sending</span>
+                <div class="as-btn inert">Waiting on advisor &middot; 2 lines</div>
+                <div class="as-textlink">Resend</div>
+              </div>
+            </div>
+            <p class="scap"><b>C-B &mdash; goes quiet once sent.</b> Stops the re-send, but never says what parts should do next.</p>
+          </div>
+
+          <div class="screen-col">
+            <!-- app frame: literal light colours on purpose -->
+            <div class="app-screen">
+              <div class="as-plate">
+                <div class="as-plate-row">
+                  <span class="as-ronum">RO #4482</span>
+                  <span class="as-amber">
+                    Parts Pricing
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                  </span>
+                </div>
+              </div>
+              <div class="as-actions">
+                <div class="as-hint">&uarr; All lines decided &mdash; set the RO status</div>
+                <div class="as-btn none">no big button</div>
+              </div>
+            </div>
+            <p class="scap"><b>C-C &mdash; no big button once decided.</b> Nothing new to build, but it relies on parts noticing the status picker.</p>
+          </div>
+
+        </div>
+        <div class="viz-foot">There&rsquo;s no &ldquo;Recs Approved&rdquo; status &mdash; in the app the approved destination is called <strong>Waiting for Parts</strong> (stores can rename it).</div>
+      </figure>
+
+      <p class="conseq">Parts stops sending a decided RO back, and the button on the page says what actually happens next.</p>
+
+      <p class="note cluster"><b>Cluster</b>Decide the main signal here &mdash; F and G become complements or drops once this lands.</p>
 
       <div class="ballot">
-        <div class="ballot-head">
-          Ballot
-          <span class="pending">2 to vote</span>
-        </div>
+        <div class="ballot-head">Ballot</div>
         <ol>
-          <li><span class="opt">C1</span><span>Ask Jay (McGrath) which destination they want after a decision, showing him A/B/C &mdash; your stated intent <span class="rec">rec</span> vs decide now.<span class="why">Why: the destination is a store-process question, not a UX one.</span></span></li>
-          <li><span class="opt">C2</span><span>If we build without waiting: <strong>C-A</strong> <span class="rec">rec</span> vs C-B vs C-C.<span class="why">Why: C-A is the only one that answers &ldquo;what next&rdquo;.</span></span></li>
+          <li><span class="opt">C1</span><span>Ask Jay at McGrath where they want the RO to go after a decision, showing him A / B / C. <span class="rec">rec</span> vs decide now.<span class="why">Why: that&rsquo;s a store-process question, not a design one.</span></span></li>
+          <li><span class="opt">C2</span><span>If we build without waiting: <strong>C-A</strong> <span class="rec">rec</span> &middot; C-B &middot; C-C.<span class="why">Why: only A tells parts what to do next.</span></span></li>
         </ol>
       </div>
     </article>
@@ -1783,13 +2052,14 @@
     <article class="card">
       <div class="card-head">
         <span class="key">D</span>
-        <h3>Mobile &ldquo;how much work is left on this RO&rdquo; indicator</h3>
+        <h3>Mobile &ldquo;how much work is left on this RO&rdquo;</h3>
         <span class="status">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
           groomed &mdash; vote by letter
         </span>
       </div>
       <p class="sub">On a phone a tech sees about three and a half line tabs out of ten, and nothing tells him how many are left.</p>
+      <p class="note"><b>What the number means</b>Lines the tech still has to finish &mdash; the same number as the work-done ring at the bottom of the tech&rsquo;s page. Inspection and video tools aren&rsquo;t lines.</p>
 
       <ul class="dims">
         <li class="hi">UX High</li>
@@ -1800,114 +2070,130 @@
       <p class="pop"><b>Who hits it</b>Every tech on a phone &mdash; the primary persona.</p>
 
       <figure class="viz">
-        <figcaption class="viz-cap"><span>What the number is &mdash; then three places to put it</span><span class="hint">scroll &rarr;</span></figcaption>
-        <div class="scroller">
-          <div class="strip">
-            <div class="strip-row">
-              <span class="lbl">What counts as &ldquo;left&rdquo;</span>
-              <span class="tag on">in-scope lines not complete</span>
-              <span class="tag">inScopeCompletionCounts &rarr; {complete, total} &mdash; parts-rollup.ts:599</span>
-              <span class="tag">the same number the tech work-complete ring uses</span>
+        <figcaption class="viz-cap"><span>The tech&rsquo;s RO page on a phone &mdash; three places to put it</span></figcaption>
+        <div class="phones">
+
+          <div class="phone-col">
+            <!-- app frame: literal colours on purpose — the tech's header plate is dark in the real app -->
+            <div class="as-phone">
+              <div class="as-plate">
+                <div class="as-plate-row">
+                  <span class="as-ymm">2021 Silverado 1500</span>
+                  <span class="as-chev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+                </div>
+                <div class="as-plate-row">
+                  <span class="as-ronum">RO #4482</span>
+                  <span class="as-leftpill">3 of 10 left</span>
+                  <span class="as-amber">
+                    In Progress
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                  </span>
+                </div>
+              </div>
+              <div class="as-deck edge">
+                <div class="as-tabs">
+                  <span class="as-tile"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="m9 13 2 2 4-4"/></svg>MPI</span>
+                  <span class="as-tab sel">Brake noise</span>
+                  <span class="as-tab todo">Oil service</span>
+                  <span class="as-tab done">Air filter &#10003;</span>
+                  <span class="as-tab waiting">Alignment</span>
+                </div>
+              </div>
+              <div class="as-sheet">
+                <div class="as-sheet-title">Brake noise</div>
+                <div class="as-sheet-line"></div>
+                <div class="as-sheet-line short"></div>
+              </div>
             </div>
-            <div class="strip-row">
-              <span class="lbl">What does not</span>
-              <span class="tag">MPI tools</span>
-              <span class="tag">Video tools</span>
-              <span class="tag">not lines &mdash; excluded unless voted in</span>
-            </div>
+            <p class="scap"><b>D-A &mdash; header pill.</b> Always visible, and nothing on the page moves.</p>
           </div>
-        </div>
-        <div class="scroller">
-          <div class="dirs phones">
-            <div class="dir pick">
-              <div class="pred-lbl"><span>D-A &middot; header pill</span><span>rec</span></div>
-              <div class="phone">
-                <div class="phone-bar">
-                  <span class="phone-title">2021 Chevrolet Silverado</span>
-                  <span class="push phone-sub">&#9662;</span>
+
+          <div class="phone-col">
+            <!-- app frame: literal colours on purpose -->
+            <div class="as-phone">
+              <div class="as-plate">
+                <div class="as-plate-row">
+                  <span class="as-ymm">2021 Silverado 1500</span>
+                  <span class="as-chev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
                 </div>
-                <div class="phone-bar">
-                  <span class="phone-sub">RO #4482</span>
-                  <span class="left-pill">3 of 10 left</span>
-                  <span class="push chip-amber">In progress</span>
-                </div>
-                <div class="tabstrip">
-                  <span class="tab sel">Brake noise</span>
-                  <span class="tab">Oil leak</span>
-                  <span class="tab">No start</span>
-                  <span class="tab">Alignment check</span>
+                <div class="as-plate-row">
+                  <span class="as-ronum">RO #4482</span>
+                  <span class="as-amber">
+                    In Progress
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                  </span>
                 </div>
               </div>
-              <p class="tradeoff">Always visible, zero layout change, S. The only free slot in the strip today (<code>VehicleHeaderStrip.tsx:106&ndash;119</code>). Tap scrolls to the next to-do tab.</p>
-            </div>
-            <div class="dir">
-              <div class="pred-lbl"><span>D-B &middot; strip edge counter</span></div>
-              <div class="phone">
-                <div class="phone-bar">
-                  <span class="phone-title">2021 Chevrolet Silverado</span>
-                  <span class="push phone-sub">&#9662;</span>
-                </div>
-                <div class="phone-bar">
-                  <span class="phone-sub">RO #4482</span>
-                  <span class="push chip-amber">In progress</span>
-                </div>
-                <div class="tabstrip">
-                  <span class="tab sel">Brake noise</span>
-                  <span class="tab">Oil leak</span>
-                  <span class="tab">No start</span>
-                  <span class="tab">Alignment check</span>
-                  <span class="edge-chip">6 more &rarr;</span>
-                </div>
-                <div class="progress"><i></i></div>
-              </div>
-              <p class="tradeoff">Lives where the problem is &mdash; but fights the fade and the scroll gestures (horizontal scroller vs pull-to-refresh).</p>
-            </div>
-            <div class="dir">
-              <div class="pred-lbl"><span>D-C &middot; bottom bar</span></div>
-              <div class="phone">
-                <div class="phone-bar">
-                  <span class="phone-title">2021 Chevrolet Silverado</span>
-                  <span class="push phone-sub">&#9662;</span>
-                </div>
-                <div class="phone-bar">
-                  <span class="phone-sub">RO #4482</span>
-                  <span class="push chip-amber">In progress</span>
-                </div>
-                <div class="tabstrip">
-                  <span class="tab sel">Brake noise</span>
-                  <span class="tab">Oil leak</span>
-                  <span class="tab">No start</span>
-                  <span class="tab">Alignment check</span>
-                </div>
-                <div class="bottom-bar">
-                  <span>3 of 10 lines done</span>
-                  <span class="go">Next line &rarr;</span>
+              <div class="as-deck edge">
+                <span class="as-edgechip">6 more &rarr;</span>
+                <div class="as-tabs">
+                  <span class="as-tile"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="m9 13 2 2 4-4"/></svg>MPI</span>
+                  <span class="as-tab sel">Brake noise</span>
+                  <span class="as-tab todo">Oil service</span>
+                  <span class="as-tab done">Air filter &#10003;</span>
+                  <span class="as-tab waiting">Alignment</span>
                 </div>
               </div>
-              <p class="tradeoff">Most tappable &mdash; biggest build, and a second sticky bar on a page that already has one.</p>
+              <div class="as-underline"><i></i></div>
+              <div class="as-sheet">
+                <div class="as-sheet-title">Brake noise</div>
+                <div class="as-sheet-line"></div>
+                <div class="as-sheet-line short"></div>
+              </div>
             </div>
+            <p class="scap"><b>D-B &mdash; edge counter.</b> Lives where the problem is, but it fights the strip&rsquo;s swipe.</p>
           </div>
+
+          <div class="phone-col">
+            <!-- app frame: literal colours on purpose -->
+            <div class="as-phone">
+              <div class="as-plate">
+                <div class="as-plate-row">
+                  <span class="as-ymm">2021 Silverado 1500</span>
+                  <span class="as-chev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+                </div>
+                <div class="as-plate-row">
+                  <span class="as-ronum">RO #4482</span>
+                  <span class="as-amber">
+                    In Progress
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                  </span>
+                </div>
+              </div>
+              <div class="as-deck edge">
+                <div class="as-tabs">
+                  <span class="as-tile"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="m9 13 2 2 4-4"/></svg>MPI</span>
+                  <span class="as-tab sel">Brake noise</span>
+                  <span class="as-tab todo">Oil service</span>
+                  <span class="as-tab done">Air filter &#10003;</span>
+                  <span class="as-tab waiting">Alignment</span>
+                </div>
+              </div>
+              <div class="as-sheet">
+                <div class="as-sheet-title">Brake noise</div>
+                <div class="as-sheet-line"></div>
+              </div>
+              <div class="as-footbar">
+                <span>3 of 10 lines done</span>
+                <span class="go">Next line &rarr;</span>
+              </div>
+            </div>
+            <p class="scap"><b>D-C &mdash; bottom bar.</b> Easiest to tap, but it&rsquo;s a second sticky bar on a page that already has one.</p>
+          </div>
+
         </div>
-        <div class="viz-foot">&ldquo;N left&rdquo; = <code>total &minus; complete</code> &mdash; derived at render, nothing stored. All three sketches are the tech RO header <code>VehicleHeaderStrip</code> at 390px.</div>
-        <div class="prov">
-          <span class="plbl">Provenance</span>
-          <span class="p exists">Issue.status complete <em>exists</em></span>
-          <span class="p exists">inScopeCompletionCounts <em>exists</em></span>
-          <span class="p deriv">&ldquo;N left&rdquo; <em>derivable</em></span>
-          <span class="p">MPI / Video completion <em>not counted</em></span>
-        </div>
+        <div class="viz-foot">Dark tabs are work still to do; a ticked white tab is finished; a dashed one is still waiting on an answer.</div>
       </figure>
 
+      <p class="conseq">A tech can see how much of the car is left without swiping the strip, and one tap puts him on the next line.</p>
+
       <div class="ballot">
-        <div class="ballot-head">
-          Ballot
-          <span class="pending">4 to vote</span>
-        </div>
+        <div class="ballot-head">Ballot</div>
         <ol>
-          <li><span class="opt">D1</span><span>Count = in-scope lines not complete, same as the ring <span class="rec">rec</span> vs also MPI/Video.<span class="why">Why: one number, one predicate, no drift with the work-complete strip.</span></span></li>
-          <li><span class="opt">D2</span><span>Tech only <span class="rec">rec</span> vs all roles.<span class="why">Why: advisors and parts have the desktop tabs and dashboards; the phone gap is the tech&rsquo;s.</span></span></li>
-          <li><span class="opt">D3</span><span>Placement: <strong>D-A</strong> <span class="rec">rec</span> vs D-B vs D-C.<span class="why">Why: the slot exists, no new sticky surface, ships in one evening.</span></span></li>
-          <li><span class="opt">D4</span><span>Tap jumps the strip to the next to-do tab <span class="rec">rec</span> vs display-only.<span class="why">Why: cheap &mdash; the <code>scrollLeft</code> rect math is already in <code>tab-settle.ts</code> &mdash; and it turns a number into a next step.</span></span></li>
+          <li><span class="opt">D1</span><span>The number counts lines still to do, same as the work-done ring <span class="rec">rec</span> vs also counting the inspection and video tools.<span class="why">Why: one number, so it can&rsquo;t disagree with the ring.</span></span></li>
+          <li><span class="opt">D2</span><span>Techs only <span class="rec">rec</span> vs everyone.<span class="why">Why: the phone gap is the tech&rsquo;s.</span></span></li>
+          <li><span class="opt">D3</span><span>Where it goes: <strong>D-A</strong> <span class="rec">rec</span> &middot; D-B &middot; D-C.<span class="why">Why: the slot already exists, so it ships in an evening.</span></span></li>
+          <li><span class="opt">D4</span><span>Tapping it jumps to the next line to do. <span class="rec">rec: yes</span><span class="why">Why: it turns a number into a next step.</span></span></li>
         </ol>
       </div>
     </article>
@@ -1925,14 +2211,14 @@
     <article class="card">
       <div class="card-head">
         <span class="key">E</span>
-        <h3>Unmatched <code>/api/*</code> returns the SPA&rsquo;s index.html with a 200</h3>
+        <h3>The server says &ldquo;OK&rdquo; to requests for things that don&rsquo;t exist</h3>
         <span class="status">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
           groomed &mdash; vote by letter
         </span>
       </div>
-      <p class="sub">A wrong verb or a typo&rsquo;d route gets the app shell back as a 200, so the caller reads &ldquo;success&rdquo; for a write that never happened.</p>
-      <p class="note"><b>Outranks F and G</b>It fooled the build agent twice in one day, and it&rsquo;s a 20-line fix.</p>
+      <p class="sub">Ask the server for something that isn&rsquo;t there &mdash; a typo, a removed feature, the wrong kind of request &mdash; and it answers &ldquo;OK&rdquo; and hands back the app&rsquo;s web page instead of &ldquo;not found&rdquo;. Twice in one day a build agent believed a save had worked when nothing was saved.</p>
+      <p class="note"><b>Outranks F and G</b>It fooled the build agent twice in one day, and the fix is a few lines.</p>
 
       <ul class="dims">
         <li class="hi">
@@ -1944,70 +2230,40 @@
         <li>Codex 0&ndash;1</li>
         <li class="safe">revert-cheap</li>
       </ul>
-      <p class="pop"><b>Who hits it</b>Every client and every future agent hitting a wrong verb or a typo&rsquo;d route. No human report yet.</p>
+      <p class="pop"><b>Who hits it</b>Anything talking to the server &mdash; the app, a build agent &mdash; whenever it asks for something that isn&rsquo;t there. No human report yet.</p>
 
       <figure class="viz">
-        <figcaption class="viz-cap"><span>What a missing route returns today &mdash; and after</span><span class="hint">scroll &rarr;</span></figcaption>
-        <div class="scroller">
-          <div class="flow">
-            <div class="step"><span class="who">Caller</span><code>PATCH /api/organization/settings</code></div>
-            <div class="link">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="m13 6 6 6-6 6"/></svg>
-            </div>
-            <div class="step"><span class="who">Express</span>No router matches</div>
-            <div class="link cut">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="m13 6 6 6-6 6"/></svg>
-            </div>
-            <div class="step"><span class="who">Catch-all</span><code>app.use("*")</code> &mdash; static.ts:101 prod / vite.ts:52 dev</div>
-            <div class="link cut">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="m13 6 6 6-6 6"/></svg>
-            </div>
-            <div class="step break">
-              <span class="who">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
-                Reads as success
-              </span>
-              <code>200 text/html</code>
+        <figcaption class="viz-cap"><span>The same bad request, today and after</span></figcaption>
+        <div class="preds">
+          <div class="pred">
+            <div class="pred-lbl"><span>Today</span></div>
+            <div class="pane-line">Save shop settings &rarr; <strong>&#9989; OK</strong></div>
+            <div class="outcome bad">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              &hellip;but it&rsquo;s the app&rsquo;s home page. Nothing was saved.
             </div>
           </div>
-          <div class="flow">
-            <div class="step dead"><span class="who">Proposed</span><code>app.all('/api/*')</code> mounted after the last router &mdash; index.ts:258</div>
-            <div class="link ok">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="m13 6 6 6-6 6"/></svg>
-            </div>
-            <div class="step good"><span class="who">Caller sees</span><code>404 {error:'NOT_FOUND', path}</code></div>
-          </div>
-          <div class="strip">
-            <div class="strip-row">
-              <span class="lbl">Mount order</span>
-              <span class="tag">/service-worker.js + /api/version &mdash; static.ts</span>
-              <span class="sep">&rarr;</span>
-              <span class="tag">last /api router</span>
-              <span class="sep">&rarr;</span>
-              <span class="tag on">app.all('/api/*') &mdash; JSON 404 &mdash; NEW</span>
-              <span class="sep">&rarr;</span>
-              <span class="tag">serveStatic / setupVite &mdash; index.ts:258</span>
+          <div class="pred next">
+            <div class="pred-lbl"><span>Proposed</span></div>
+            <div class="pane-line">Save shop settings &rarr; <strong>&#10060; Not found &mdash; nothing saved</strong></div>
+            <div class="outcome ok">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+              The caller is told the truth and stops reporting a save that never happened.
             </div>
           </div>
         </div>
-        <div class="viz-foot"><code>server/index.ts:258</code> mounts the static / vite catch-all. The JSON 404 must sit after the last <code>/api</code> router and before <code>serveStatic</code>/<code>setupVite</code>; the <code>/service-worker.js</code> and <code>/api/version</code> handlers in <code>static.ts</code> stay ahead of it.</div>
-        <div class="prov">
-          <span class="plbl">Provenance</span>
-          <span class="none">no data rendered &mdash; nothing to source</span>
-        </div>
+        <div class="viz-foot">Real pages and real features are untouched &mdash; only requests that would have been ignored anyway change.</div>
       </figure>
 
+      <p class="conseq">Nothing on screen changes. What changes is that a failed save can never again read as a successful one.</p>
+
       <div class="ballot">
-        <div class="ballot-head">
-          Ballot
-          <span class="pending">3 to vote</span>
-        </div>
+        <div class="ballot-head">Ballot</div>
         <ol>
-          <li><span class="opt">E1</span><span><code>404 {error:'NOT_FOUND', path}</code> for every unmatched <code>/api/*</code> verb <span class="rec">rec</span> vs 405 when the path exists for another verb.<span class="why">Why: 405 needs a route-table walk for marginal value.</span></span></li>
-          <li><span class="opt">E2</span><span>Ship solo tonight <span class="rec">rec</span> vs ride the next server PR.<span class="why">Why: S and isolated &mdash; the only risk is mount order, and a pin catches it.</span></span></li>
-          <li><span class="opt">E3</span><span>Add an API-suite pin: <code>GET/PATCH /api/nope</code> &rarr; JSON 404, and <code>GET /</code> still &rarr; HTML. <span class="rec">rec</span><span class="why">Why: it&rsquo;s the whole point.</span></span></li>
+          <li><span class="opt">E1</span><span>Answer &ldquo;not found&rdquo; to every bad request <span class="rec">rec</span> vs also distinguishing &ldquo;right place, wrong kind of request&rdquo;.<span class="why">Why: extra work, and nobody would act on the difference.</span></span></li>
+          <li><span class="opt">E2</span><span>Ship it on its own tonight <span class="rec">rec</span> vs bundling it with the next server change.<span class="why">Why: it&rsquo;s small and isolated.</span></span></li>
+          <li><span class="opt">E3</span><span>Add a test that proves it. <span class="rec">rec: yes</span><span class="why">Why: that&rsquo;s the whole point.</span></span></li>
         </ol>
-        <p class="sens">Sensitivity: <code>server/</code> = full Codex scope; no auth or org change.</p>
       </div>
     </article>
 
@@ -2017,7 +2273,7 @@
         <span class="key">F</span>
         <h3>System note when an advisor approves or declines lines</h3>
       </div>
-      <p class="sub">A machine-written note per decision round would light the parts dashboard&rsquo;s unread-notes badge &mdash; the only push-style signal parts can get today.</p>
+      <p class="sub">One machine-written note per decision round would light the parts queue&rsquo;s Notes badge &mdash; the only push-style signal parts can get today.</p>
 
       <ul class="dims">
         <li>UX Low</li>
@@ -2028,34 +2284,85 @@
           touches data (notes)
         </li>
       </ul>
-      <p class="pop"><b>Who hits it</b>Parts users at stores relying on the unread-notes badge &mdash; chips and the LINES column (#1566) may already cover it.</p>
+      <p class="pop"><b>Who hits it</b>Parts users at stores that watch the Notes badge &mdash; last week&rsquo;s row colors, Approved chips and Lines column may already cover it.</p>
 
       <figure class="viz">
-        <figcaption class="viz-cap"><span>Where a note would be emitted</span><span class="hint">scroll &rarr;</span></figcaption>
-        <div class="scroller">
-          <div class="flow">
-            <div class="step"><span class="who">Advisor</span>Decides the lines</div>
-            <div class="link">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="m13 6 6 6-6 6"/></svg>
+        <figcaption class="viz-cap"><span>What happens today, step by step</span></figcaption>
+        <ol class="story s3">
+          <li>
+            <span class="stephead">
+              <span class="n">1</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.4 12.3l2.4 2.4 4.8-5"/></svg>
+            </span>
+            <p>The advisor <b>OK&rsquo;s 3 lines</b> and declines 1.</p>
+          </li>
+          <li>
+            <span class="stephead">
+              <span class="n">2</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4.2-4.2"/></svg>
+            </span>
+            <p>Parts finds out <b>only by looking</b> &mdash; row color, the Approved chips, the Lines column, all shipped last week.</p>
+          </li>
+          <li>
+            <span class="stephead">
+              <span class="n">3</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 4H4a1.6 1.6 0 0 0-1.6 1.6v9.8A1.6 1.6 0 0 0 4 17h3.4V21l4.4-4h8.2a1.6 1.6 0 0 0 1.6-1.6V5.6A1.6 1.6 0 0 0 20 4z"/></svg>
+            </span>
+            <p><b>Proposed:</b> one internal note, and the parts queue&rsquo;s Notes badge lights up.</p>
+          </li>
+        </ol>
+        <div class="viz-foot">Nothing reaches parts on its own today &mdash; they have to go and look.</div>
+      </figure>
+
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>How it would land in the parts queue</span><span class="hint">screens scroll &rarr;</span></figcaption>
+        <div class="screens">
+          <div class="screen-col">
+            <!-- app frame: literal light colours on purpose — see the note in card B's style block -->
+            <div class="app-screen">
+              <div class="as-scroll">
+                <div class="as-table">
+                  <div class="as-head"><span>RO #</span><span>Vehicle</span><span>RO Status</span><span>Lines</span><span>Team</span><span>Notes</span></div>
+                  <div class="as-list">
+                    <div class="as-row fam-waiting">
+                      <span><span class="as-ro">4482<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></span>
+                      <span class="as-veh"><span>2021 Silverado</span></span>
+                      <span><span class="as-status">Waiting for Parts</span></span>
+                      <span class="as-lines"><span class="as-pill ok">&#10003; 3</span><span class="as-pill no">&#10005; 1</span></span>
+                      <span class="as-team"><i>Parts</i><b>Jay A.</b></span>
+                      <span><span class="as-notes"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><b>1</b></span></span>
+                    </div>
+                    <div class="as-row fam-pricing">
+                      <span><span class="as-ro">4478<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></span>
+                      <span class="as-veh"><span>2022 Camry</span></span>
+                      <span><span class="as-status">Parts Pricing</span></span>
+                      <span class="as-lines"><span class="as-pill wait">&#8987; 3</span></span>
+                      <span class="as-team"><i>Parts</i><b class="none">unclaimed</b></span>
+                      <span><span class="as-notes quiet"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="as-below">
+                <div class="as-notecard">
+                  <div class="who"><span>System</span><span>2:41 PM</span></div>
+                  <p>Advisor finished deciding &mdash; 3 approved, 1 declined.</p>
+                </div>
+              </div>
             </div>
-            <div class="step dead"><span class="who">Server</span><code>applyApprovalLanding</code> &mdash; approval-rollup.ts:406, emits nothing today</div>
-            <div class="link">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="m13 6 6 6-6 6"/></svg>
-            </div>
-            <div class="step good"><span class="who">Proposed</span>One system note per all-decided round &mdash; <code>appendNoteToRO</code>, internal-notes.ts:101 (reset-note precedent)</div>
+            <p class="scap"><b>Proposed</b> &mdash; the badge lights on RO 4482, and the note says what changed.</p>
           </div>
         </div>
       </figure>
 
+      <p class="conseq">Parts gets one line telling them the advisor is finished, instead of having to check the queue for a color change.</p>
+
       <div class="ballot">
-        <div class="ballot-head">
-          Ballot
-          <span class="pending">3 to vote</span>
-        </div>
+        <div class="ballot-head">Ballot</div>
         <ol>
-          <li><span class="opt">B1</span><span>Drop it until McGrath asks after #1566. <span class="rec">rec</span></span></li>
-          <li><span class="opt">B2</span><span>Only on the all-decided landing &mdash; one note per round. Sub-question: does a decline-only round post?</span></li>
-          <li><span class="opt">B3</span><span>Per line.</span></li>
+          <li><span class="opt">F1</span><span>Drop it for now &mdash; the colors and chips may already be enough; revisit if McGrath asks. <span class="rec">rec</span> vs build it.<span class="why">Why: it adds moving parts for a signal parts can already see.</span></span></li>
+          <li><span class="opt">F2</span><span>If built: one note when the advisor <strong>finishes</strong> a round <span class="rec">rec</span> vs one note per line.<span class="why">Why: ten lines would mean ten notes, which is noise.</span></span></li>
+          <li><span class="opt">F3</span><span>Post it even when every line was declined. <span class="rec">rec: yes</span><span class="why">Why: parts needs to stop waiting on that RO.</span></span></li>
         </ol>
       </div>
     </article>
@@ -2064,56 +2371,56 @@
     <article class="card">
       <div class="card-head">
         <span class="key">G</span>
-        <h3>Parts notification channel (bell or email on approval)</h3>
+        <h3>A real notification to parts when work gets approved</h3>
       </div>
-      <p class="sub">The original McGrath complaint was &ldquo;we don&rsquo;t get a notification.&rdquo; Today no channel reaches the parts role at all.</p>
+      <p class="sub">The original McGrath complaint was &ldquo;we don&rsquo;t get a notification.&rdquo; Today nothing at all reaches the parts role.</p>
 
       <ul class="dims">
         <li class="hi">UX Med</li>
         <li>L</li>
         <li>Codex 4+</li>
-        <li class="safe">revert-cheap code</li>
+        <li class="safe">revert-cheap</li>
       </ul>
-      <p class="pop"><b>Who hits it</b>The parts role &mdash; bell and banner are advisor|admin (<code>open-questions.ts:97</code>), and the email sweep routes to exactly one advisor (<code>question-alert-sweep.ts:100&ndash;115</code>). New pref surface either way.</p>
+      <p class="pop"><b>Who hits it</b>The parts role at every store &mdash; whichever way this goes, it needs a new setting for people to turn it off.</p>
 
       <figure class="viz">
-        <figcaption class="viz-cap"><span>Channel &times; who gets it today</span><span class="hint">scroll &rarr;</span></figcaption>
+        <figcaption class="viz-cap"><span>Who gets told today</span><span class="hint">scroll &rarr;</span></figcaption>
         <div class="scroller">
           <table class="plain">
             <thead>
-              <tr><th scope="col">Channel</th><th scope="col">Who it reaches today</th></tr>
+              <tr><th scope="col">Way of telling someone</th><th scope="col">Who it reaches today</th></tr>
             </thead>
             <tbody>
               <tr>
-                <td class="surface-name">Bell<span class="code">QuestionBell</span></td>
-                <td class="gate-now"><span class="gate good">advisor, admin</span></td>
+                <td class="surface-name">Bell in the app</td>
+                <td class="gate-now"><span class="gate good">advisors, admins</span></td>
               </tr>
               <tr>
-                <td class="surface-name">Banner / strip<span class="code">open-questions.ts:97</span></td>
-                <td class="gate-now"><span class="gate good">advisor, admin</span></td>
+                <td class="surface-name">Banner across the top</td>
+                <td class="gate-now"><span class="gate good">advisors, admins</span></td>
               </tr>
               <tr>
-                <td class="surface-name">Email<span class="code">question-alert-sweep.ts</span></td>
+                <td class="surface-name">Email</td>
                 <td class="gate-now"><span class="gate warn">exactly one advisor</span></td>
               </tr>
               <tr>
-                <td class="surface-name">Parts role<span class="code">any channel</span></td>
-                <td class="gate-now"><span class="gate bad">&mdash; nothing reaches them</span></td>
+                <td class="surface-name">Parts</td>
+                <td class="gate-now"><span class="gate bad">&mdash; nobody</span></td>
               </tr>
             </tbody>
           </table>
         </div>
+        <div class="viz-foot">The McGrath note said &ldquo;we don&rsquo;t get a notification&rdquo; &mdash; today nothing reaches the parts role at all.</div>
       </figure>
 
+      <p class="conseq">Parts would be told the moment work is approved, instead of finding out on their next look at the queue.</p>
+
       <div class="ballot">
-        <div class="ballot-head">
-          Ballot
-          <span class="pending">3 to vote</span>
-        </div>
+        <div class="ballot-head">Ballot</div>
         <ol>
-          <li><span class="opt">B1</span><span>Wait for McGrath feedback after #1566 before building. <span class="rec">rec</span></span></li>
-          <li><span class="opt">B2</span><span>In-app only, or in-app plus email?</span></li>
-          <li><span class="opt">B3</span><span>Who is &ldquo;the parts user&rdquo;: checkout holder / all parts-role members / the org&rsquo;s parts roster?</span></li>
+          <li><span class="opt">G1</span><span>Wait for McGrath&rsquo;s reaction to the new colors and chips before building <span class="rec">rec</span> vs build now.<span class="why">Why: the cheap answer shipped last week &mdash; see if it landed.</span></span></li>
+          <li><span class="opt">G2</span><span>In-app bell only <span class="rec">rec</span> vs bell plus email.<span class="why">Why: parts is at the counter, not in email.</span></span></li>
+          <li><span class="opt">G3</span><span>Who counts as &ldquo;parts&rdquo; for an RO: whoever has it checked out <span class="rec">rec</span> &middot; everyone in the parts role &middot; the store&rsquo;s parts list.<span class="why">Why: it matches the checkout model you already chose.</span></span></li>
         </ol>
       </div>
     </article>
@@ -2122,17 +2429,17 @@
     <article class="card">
       <div class="card-head">
         <span class="key">H</span>
-        <h3>Session hygiene: stale primary checkout, over-specified source pins</h3>
+        <h3>Two things that waste time in my own sessions</h3>
       </div>
-      <p class="sub">Two time sinks from one day &mdash; a just-merged script &ldquo;wasn&rsquo;t there,&rdquo; and a test that breaks on refactors it has no opinion about.</p>
+      <p class="sub">Two time sinks from one day &mdash; a just-merged script that &ldquo;wasn&rsquo;t there,&rdquo; and tests that fail when nothing about the behaviour changed.</p>
 
       <ul class="dims">
         <li>UX none (process)</li>
         <li>S</li>
-        <li>Codex 0 (docs/hook)</li>
+        <li>Codex 0</li>
         <li class="safe">revert-cheap</li>
       </ul>
-      <p class="pop"><b>Who hits it</b>Claude sessions only &mdash; cost 3 Codex rounds on #1563 and one false &ldquo;script missing.&rdquo;</p>
+      <p class="pop"><b>Who hits it</b>My sessions only &mdash; no customer sees either one.</p>
 
       <figure class="viz">
         <figcaption class="viz-cap"><span>Two sinks, two fixes</span><span class="hint">scroll &rarr;</span></figcaption>
@@ -2143,26 +2450,24 @@
             </thead>
             <tbody>
               <tr>
-                <td class="surface-name">Primary main lags origin<span class="code">a merged script reads as missing</span></td>
-                <td class="gate-next"><span class="gate good"><code>git pull --ff-only</code> at session start</span><span class="code">RULE #4 text, or seed-worktree-env.sh &mdash; the hook already exists</span></td>
+                <td class="surface-name">My workspace starts on stale code &mdash; a just-merged script &ldquo;wasn&rsquo;t there&rdquo;</td>
+                <td class="gate-next"><span class="gate good">refresh at session start, automatically</span></td>
               </tr>
               <tr>
-                <td class="surface-name">Statement-order pins<span class="code">break on behavior-preserving refactors</span></td>
-                <td class="gate-next"><span class="gate good">sweep on next touch</span><span class="code">workflow-savebar-wiring is now 139 lines / 13 tests; workflow-board-model still to sweep</span></td>
+                <td class="surface-name">Some tests fail when code is merely reordered &mdash; cost 3 review rounds on one change</td>
+                <td class="gate-next"><span class="gate good">loosen them the next time that file is touched</span></td>
               </tr>
             </tbody>
           </table>
         </div>
+        <div class="viz-foot">Both are my time, not yours &mdash; but they come out of the same nights.</div>
       </figure>
 
       <div class="ballot">
-        <div class="ballot-head">
-          Ballot
-          <span class="pending">2 to vote</span>
-        </div>
+        <div class="ballot-head">Ballot</div>
         <ol>
-          <li><span class="opt">B1</span><span>Put the fast-forward in the session-start hook <span class="rec">rec</span> vs RULE #4 text.</span></li>
-          <li><span class="opt">B2</span><span>Sweep the pins now, or on next touch of that file. <span class="rec">rec: next touch</span></span></li>
+          <li><span class="opt">H1</span><span>Refresh automatically at session start. <span class="rec">rec: yes</span><span class="why">Why: relying on me to remember is what failed.</span></span></li>
+          <li><span class="opt">H2</span><span>Loosen the strict tests only when that file is next touched <span class="rec">rec</span> vs sweeping them now.<span class="why">Why: no user impact &mdash; don&rsquo;t spend a night on it.</span></span></li>
         </ol>
       </div>
     </article>
@@ -2201,7 +2506,7 @@
                   <i></i><b>B &mdash; pulled count</b>
                 </span>
                 <span class="dot todo" style="left:70%; top:55%;">
-                  <i></i><b>E &mdash; api 404 fallback</b>
+                  <i></i><b>E &mdash; a false &ldquo;OK&rdquo;</b>
                 </span>
                 <span class="dot ice flip" style="left:70%; top:72%;">
                   <i></i><b>Legacy status writers</b>
@@ -2229,7 +2534,7 @@
             </li>
             <li class="todo">
               <i></i>
-              <span><strong>E &mdash; api 404 fallback</strong> &mdash; an agent or client PATCHes a route that doesn&rsquo;t exist, reads 200, and reports the write landed. <em>To groom.</em></span>
+              <span><strong>E &mdash; a false &ldquo;OK&rdquo;</strong> &mdash; something asks the server to save at an address that doesn&rsquo;t exist, is told &ldquo;OK&rdquo;, and reports the save landed. <em>To groom.</em></span>
             </li>
             <li class="ice">
               <i></i>
@@ -2269,8 +2574,8 @@
   <footer>
     <div class="how">
       <div><span class="lbl">Advance an item</span><span>Name it: <code>groom B</code></span></div>
-      <div><span class="lbl">Vote a ballot</span><span>Reply with the id: <code>A2 backfill</code></span></div>
-      <div><span class="lbl">Where it lands</span><span>Everything decided is written into <code>BACKLOG.md</code> verbatim.</span></div>
+      <div><span class="lbl">Vote a ballot</span><span>Reply with the id: <code>A2 yes</code>, <code>D3 A</code></span></div>
+      <div><span class="lbl">Where it lands</span><span>Everything decided is written into the backlog verbatim.</span></div>
     </div>
   </footer>
 
