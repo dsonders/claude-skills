@@ -1615,6 +1615,311 @@
       <p class="sec-sub">Needs your decisions before it can run</p>
     </div>
 
+    <!-- Card I -->
+    <article class="card">
+      <div class="card-head">
+        <span class="key">I</span>
+        <h3>The Unassigned pile: ROs wait a day for someone to dispatch them</h3>
+        <span class="rank">#2 overall</span>
+        <span class="status" style="background:var(--amber-soft); color:var(--amber);">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h9"/></svg>
+          to vote
+        </span>
+      </div>
+      <p class="sub">At McGrath, 20 of 34 ROs never left <b>Unassigned</b> &mdash; median a day, longest six. Techs can&rsquo;t see undispatched work, can&rsquo;t pick a car up, and only an admin can dispatch from the list.</p>
+
+      <ul class="dims">
+        <li class="hi">
+          UX High
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>
+          reliability
+        </li>
+        <li>M</li>
+        <li>Codex 2&ndash;3</li>
+        <li class="safe">revert-cheap</li>
+      </ul>
+      <p class="pop"><b>Who hits it</b>Every recon store &mdash; McGrath&rsquo;s admins (dispatch falls on them), techs (idle while cars wait), and the advisor.</p>
+
+      <style>
+      /* ---- card I only: the pipeline column + the tech's dashboard ---------
+         Same scoped exception as cards A&ndash;H: everything inside an .app-screen
+         carries its OWN literal light-app colours, board chrome around it uses
+         the board's tokens. The pipeline column is lifted from the McGrath
+         field report; the dashboard pieces are new. ---------------------- */
+
+      /* pipeline board (from the field report) — two columns, so it needs less
+         width than the report's full four */
+      .i-bd { min-width: 560px; padding: 9px; display: flex; gap: 7px; align-items: flex-start; background: #f8fafc; }
+      .i-bd .bd-col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+      .i-bd .bd-colhd {
+        display: flex; justify-content: space-between; align-items: baseline; gap: 6px;
+        padding: 5px 7px; border-radius: 6px; background: #eef2f7;
+        font-size: 9px; letter-spacing: .07em; text-transform: uppercase; font-weight: 700; color: #475569;
+      }
+      .i-bd .bd-colhd b { font-size: 10px; color: #0f172a; font-variant-numeric: tabular-nums; }
+      .i-bd .bd-strow { border-radius: 6px; overflow: hidden; border: 1px solid #e2e8f0; background: #ffffff; }
+      .i-bd .bd-sthd {
+        display: flex; align-items: center; gap: 5px; padding: 4px 7px;
+        font-size: 9px; font-weight: 700; color: #1e293b; line-height: 1.25;
+      }
+      .i-bd .bd-sthd u { text-decoration: none; flex: none; width: 3px; height: 12px; border-radius: 2px; }
+      .i-bd .bd-sthd i { font-style: normal; margin-left: auto; flex: none; font-size: 8.5px; color: #64748b; font-variant-numeric: tabular-nums; }
+      .i-bd .bd-cards { padding: 4px; display: grid; gap: 3px; }
+      .i-bd .bd-card {
+        display: flex; align-items: baseline; gap: 5px; min-width: 0;
+        border: 1px solid #e2e8f0; border-radius: 5px; background: #ffffff; padding: 4px 6px;
+      }
+      .i-bd .bd-card b { flex: none; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 9.5px; font-weight: 600; color: #1d4ed8; }
+      .i-bd .bd-card b.nonum { color: #94a3b8; font-style: italic; font-weight: 500; }
+      .i-bd .bd-card span { flex: 1 1 auto; min-width: 0; font-size: 8.5px; color: #475569; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .i-bd .bd-card em { flex: none; font-style: normal; font-size: 8px; color: #94a3b8; font-variant-numeric: tabular-nums; }
+      .i-bd .bd-empty { padding: 5px 7px 6px; font-size: 8.5px; color: #cbd5e1; font-style: italic; }
+      .i-more { padding: 3px 8px; font-size: 9.5px; color: #94a3b8; font-style: italic; }
+
+      /* the tech's dashboard */
+      .i-dash { padding: 8px; display: grid; gap: 7px; background: #f8fafc; }
+      .i-grp { display: grid; gap: 4px; }
+      .i-grphd {
+        display: flex; align-items: baseline; gap: 6px;
+        padding: 4px 7px; border-radius: 6px; background: #eef2f7;
+        font-size: 9px; letter-spacing: .07em; text-transform: uppercase; font-weight: 700; color: #475569;
+      }
+      .i-grphd b { margin-left: auto; font-size: 10px; color: #0f172a; font-variant-numeric: tabular-nums; }
+      .i-ro {
+        display: flex; align-items: center; gap: 6px; min-width: 0;
+        border: 1px solid #e2e8f0; border-radius: 6px; background: #ffffff; padding: 6px 8px;
+      }
+      .i-ro b { flex: none; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; font-weight: 600; color: #1d4ed8; }
+      .i-ro span { flex: 1 1 auto; min-width: 0; font-size: 9.5px; color: #475569; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .i-ro em { flex: none; font-style: normal; font-size: 8.5px; color: #94a3b8; }
+      .i-ro .i-take {
+        flex: none; border-radius: 6px; background: #0f172a; color: #ffffff;
+        padding: 3px 8px; font-size: 9px; font-weight: 700; white-space: nowrap;
+      }
+      .i-nothing {
+        padding: 14px 8px; text-align: center; font-size: 10px; color: #94a3b8; font-style: italic;
+        border: 1px dashed #cbd5e1; border-radius: 6px; background: #ffffff;
+      }
+      .i-tile {
+        display: flex; align-items: center; gap: 7px;
+        border: 1px solid #fecaca; border-radius: 8px; background: #fff1f2;
+        padding: 8px 9px; color: #b91c1c; font-size: 10px; font-weight: 600;
+      }
+      .i-tile svg { flex: none; }
+      .i-tile i { font-style: normal; font-weight: 500; color: #9f1239; }
+      .i-tile u { text-decoration: none; margin-left: auto; flex: none; font-size: 9px; font-weight: 600; color: #1d4ed8; white-space: nowrap; }
+
+      .i-tw {
+        display: block; margin-top: 6px; padding-left: 9px;
+        border-left: 2px solid var(--amber); color: var(--muted); font-size: 12px; line-height: 1.45;
+      }
+      </style>
+
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>What happens today, step by step</span></figcaption>
+        <ol class="story">
+          <li>
+            <span class="stephead">
+              <span class="n">1</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-16a1 1 0 0 1 1-1z"/><path d="M14.5 3.7V8h4.2"/><path d="M12 11v6M9 14h6"/></svg>
+            </span>
+            <p>An RO is created &mdash; by the advisor, or by the store&rsquo;s system &mdash; and lands in <b>Unassigned</b>.</p>
+          </li>
+          <li>
+            <span class="stephead">
+              <span class="n">2</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19.5c.6-3.2 2.9-5 5.5-5s4.9 1.8 5.5 5"/><path d="M17 9.5h4.5M19.25 7.25v4.5"/></svg>
+            </span>
+            <p>Only an <b>admin</b> &mdash; or the advisor, from inside the RO &mdash; can hand it to a tech.</p>
+          </li>
+          <li class="bad">
+            <span class="stephead">
+              <span class="n">3</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12s3.4-6 9-6c1.6 0 3 .5 4.2 1.2M21 12s-3.4 6-9 6c-1.7 0-3.2-.5-4.4-1.3"/><circle cx="12" cy="12" r="2.6"/><path d="M3.5 3.5l17 17"/></svg>
+            </span>
+            <p><b>Today:</b> techs don&rsquo;t see it &mdash; their list shows only cars already assigned to them.</p>
+          </li>
+          <li class="bad">
+            <span class="stephead">
+              <span class="n">4</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 6.8V12l3.4 1.9"/></svg>
+            </span>
+            <p><b>20 of 34</b> ROs sit there. The oldest waited <b>six days</b>.</p>
+          </li>
+        </ol>
+        <div class="viz-foot">Nothing on any screen says the pile is growing.</div>
+      </figure>
+
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>The admin&rsquo;s pipeline board &mdash; 26 Aug</span><span class="hint">scroll &rarr;</span></figcaption>
+        <div class="scroller">
+          <div class="app-screen"><div class="i-bd">
+            <div class="bd-col">
+              <div class="bd-colhd"><span>New</span><b>20</b></div>
+              <div class="bd-strow">
+                <div class="bd-sthd"><u style="background:#f5f5f4"></u><span>Unassigned</span><i>20</i></div>
+                <div class="bd-cards">
+                  <div class="bd-card"><b>832803</b><span>2018 Audi S5</span><em>3</em></div>
+                  <div class="bd-card"><b>832812</b><span>2023 Audi A6</span><em>7</em></div>
+                  <div class="bd-card"><b>832850</b><span>2024 Audi Q8</span><em>8</em></div>
+                  <div class="bd-card"><b>832856</b><span>2023 Audi Q5</span><em>6</em></div>
+                  <div class="bd-card"><b>832859</b><span>2023 Audi Q5</span><em>6</em></div>
+                  <div class="bd-card"><b>832862</b><span>2023 Audi S3</span><em>6</em></div>
+                  <div class="bd-card"><b>832864</b><span>2023 Audi Q8</span><em>7</em></div>
+                  <div class="bd-card"><b>832866</b><span>2023 Audi Q3</span><em>7</em></div>
+                  <div class="bd-card"><b>832872</b><span>2023 Audi Q4</span><em>7</em></div>
+                  <div class="bd-card"><b>832902</b><span>2023 Audi A4</span><em>6</em></div>
+                  <div class="bd-card"><b>832938</b><span>2021 Audi Q3</span><em>7</em></div>
+                  <div class="bd-card"><b>832941</b><span>2011 BMW 535i</span><em>3</em></div>
+                  <div class="bd-card"><b>832942</b><span>2018 Chevrolet Traverse</span><em>3</em></div>
+                  <div class="bd-card"><b>832956</b><span>2023 Audi A4</span><em>7</em></div>
+                  <div class="bd-card"><b>832962</b><span>2023 Audi Q7</span><em>9</em></div>
+                  <div class="bd-card"><b>833040</b><span>2026 Audi A3</span><em>6</em></div>
+                  <div class="bd-card"><b>833044</b><span>2025 Audi A5</span><em>6</em></div>
+                  <div class="bd-card"><b>833047</b><span>2026 Audi Q8</span><em>6</em></div>
+                  <div class="bd-card"><b>833051</b><span>2025 Audi Q3</span><em>6</em></div>
+                  <div class="bd-card"><b>833062</b><span>2026 Audi A6</span><em>7</em></div>
+                </div>
+              </div>
+            </div>
+            <div class="bd-col">
+              <div class="bd-colhd"><span>In Progress</span><b>5</b></div>
+              <div class="bd-strow">
+                <div class="bd-sthd"><u style="background:#df3a4a"></u><span>Not Started</span><i>4</i></div>
+                <div class="bd-cards">
+                  <div class="bd-card"><b>833034</b><span>2018 Audi Q7</span><em>3</em></div>
+                  <div class="bd-card"><b class="nonum">no RO #</b><span>2021 Audi Q3</span><em>1</em></div>
+                  <div class="bd-card"><b class="nonum">no RO #</b><span>2021 Audi Q8</span><em>3</em></div>
+                  <div class="bd-card"><b class="nonum">no RO #</b><span>2024 Audi RS e-tron GT</span><em>1</em></div>
+                </div>
+              </div>
+              <div class="bd-strow">
+                <div class="bd-sthd"><u style="background:#e7bc88"></u><span>MPI &amp; Diag in Progress</span><i>1</i></div>
+                <div class="bd-cards">
+                  <div class="bd-card"><b>832807</b><span>2023 Audi A6</span><em>9</em></div>
+                </div>
+              </div>
+              <div class="bd-strow">
+                <div class="bd-sthd"><u style="background:#ffed56"></u><span>Attention Parts</span><i>0</i></div>
+                <div class="bd-empty">empty</div>
+              </div>
+              <div class="bd-strow">
+                <div class="bd-sthd"><u style="background:#123493"></u><span>Attention Service Advisor</span><i>0</i></div>
+                <div class="bd-empty">empty</div>
+              </div>
+            </div>
+          </div></div>
+        </div>
+        <div class="viz-foot">The only place the pile is visible is by counting cards.</div>
+      </figure>
+
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>The tech&rsquo;s dashboard &mdash; today, and three ways out</span><span class="hint">screens scroll &rarr;</span></figcaption>
+        <div class="screens">
+
+          <div class="screen-col">
+            <!-- app frame: literal light colours on purpose — see the note in the style block above -->
+            <div class="app-screen">
+              <div class="as-bar">
+                <span class="as-search">Search RO, VIN, customer</span>
+                <span class="as-seg"><span class="on">My Queue <em>1</em></span></span>
+              </div>
+              <div class="i-dash">
+                <div class="i-grp">
+                  <div class="i-grphd"><span>My Queue</span><b>1 car</b></div>
+                  <div class="i-ro"><b>832807</b><span>2023 Audi A6</span><em>MPI &amp; Diag</em></div>
+                </div>
+                <div class="i-nothing">nothing else on this screen</div>
+              </div>
+            </div>
+            <p class="scap"><b>Today</b> &mdash; one assigned car, and no sign that twenty more are waiting for someone to hand them out.</p>
+          </div>
+
+          <div class="screen-col">
+            <!-- app frame: literal light colours on purpose — see the note in the style block above -->
+            <div class="app-screen">
+              <div class="as-bar">
+                <span class="as-search">Search RO, VIN, customer</span>
+                <span class="as-seg"><span>Mine <em>1</em></span><span class="on">All <em>21</em></span></span>
+              </div>
+              <div class="i-dash">
+                <div class="i-grp">
+                  <div class="i-grphd"><span>My Queue</span><b>1 car</b></div>
+                  <div class="i-ro"><b>832807</b><span>2023 Audi A6</span><em>MPI &amp; Diag</em></div>
+                </div>
+                <div class="i-grp">
+                  <div class="i-grphd"><span>Shop Queue</span><b>20 waiting</b></div>
+                  <div class="i-ro"><b>832803</b><span>2018 Audi S5</span><em>3 days</em></div>
+                  <div class="i-ro"><b>832812</b><span>2023 Audi A6</span><em>2 days</em></div>
+                  <div class="i-ro"><b>832850</b><span>2024 Audi Q8</span><em>1 day</em></div>
+                  <div class="i-more">and 17 more</div>
+                </div>
+              </div>
+            </div>
+            <p class="scap"><b>I&#8209;A &mdash; techs see the shop queue.</b> Flip the per&#8209;tech &ldquo;see all ROs&rdquo; switch in Team Management &mdash; it exists today, no build. The tech&rsquo;s dashboard gains a My/All toggle and a <b>Shop Queue</b> list of the twenty unassigned cars. They can open them &mdash; but still can&rsquo;t take one.
+              <span class="i-tw">Trade-off: tonight, no code &mdash; but visibility only.</span></p>
+          </div>
+
+          <div class="screen-col">
+            <!-- app frame: literal light colours on purpose — see the note in the style block above -->
+            <div class="app-screen">
+              <div class="as-bar">
+                <span class="as-search">Search RO, VIN, customer</span>
+                <span class="as-seg"><span>Mine <em>1</em></span><span class="on">All <em>21</em></span></span>
+              </div>
+              <div class="i-dash">
+                <div class="i-grp">
+                  <div class="i-grphd"><span>Shop Queue</span><b>20 waiting</b></div>
+                  <div class="i-ro"><b>832803</b><span>2018 Audi S5</span><span class="i-take">Pick up this car</span></div>
+                  <div class="i-ro"><b>832812</b><span>2023 Audi A6</span><span class="i-take">Pick up this car</span></div>
+                  <div class="i-ro"><b>832850</b><span>2024 Audi Q8</span><span class="i-take">Pick up this car</span></div>
+                </div>
+              </div>
+            </div>
+            <p class="scap"><b>I&#8209;B &mdash; &ldquo;Pick up this car&rdquo;.</b> A button on an unassigned RO in the Shop Queue: it puts the tech on the car and moves the RO to <b>Not Started</b> &mdash; exactly what dispatch does today. New.
+              <span class="i-tw">Trade-off: the real fix for a shop that pulls its own work &mdash; but assignment is a permission, so it&rsquo;s a careful change.</span></p>
+          </div>
+
+          <div class="screen-col">
+            <!-- app frame: literal light colours on purpose — see the note in the style block above -->
+            <div class="app-screen">
+              <div class="as-bar">
+                <span class="as-search">Search RO, VIN, customer</span>
+                <span class="as-seg"><span class="on">All <em>34</em></span><span class="un">Unassigned <em>20</em></span></span>
+              </div>
+              <div class="i-dash">
+                <div class="i-tile">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5a6 6 0 0 0-6 6c0 4-1.6 5.6-2.2 6.3-.3.3 0 .8.4.8h15.6c.4 0 .7-.5.4-.8-.6-.7-2.2-2.3-2.2-6.3a6 6 0 0 0-6-6z"/><path d="M10 20a2.2 2.2 0 0 0 4 0"/></svg>
+                  12 waiting for dispatch <i>&middot; oldest 3 days</i><u>Show them</u>
+                </div>
+                <div class="i-grp">
+                  <div class="i-grphd"><span>Unassigned</span><b>12</b></div>
+                  <div class="i-ro"><b>832803</b><span>2018 Audi S5</span><span class="i-take">Assign a tech</span></div>
+                  <div class="i-ro"><b>832812</b><span>2023 Audi A6</span><span class="i-take">Assign a tech</span></div>
+                  <div class="i-ro"><b>832850</b><span>2024 Audi Q8</span><span class="i-take">Assign a tech</span></div>
+                </div>
+              </div>
+            </div>
+            <p class="scap"><b>I&#8209;C &mdash; dispatch nudge.</b> A tile on the admin <b>and</b> advisor dashboards that filters the list, plus the ability for the advisor to hand a car to a tech from the row itself (today only from inside the RO). The app already rates an Unassigned RO &ldquo;at risk&rdquo; after four hours &mdash; it just never says so out loud.
+              <span class="i-tw">Trade-off: keeps dispatch with the admin &mdash; good if the store wants a dispatcher.</span></p>
+          </div>
+
+        </div>
+      </figure>
+
+      <p class="conseq">A car never waits because nobody saw it: either the tech takes it, or the dispatcher is told it&rsquo;s waiting.</p>
+
+      <div class="ballot">
+        <div class="ballot-head">Ballot</div>
+        <ol>
+          <li><span class="opt">I1</span><span>Turn on &ldquo;see all ROs&rdquo; for McGrath&rsquo;s techs now &mdash; a store setting, no build. <span class="rec" style="white-space:normal">rec: yes &mdash; with the store&rsquo;s OK, it&rsquo;s their process</span><span class="why">Why: it&rsquo;s the only piece that can happen today.</span></span></li>
+          <li><span class="opt">I2</span><span>Build &ldquo;Pick up this car&rdquo; (I&#8209;B). <span class="rec">rec: yes</span><span class="why">Why: a recon shop pulls work; waiting on a dispatcher is the pile.</span></span></li>
+          <li><span class="opt">I3</span><span>Build the dispatch nudge and let the advisor hand a car to a tech from the list (I&#8209;C). <span class="rec">rec: yes, smaller</span><span class="why">Why: covers stores that keep a dispatcher; the &ldquo;at risk&rdquo; rule already exists, just unspoken.</span></span></li>
+          <li><span class="opt">I4</span><span>Should &ldquo;pick up&rdquo; be limited to Unassigned ROs &mdash; never re&#8209;assigning a car someone else already has? <span class="rec">rec: yes</span><span class="why">Why: keeps the permission change small and safe.</span></span></li>
+        </ol>
+      </div>
+    </article>
+
 <article class="card">
       <div class="card-head">
         <span class="key queued">Queued</span><span class="key">B</span>
@@ -1965,7 +2270,7 @@
         <h3>One way to advance an RO: the big buttons become shortcuts into the status picker</h3>
         <span class="status">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-          direction ruled 26 Aug &mdash; C4/C6 to vote
+          direction ruled 26 Aug &mdash; C8 to vote
         </span>
       </div>
       <p class="sub">Five big buttons each move the RO with their own private rules, so one can tell you the wrong thing (the parts ping&#8209;pong). Agreed: keep the buttons and their words &mdash; but each one only shows up, and only goes, where the status picker&rsquo;s own rule says it can.</p>
@@ -2405,10 +2710,11 @@
           <li><span class="opt">C1</span><span>Button labels stay verbs &mdash; &ldquo;Send to advisor&rdquo;, &ldquo;Mark Ready for Customer&rdquo;, &ldquo;Close RO&rdquo;; after all lines are decided the parts button reads &ldquo;Move to Waiting for Parts&rdquo;. <span class="rec">ruled</span><span class="why">Ruled 26 Aug.</span></span></li>
           <li><span class="opt">C2</span><span>Tech&rsquo;s phone: keep the full&#8209;width dock button <span class="rec">ruled</span> vs a smaller control.<span class="why">Why: it&rsquo;s the tech&rsquo;s one&#8209;tap exit; don&rsquo;t shrink it.</span></span></li>
           <li><span class="opt">C3</span><span>Keep the hand&#8209;off animation and &ldquo;back to your queue&rdquo; on tech and parts moves <span class="rec">ruled: yes</span> vs a plain status change.<span class="why">Why: it&rsquo;s the moment that tells them they&rsquo;re done.</span></span></li>
-          <li><span class="opt">C4</span><span>When the advisor moves an RO out of Advisor Review with lines still waiting on him: warn with the count &mdash; &ldquo;2 lines still need your OK. Move anyway?&rdquo; <span class="rec">rec</span> vs block the move vs nothing.<span class="why">Why: it catches the miss without taking the decision away from him.</span></span></li>
+          <li><span class="opt">C4</span><span>When the advisor moves an RO out of Advisor Review with lines still waiting on him: warn with the count &mdash; &ldquo;2 lines still need your OK. Move anyway?&rdquo; <span class="rec">ruled</span> vs block the move vs nothing.<span class="why">Why: it catches the miss without taking the decision away from him.</span></span></li>
           <li><span class="opt">C5</span><span>Ship in one PR <span class="rec">ruled</span> vs one PR per role.<span class="why">Why: one shared &ldquo;next move&rdquo; rule; splitting it re&#8209;creates the drift.</span></span></li>
-          <li><span class="opt">C6</span><span>Parts page with nothing to price: show &ldquo;Nothing to price &mdash; N lines waiting on the advisor&rdquo; and no Send button <span class="rec">rec: yes</span> vs leave the button.<span class="why">Why: Thursday&rsquo;s tap had nowhere useful to go.</span></span></li>
+          <li><span class="opt">C6</span><span>Parts page with nothing to price: show &ldquo;Nothing to price &mdash; N lines waiting on the advisor&rdquo; and no Send button <span class="rec">ruled: yes</span> vs leave the button.<span class="why">Why: Thursday&rsquo;s tap had nowhere useful to go.</span></span></li>
           <li><span class="opt">C7</span><span>A part added with <b>no price</b> (a placeholder) should not knock the line back to &ldquo;needs OK&rdquo; <span class="rec">ruled: yes</span> vs keep today&rsquo;s rule (any change re&#8209;asks).<span class="why">Why: five of the six re&#8209;asks on this RO were placeholders and oil; you kept the re&#8209;ask for real money changes in July &mdash; this keeps that.</span></span></li>
+          <li><span class="opt">C8</span><span>A line that still needs an OK shows that <strong>over</strong> the work-done &#10003; on its tab &mdash; today the &#10003; hides it (that&rsquo;s how oil change and detail on 832805 sat waiting a week). <span class="rec">rec: yes</span><span class="why">Why: the advisor can&rsquo;t answer a question he can&rsquo;t see.</span></span></li>
         </ol>
       </div>
     </article>
