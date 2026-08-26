@@ -1164,6 +1164,20 @@
   @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; transition: none !important; }
   }
+
+  /* ---------- collapsible cards ---------- */
+  .card-head { cursor: pointer; user-select: none; }
+  .card-head:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 3px; }
+  .card-head .chev {
+    flex: none; margin-left: auto; width: 26px; height: 26px; display: grid; place-items: center;
+    color: var(--muted); border: 1px solid var(--line); border-radius: 3px; background: var(--surface-2);
+    transition: transform .15s ease;
+  }
+  .card.collapsed .card-head .chev { transform: rotate(-90deg); }
+  .card.collapsed > :not(.card-head) { display: none !important; }
+  .card.collapsed { padding-bottom: 16px; }
+  .card.collapsed .card-head h3 { color: var(--muted); font-weight: 500; }
+  @media (prefers-reduced-motion: reduce) { .card-head .chev { transition: none; } }
 </style>
 
 <div class="wrap">
@@ -2861,3 +2875,44 @@
   </footer>
 
 </div>
+
+<script>
+(function () {
+  var KEY = 'groomboard.collapsed.v1';
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { saved = {}; }
+  function persist() { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {} }
+  var cards = document.querySelectorAll('article.card');
+  Array.prototype.forEach.call(cards, function (card) {
+    var head = card.querySelector('.card-head');
+    var h3 = head && head.querySelector('h3');
+    if (!head || !h3) return;
+    var key = h3.textContent.replace(/\s+/g, ' ').trim().toLowerCase().slice(0, 80);
+    var st = (card.querySelector('.status') || {}).textContent || '';
+    var ruled = !!card.querySelector('.key.queued') || (/ruled/i.test(st) && !/vote/i.test(st));
+    var collapsed = (key in saved) ? !!saved[key] : ruled;
+    var chev = document.createElement('span');
+    chev.className = 'chev';
+    chev.setAttribute('aria-hidden', 'true');
+    chev.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+    head.appendChild(chev);
+    head.setAttribute('role', 'button');
+    head.setAttribute('tabindex', '0');
+    head.setAttribute('data-collapse', key);
+    function apply() {
+      card.classList.toggle('collapsed', collapsed);
+      head.setAttribute('aria-expanded', String(!collapsed));
+    }
+    function toggle(ev) {
+      if (ev && ev.target && ev.target.closest && ev.target.closest('a')) return;
+      collapsed = !collapsed; saved[key] = collapsed; persist(); apply();
+    }
+    head.addEventListener('click', toggle);
+    head.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); toggle(ev); }
+    });
+    apply();
+  });
+})();
+</script>
+
