@@ -1,0 +1,2277 @@
+<title>Grooming Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+
+<style>
+  :root {
+    --bg:            #eef2f7;
+    --surface:       #ffffff;
+    --surface-2:     #f6f9fc;
+    --surface-3:     #e8eef6;
+    --ink:           #0d1826;
+    --ink-2:         #33445a;
+    --muted:         #64768c;
+    --line:          #d1dce8;
+    --line-2:        #e3eaf3;
+    --accent:        #0284c7;
+    --accent-2:      #38bdf8;
+    --accent-soft:   #e0f2fe;
+    --teal:          #0d7d72;
+    --teal-soft:     #d3f5ef;
+    --amber:         #a15c07;
+    --amber-soft:    #fdf0d5;
+    --danger:        #c62828;
+    --danger-soft:   #fde5e5;
+    --shadow:        0 1px 2px rgba(13,24,38,.05), 0 10px 26px -18px rgba(13,24,38,.35);
+    --radius:        5px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:          #0a1220;
+      --surface:     #111c2c;
+      --surface-2:   #162335;
+      --surface-3:   #1c2c41;
+      --ink:         #e6edf6;
+      --ink-2:       #bccbdd;
+      --muted:       #8397af;
+      --line:        #27384e;
+      --line-2:      #1d2c3f;
+      --accent:      #38bdf8;
+      --accent-2:    #7dd3fc;
+      --accent-soft: #0e2c40;
+      --teal:        #2dd4bf;
+      --teal-soft:   #0d3a37;
+      --amber:       #fbbf24;
+      --amber-soft:  #3a2c0d;
+      --danger:      #f87171;
+      --danger-soft: #3d1c1c;
+      --shadow:      0 1px 2px rgba(0,0,0,.45), 0 10px 26px -18px rgba(0,0,0,.9);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg:          #0a1220;
+    --surface:     #111c2c;
+    --surface-2:   #162335;
+    --surface-3:   #1c2c41;
+    --ink:         #e6edf6;
+    --ink-2:       #bccbdd;
+    --muted:       #8397af;
+    --line:        #27384e;
+    --line-2:      #1d2c3f;
+    --accent:      #38bdf8;
+    --accent-2:    #7dd3fc;
+    --accent-soft: #0e2c40;
+    --teal:        #2dd4bf;
+    --teal-soft:   #0d3a37;
+    --amber:       #fbbf24;
+    --amber-soft:  #3a2c0d;
+    --danger:      #f87171;
+    --danger-soft: #3d1c1c;
+    --shadow:      0 1px 2px rgba(0,0,0,.45), 0 10px 26px -18px rgba(0,0,0,.9);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 28px 72px;
+  }
+
+  /* ---------- header ---------- */
+
+  .masthead { border-bottom: 2px solid var(--ink); padding-bottom: 18px; }
+
+  .stamp {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    align-items: baseline;
+  }
+  .stamp b { color: var(--accent); font-weight: 600; }
+
+  h1 {
+    font-size: clamp(30px, 6vw, 44px);
+    line-height: 1.04;
+    letter-spacing: -.025em;
+    font-weight: 700;
+    margin: 10px 0 8px;
+    text-wrap: balance;
+  }
+
+  .dek {
+    margin: 0;
+    max-width: 62ch;
+    color: var(--ink-2);
+    font-size: 16px;
+  }
+  .dek .arrow { color: var(--accent); font-weight: 600; }
+  .dek .rule { display: block; margin-top: 5px; color: var(--muted); font-size: 14.5px; }
+
+  .legend {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    align-items: center;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .02em;
+  }
+  .legend .k {
+    background: var(--surface-3);
+    border-radius: 3px;
+    padding: 2px 7px;
+    color: var(--ink-2);
+  }
+
+  /* ---------- sections + pipeline rail ---------- */
+
+  .section {
+    border-left: 1px solid var(--line);
+    padding: 34px 0 0 30px;
+  }
+  .section:last-of-type { border-left-color: transparent; }
+  .section:last-of-type .sec-head::after {
+    content: "";
+    position: absolute;
+    left: -30px;
+    top: 0;
+    width: 1px;
+    height: 12px;
+    background: var(--line);
+  }
+
+  .sec-head {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .node {
+    position: absolute;
+    left: -36px;
+    top: 4px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--line);
+  }
+  .node.on   { border-color: var(--teal); background: var(--teal); }
+  .node.next { border-color: var(--accent); }
+
+  h2 {
+    font-size: 13px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-weight: 600;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    margin: 0;
+    color: var(--ink);
+  }
+  .sec-sub { margin: 0; font-size: 13px; color: var(--muted); }
+
+  /* ---------- cards ---------- */
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px 22px 22px;
+  }
+  .card + .card { margin-top: 16px; }
+
+  .card-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .key {
+    flex: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 3px;
+    display: grid;
+    place-items: center;
+    background: var(--ink);
+    color: var(--surface);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-weight: 600;
+    font-size: 13px;
+    margin-top: 1px;
+  }
+  .key.queued {
+    width: auto;
+    padding: 0 8px;
+    background: var(--teal-soft);
+    color: var(--teal);
+    font-size: 10px;
+    letter-spacing: .1em;
+    height: 22px;
+    margin-top: 3px;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.3;
+    letter-spacing: -.012em;
+    font-weight: 600;
+    flex: 1 1 260px;
+    text-wrap: balance;
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--teal-soft);
+    color: var(--teal);
+    border-radius: 999px;
+    padding: 4px 11px 4px 8px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .status svg { flex: none; }
+
+  .rank {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    white-space: nowrap;
+    margin-top: 3px;
+  }
+
+  .sub {
+    margin: 8px 0 0;
+    color: var(--ink-2);
+    max-width: 64ch;
+    font-size: 14.5px;
+  }
+
+  .note {
+    margin: 12px 0 0;
+    padding: 2px 0 2px 12px;
+    border-left: 2px solid var(--accent);
+    font-size: 13.5px;
+    color: var(--ink-2);
+    max-width: 66ch;
+  }
+  .note.cluster { border-left-color: var(--amber); }
+  .note b {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    font-weight: 600;
+    margin-right: 6px;
+  }
+
+  /* ---------- dimension chips ---------- */
+
+  .dims {
+    list-style: none;
+    margin: 14px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px;
+    letter-spacing: .01em;
+  }
+  .dims li {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink-2);
+    border-radius: 3px;
+    padding: 3px 8px;
+  }
+  .dims li.hi   { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .dims li.safe { border-color: var(--teal); color: var(--teal); background: var(--teal-soft); }
+  .dims li.data { border-color: var(--amber); color: var(--amber); background: var(--amber-soft); }
+  .dims svg { flex: none; }
+
+  .pop {
+    margin: 10px 0 0;
+    font-size: 13.5px;
+    color: var(--muted);
+    max-width: 66ch;
+  }
+  .pop b {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    font-weight: 600;
+    margin-right: 6px;
+  }
+
+  /* ---------- visuals ---------- */
+
+  .viz {
+    margin: 18px 0 0;
+    padding: 0;
+    border: 1px solid var(--line-2);
+    border-radius: var(--radius);
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+  .viz-cap {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--line-2);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .hint { display: none; color: var(--accent); white-space: nowrap; }
+  .scroller { overflow-x: auto; }
+  .viz-foot {
+    font-size: 12.5px;
+    color: var(--muted);
+    padding: 9px 14px;
+    border-top: 1px solid var(--line-2);
+    background: var(--surface);
+  }
+  .viz-foot code, .note code, .sub code, .ballot code, .pop code {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px;
+    background: var(--surface-3);
+    border-radius: 3px;
+    padding: 1px 5px;
+    color: var(--ink-2);
+  }
+  h3 code {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .88em;
+    background: var(--surface-3);
+    border-radius: 3px;
+    padding: 0 5px;
+  }
+  .gate code {
+    font-family: inherit;
+    font-size: inherit;
+    background: none;
+    padding: 0;
+    color: inherit;
+  }
+
+  /* mini table */
+  table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 13.5px; }
+  th, td { text-align: left; padding: 10px 14px; vertical-align: top; border-bottom: 1px solid var(--line-2); }
+  tbody tr:last-child td { border-bottom: 0; }
+  thead th {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    background: var(--surface);
+  }
+  thead th:nth-child(2) { color: var(--danger); }
+  thead th:nth-child(3) { color: var(--teal); }
+  table.plain thead th:nth-child(2),
+  table.plain thead th:nth-child(3) { color: var(--muted); }
+  td.surface-name { font-weight: 500; color: var(--ink); width: 34%; }
+  td .code {
+    display: block;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    font-weight: 400;
+  }
+  td.gate-now  { color: var(--ink-2); }
+  td.gate-next { color: var(--ink-2); }
+  .gate {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px;
+    border-radius: 3px;
+    padding: 2px 6px;
+    display: inline-block;
+  }
+  .gate.bad  { background: var(--danger-soft); color: var(--danger); }
+  .gate.good { background: var(--teal-soft);  color: var(--teal); }
+  .gate.warn { background: var(--amber-soft); color: var(--amber); }
+
+  /* flow */
+  .flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    padding: 18px 14px;
+    min-width: 620px;
+  }
+  .flow + .flow { border-top: 1px dashed var(--line); padding-top: 16px; }
+  .step {
+    flex: 1 1 0;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 11px 12px;
+    font-size: 13px;
+    line-height: 1.35;
+    color: var(--ink-2);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .step .who {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .step code {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px;
+    color: inherit;
+  }
+  .step.break {
+    border-color: var(--danger);
+    background: var(--danger-soft);
+    color: var(--danger);
+    font-weight: 500;
+  }
+  .step.break .who { color: var(--danger); }
+  .step.good {
+    border-color: var(--teal);
+    background: var(--teal-soft);
+    color: var(--teal);
+    font-weight: 500;
+  }
+  .step.good .who { color: var(--teal); }
+  .step.dead { border-style: dashed; color: var(--muted); }
+  .link {
+    flex: none;
+    width: 30px;
+    display: grid;
+    place-items: center;
+    color: var(--muted);
+  }
+  .link.cut { color: var(--danger); }
+  .link.ok { color: var(--teal); }
+
+  /* writers strip (card A) */
+  .strip {
+    border-top: 1px dashed var(--line);
+    padding: 13px 14px 15px;
+    display: grid;
+    gap: 9px;
+    min-width: 620px;
+  }
+  .strip-row { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .strip-row .lbl {
+    flex: none;
+    min-width: 168px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .strip .tag {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 3px;
+    padding: 2px 7px;
+    color: var(--ink-2);
+  }
+  .strip .tag.on { border-color: var(--teal); background: var(--teal-soft); color: var(--teal); }
+
+  /* before / after panes (card C) */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 16px 14px;
+    min-width: 600px;
+  }
+  .pane {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: 13px;
+    display: grid;
+    gap: 9px;
+    align-content: start;
+  }
+  .pane.next { border-color: var(--accent); }
+  .pane-lbl {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .pane.next .pane-lbl { color: var(--accent); }
+  .pane-line { font-size: 12.5px; color: var(--muted); }
+  .btn-mock {
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 9px 12px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .btn-mock.primary { background: var(--accent); color: var(--surface); }
+  .btn-mock.good { background: var(--teal); color: var(--surface); }
+  .btn-mock.inert { background: var(--surface-2); color: var(--muted); border-color: var(--line); }
+  .outcome { font-size: 12.5px; display: flex; gap: 7px; align-items: baseline; }
+  .outcome.bad { color: var(--danger); }
+  .outcome.ok  { color: var(--teal); }
+
+  /* phone sketch */
+  .phone-wrap { padding: 18px 14px; min-width: 422px; }
+  .phone {
+    width: 390px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    overflow: hidden;
+    margin: 0 auto;
+  }
+  .phone-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line-2);
+    background: var(--surface-3);
+  }
+  .phone-title { font-weight: 600; font-size: 14px; }
+  .phone-sub { font-size: 11.5px; color: var(--muted); }
+  .slot {
+    margin-left: auto;
+    border: 1px dashed var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: 4px;
+    padding: 5px 9px;
+    text-align: center;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: .06em;
+    line-height: 1.35;
+  }
+  .slot .q { display: block; font-size: 15px; font-weight: 600; }
+  .tabstrip {
+    display: flex;
+    gap: 8px;
+    padding: 10px 0 10px 12px;
+    overflow: hidden;
+    position: relative;
+  }
+  .tabstrip::after {
+    content: "";
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 46px;
+    background: linear-gradient(90deg, transparent, var(--surface));
+  }
+  .tab {
+    flex: none;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 13px;
+    font-size: 12.5px;
+    color: var(--ink-2);
+    background: var(--surface-2);
+    white-space: nowrap;
+  }
+  .tab.sel { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); font-weight: 500; }
+  .phone-foot {
+    padding: 8px 12px 12px;
+    font-size: 12px;
+    color: var(--muted);
+    border-top: 1px solid var(--line-2);
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .phone-foot .hid { color: var(--danger); font-weight: 500; }
+
+  /* ---------- ballot / questions ---------- */
+
+  .ballot {
+    margin-top: 18px;
+    border-top: 1px dashed var(--line);
+    padding-top: 14px;
+  }
+  .ballot-head {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .pending {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 1px 8px;
+    color: var(--ink-2);
+    background: var(--surface-2);
+    letter-spacing: .06em;
+  }
+  .ballot ol { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
+  .ballot li { display: flex; gap: 10px; align-items: baseline; font-size: 14px; color: var(--ink-2); }
+  .ballot .opt {
+    flex: none;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 1px 6px;
+    background: var(--accent-soft);
+  }
+  .rec {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--teal);
+    background: var(--teal-soft);
+    border: 1px solid var(--teal);
+    border-radius: 999px;
+    padding: 0 6px;
+    margin-left: 6px;
+    white-space: nowrap;
+  }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+  .chips span {
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    border-radius: 999px;
+    padding: 4px 11px;
+    font-size: 12.5px;
+    color: var(--ink-2);
+  }
+
+  .empty {
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    color: var(--muted);
+    font-size: 14px;
+    background: transparent;
+  }
+
+  /* ---------- risk grid ---------- */
+
+  .risk-body { padding: 20px 18px 18px; }
+  .grid-shell { display: flex; gap: 12px; align-items: stretch; min-width: 430px; }
+  .y-axis {
+    flex: none;
+    width: 18px;
+    display: grid;
+    place-items: center;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .y-axis span { writing-mode: vertical-rl; transform: rotate(180deg); }
+  .plot-col { flex: 1 1 auto; min-width: 0; max-width: 560px; }
+  .plot {
+    position: relative;
+    aspect-ratio: 8 / 5;
+    min-height: 190px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background:
+      linear-gradient(var(--line-2), var(--line-2)) center/100% 1px no-repeat,
+      linear-gradient(var(--line-2), var(--line-2)) center/1px 100% no-repeat,
+      var(--surface);
+  }
+  .quad {
+    position: absolute;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 9.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: .75;
+  }
+  .dot {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .dot i {
+    flex: none;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    display: block;
+  }
+  .dot.fixing i { background: var(--surface); border: 2.5px solid var(--teal); }
+  .dot.ice i    { background: var(--muted); border: 2.5px solid var(--muted); }
+  .dot.now i    { background: var(--danger); border: 2.5px solid var(--danger); }
+  .dot.todo i   { background: var(--surface); border: 2.5px solid var(--accent); }
+  .dot b {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink);
+    background: var(--surface);
+    padding: 1px 5px;
+    border-radius: 3px;
+    white-space: nowrap;
+    box-shadow: 0 0 0 1px var(--line-2);
+  }
+  .dot.flip { flex-direction: row-reverse; }
+  .x-axis {
+    display: flex;
+    justify-content: space-between;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 7px 2px 0;
+  }
+  .scenarios { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+  .scenarios li { display: flex; gap: 9px; font-size: 13.5px; color: var(--ink-2); align-items: baseline; }
+  .scenarios i {
+    flex: none;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    transform: translateY(1px);
+  }
+  .scenarios .fixing i { background: var(--surface); border: 2px solid var(--teal); }
+  .scenarios .ice i { background: var(--muted); }
+  .scenarios .now i { background: var(--danger); }
+  .scenarios .todo i { background: var(--surface); border: 2px solid var(--accent); }
+  .scenarios em { font-style: normal; color: var(--muted); }
+
+  /* ---------- icebox ---------- */
+
+  .icebox { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 0; }
+  .icebox li {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 18px;
+    align-items: baseline;
+    padding: 11px 0;
+    border-top: 1px solid var(--line-2);
+    font-size: 14px;
+  }
+  .icebox li:first-child { border-top: 0; }
+  .icebox .what { color: var(--ink); }
+  .icebox .trig {
+    font-size: 12.5px;
+    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-align: right;
+  }
+  .icebox .trig b {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+
+  /* ---------- footer ---------- */
+
+  footer {
+    margin-top: 44px;
+    border-top: 2px solid var(--ink);
+    padding-top: 18px;
+    display: grid;
+    gap: 12px;
+  }
+  .how { display: grid; gap: 9px; }
+  .how div { display: flex; gap: 10px; align-items: baseline; font-size: 14px; color: var(--ink-2); }
+  .how .lbl {
+    flex: none;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    font-weight: 600;
+    min-width: 132px;
+  }
+  .how code {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12.5px;
+    background: var(--surface-3);
+    border-radius: 3px;
+    padding: 1px 6px;
+    color: var(--ink);
+  }
+
+  /* ---------- groom: provenance strip ---------- */
+
+  .prov {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 7px;
+    align-items: center;
+    padding: 11px 14px;
+    border-top: 1px dashed var(--line);
+    background: var(--surface);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+  }
+  .prov .plbl {
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-right: 4px;
+  }
+  .prov .p {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink-2);
+    border-radius: 3px;
+    padding: 2px 7px;
+  }
+  .prov .p em {
+    font-style: normal;
+    font-size: 9.5px;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .prov .p.exists  { border-color: var(--teal);   color: var(--teal);   background: var(--teal-soft); }
+  .prov .p.deriv   { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .prov .p.missing { border-color: var(--amber);  color: var(--amber);  background: var(--amber-soft); }
+  .prov .none { color: var(--muted); }
+
+  /* ---------- groom: predicate boxes / direction panes ---------- */
+
+  .preds, .dirs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 12px;
+    padding: 16px 14px;
+  }
+  .dirs { border-top: 1px dashed var(--line); }
+  .dirs.phones { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+  .dirs.phones .dir { padding: 12px 4px; }
+  .dirs.phones .pred-lbl { padding: 0 6px; }
+  .dirs.phones .tradeoff { padding-left: 6px; padding-right: 6px; }
+  .pred, .dir {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: 12px;
+    display: grid;
+    gap: 8px;
+    align-content: start;
+    min-width: 0;
+  }
+  .pred.next { border-color: var(--accent); }
+  .dir.pick  { border-color: var(--teal); }
+  .pred-lbl {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .pred.next .pred-lbl { color: var(--accent); }
+  .dir.pick .pred-lbl  { color: var(--teal); }
+  .clause {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px;
+    line-height: 1.4;
+    border: 1px solid var(--line-2);
+    background: var(--surface-2);
+    color: var(--ink-2);
+    border-radius: 3px;
+    padding: 6px 8px;
+  }
+  .clause.new { border-color: var(--teal); background: var(--teal-soft); color: var(--teal); font-weight: 500; }
+  .tradeoff {
+    font-size: 12.5px;
+    color: var(--muted);
+    border-top: 1px dashed var(--line-2);
+    padding-top: 8px;
+    margin: 2px 0 0;
+  }
+  .dir-note { font-size: 12.5px; color: var(--ink-2); }
+  .mini-lbl {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 9.5px;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ---------- groom: queue-row sketch (card A) ---------- */
+
+  .qtable {
+    padding: 14px 14px 16px;
+    min-width: 560px;
+    border-top: 1px dashed var(--line);
+  }
+  .qhead, .qrow {
+    display: grid;
+    grid-template-columns: 82px 1.1fr 1fr 1.3fr;
+    gap: 12px;
+    align-items: center;
+  }
+  .qhead {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 12px 7px;
+  }
+  .qrow {
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--surface);
+    padding: 11px 12px;
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink-2);
+    border-radius: 999px;
+    padding: 2px 9px;
+    white-space: nowrap;
+  }
+  .pill.ok   { border-color: var(--teal);   color: var(--teal);   background: var(--teal-soft); }
+  .pill.wait { border-color: var(--amber);  color: var(--amber);  background: var(--amber-soft); }
+  .pill.no   { border-color: var(--danger); color: var(--danger); background: var(--danger-soft); }
+  .pill.new  { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+
+  /* ---------- groom: line-row variants (card B) ---------- */
+
+  .lrow {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-wrap: wrap;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--surface-2);
+    padding: 9px 11px;
+    font-size: 12.5px;
+    color: var(--ink-2);
+  }
+  .lrow .cb {
+    margin-left: auto;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+  .lrow .cb.off  { color: var(--muted); }
+  .lrow .cb.gone { color: var(--muted); font-style: italic; }
+
+  /* ---------- groom: actions-row mocks (card C) ---------- */
+
+  .btn-mock.text {
+    background: none;
+    color: var(--accent);
+    font-weight: 500;
+    padding: 5px 2px;
+    text-align: left;
+    font-size: 12.5px;
+  }
+  .btn-mock.sm { padding: 7px 10px; font-size: 12.5px; }
+  .btn-mock.gone {
+    border-style: dashed;
+    border-color: var(--line);
+    background: none;
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 12.5px;
+  }
+
+  /* ---------- groom: phone extras (card D) ---------- */
+
+  .push { margin-left: auto; }
+  .chip-amber {
+    border: 1px solid var(--amber);
+    background: var(--amber-soft);
+    color: var(--amber);
+    border-radius: 999px;
+    padding: 2px 9px;
+    font-size: 11.5px;
+    white-space: nowrap;
+  }
+  .left-pill {
+    background: var(--ink);
+    color: var(--surface);
+    border-radius: 999px;
+    padding: 3px 11px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .edge-chip {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    background: var(--ink);
+    color: var(--surface);
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 11.5px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .progress { height: 2px; background: var(--line-2); }
+  .progress i { display: block; height: 2px; width: 30%; background: var(--teal); }
+  .bottom-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    border-top: 1px solid var(--line);
+    background: var(--surface-3);
+    font-size: 12.5px;
+    color: var(--ink-2);
+  }
+  .bottom-bar .go {
+    background: var(--accent);
+    color: var(--surface);
+    border-radius: 4px;
+    padding: 6px 11px;
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* ---------- groom: ballot why-line + sensitivity ---------- */
+
+  .why { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+  .strip .sep {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .sens {
+    margin: 12px 0 0;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--amber);
+    background: var(--amber-soft);
+    border: 1px solid var(--amber);
+    border-radius: 3px;
+    padding: 6px 9px;
+  }
+
+  @media (max-width: 620px) {
+    .wrap { padding: 28px 16px 56px; }
+    .section { border-left: 0; padding-left: 0; padding-top: 30px; }
+    .section:last-of-type .sec-head::after { display: none; }
+    .node { position: static; align-self: center; }
+    .sec-head { align-items: center; }
+    .card { padding: 16px 15px 18px; }
+    .how .lbl { min-width: 0; }
+    .how div { flex-direction: column; gap: 2px; }
+    .icebox li { grid-template-columns: 1fr; }
+    .icebox .trig { text-align: left; display: block; }
+    .icebox .trig b { margin-right: 6px; }
+    .hint { display: inline; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="stamp">
+      <span>RO-bot backlog</span>
+      <span>&middot;</span>
+      <span>updated <b>25 Aug 2026</b></span>
+      <span>&middot;</span>
+      <span>cycle 02 &middot; groom</span>
+    </div>
+    <h1>Grooming Board</h1>
+    <p class="dek">
+      Triage <span class="arrow">&rarr;</span> groom <span class="arrow">&rarr;</span> overnight pipeline.
+      Reply with item letters to advance one or vote a ballot.
+      <span class="rule">Order within a section is the recommendation.</span>
+    </p>
+    <div class="legend">
+      <span>Every card reads:</span>
+      <span class="k">UX impact</span>
+      <span class="k">size</span>
+      <span class="k">Codex rounds</span>
+      <span class="k">reversibility</span>
+      <span>then who actually hits it.</span>
+    </div>
+  </header>
+
+  <!-- ============ 1. READY TO RUN ============ -->
+  <section class="section">
+    <div class="sec-head">
+      <span class="node on"></span>
+      <h2>Ready to run</h2>
+      <p class="sec-sub">Queued &mdash; decided, waiting on your word</p>
+    </div>
+
+    <article class="card">
+      <div class="card-head">
+        <span class="key queued">Queued</span>
+        <h3>Settings-error sweep</h3>
+        <span class="status">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          groomed &mdash; runs tonight on your word
+        </span>
+      </div>
+      <p class="sub">Four surfaces treat a <em>failed</em> settings lookup as an answer: the lookup errors, the code reads &ldquo;not loading any more&rdquo; and shows multi-player controls to a single-player shop.</p>
+
+      <ul class="dims">
+        <li class="hi">
+          UX Low
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>
+          reliability
+        </li>
+        <li>S</li>
+        <li>Codex 0&ndash;1</li>
+        <li class="safe">revert-cheap</li>
+      </ul>
+      <p class="pop"><b>Who hits it</b>Any org, during a rare settings-fetch failure.</p>
+
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>The gate on each surface &mdash; before / after</span><span class="hint">scroll &rarr;</span></figcaption>
+        <div class="scroller">
+          <table>
+            <thead>
+              <tr><th scope="col">Surface</th><th scope="col">Today &mdash; shows when</th><th scope="col">After &mdash; shows when</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="surface-name">Work-complete strip<span class="code">TechWorkCompleteStrip</span></td>
+                <td class="gate-now"><span class="gate bad">not loading</span></td>
+                <td class="gate-next"><span class="gate good">confirmed multi-player</span></td>
+              </tr>
+              <tr>
+                <td class="surface-name">Pending internal-auth badge<span class="code">PendingInternalAuthBadge</span></td>
+                <td class="gate-now"><span class="gate bad">not loading</span></td>
+                <td class="gate-next"><span class="gate good">confirmed multi-player</span></td>
+              </tr>
+              <tr>
+                <td class="surface-name">Pending customer-OK badge<span class="code">PendingCustomerOkBadge</span></td>
+                <td class="gate-now"><span class="gate bad">not loading</span></td>
+                <td class="gate-next"><span class="gate good">confirmed multi-player</span></td>
+              </tr>
+              <tr>
+                <td class="surface-name">Parts page spot<span class="code">parts-repair-order.tsx:237</span></td>
+                <td class="gate-now"><span class="gate bad">not loading</span></td>
+                <td class="gate-next"><span class="gate good">confirmed multi-player</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="viz-foot">4 of 4 surfaces confirmed still on <code>isLoading</code>. The replacement signal already ships &mdash; <code>useWorkflowMode().isSettled</code> (<code>useOrgFeatures.ts:164</code>), so this is a gate swap, not new plumbing.</div>
+      </figure>
+    </article>
+  </section>
+
+  <!-- ============ 2. TO GROOM · UX ============ -->
+  <section class="section">
+    <div class="sec-head">
+      <span class="node next"></span>
+      <h2>To groom &middot; UX</h2>
+      <p class="sec-sub">Needs your decisions before it can run</p>
+    </div>
+
+    <!-- Card A -->
+    <article class="card">
+      <div class="card-head">
+        <span class="key">A</span>
+        <h3>Parts queue: OK&rsquo;d-but-not-pulled keeps the RO in the queue</h3>
+        <span class="rank">#1 overall</span>
+        <span class="status">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          groomed &mdash; vote by letter
+        </span>
+      </div>
+      <p class="sub">A part added after the RO is already Ready gets approved &mdash; but the RO never returns to the parts queue, so nobody pulls it.</p>
+      <p class="note"><b>Why #1</b>McGrath is live and this is the un-shipped half of your own &ldquo;queue = what parts owes&rdquo; ruling. It also anchors B and C &mdash; same corner of the app, same night&rsquo;s work.</p>
+
+      <ul class="dims">
+        <li class="hi">
+          UX High
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>
+          reliability
+        </li>
+        <li>M</li>
+        <li>Codex 2&ndash;3</li>
+        <li class="data">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v13c0 1.7 3.6 3 8 3s8-1.3 8-3v-13"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+          touches data
+        </li>
+      </ul>
+      <p class="pop"><b>Who hits it</b>Every parts user at a live store, whenever a part is added or approved after the RO is already Ready.</p>
+
+      <style>
+      /* ---- Card A only -----------------------------------------------------
+         The two framed mock-ups below are meant to read as the REAL app, and the
+         app is light in either board theme. They therefore carry their OWN
+         LITERAL colours (stock Tailwind values copied from the parts queue) and
+         the app's system-sans, all scoped under .app-screen. That is the one
+         deliberate exception to this board's token rule — everything else on the
+         card uses the board's tokens and IBM Plex. ------------------------- */
+
+      .story { list-style: none; margin: 0; padding: 13px 14px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+      .story li {
+        display: flex; flex-direction: column; gap: 6px;
+        border: 1px solid var(--line-2); border-radius: 4px;
+        background: var(--surface); padding: 10px 11px 11px;
+        font-size: 12.5px; line-height: 1.42; color: var(--ink-2);
+      }
+      .story li.bad { border-color: var(--danger); background: var(--danger-soft); }
+      .story .stephead { display: flex; align-items: center; gap: 7px; color: var(--muted); }
+      .story li.bad .stephead { color: var(--danger); }
+      .story .n {
+        font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10.5px; font-weight: 600;
+        width: 17px; height: 17px; flex: none; border-radius: 999px;
+        display: inline-flex; align-items: center; justify-content: center;
+        border: 1px solid currentColor;
+      }
+      .story b { color: var(--ink); font-weight: 600; }
+      .story p { margin: 0; }
+
+      .screens { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 13px; padding: 13px; }
+      .screen-col { min-width: 0; }
+      .scap { margin: 9px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+      .scap b { color: var(--ink-2); font-weight: 600; }
+
+      /* ---- the app frame — literal light-theme colours on purpose ---- */
+      .app-screen {
+        --as-min: 396px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+        font-size: 10.5px; line-height: 1.35; color: #0f172a;
+        background: #ffffff;
+        border: 1px solid #cbd5e1; border-radius: 8px;
+        box-shadow: 0 4px 6px -1px rgba(15,23,42,.10), 0 2px 4px -2px rgba(15,23,42,.10);
+        overflow: hidden;
+      }
+      .as-bar { display: flex; align-items: center; gap: 6px; padding: 8px; border-bottom: 1px solid #e2e8f0; flex-wrap: nowrap; }
+      .as-search {
+        flex: 1 1 auto; min-width: 0;
+        border: 1px solid #e2e8f0; border-radius: 6px; background: #ffffff;
+        color: #94a3b8; padding: 4px 7px; font-size: 9.5px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+      .as-seg { flex: none; display: flex; gap: 2px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 2px; }
+      .as-seg span { border-radius: 6px; padding: 3px 7px; font-size: 9.5px; font-weight: 500; color: #475569; white-space: nowrap; }
+      .as-seg span.on { background: #0f172a; color: #ffffff; }
+      .as-seg span em { font-style: normal; opacity: .7; }
+      .as-seg span.un em { color: #f97316; font-weight: 600; opacity: 1; }
+      .as-risk {
+        flex: none; display: inline-flex; align-items: center; gap: 4px;
+        border: 1px solid #fecaca; border-radius: 8px; background: #ffffff;
+        padding: 4px 8px; font-size: 9.5px; color: #b91c1c; font-weight: 500; white-space: nowrap;
+      }
+      .as-risk b { font-weight: 700; }
+
+      .as-scroll { overflow-x: auto; }
+      .as-table { min-width: var(--as-min); }
+      .as-head, .as-row {
+        display: grid;
+        grid-template-columns: 48px minmax(0,1.45fr) minmax(0,1.35fr) minmax(0,1.25fr) 58px 42px;
+        gap: 4px; align-items: center;
+      }
+      .as-head {
+        height: 26px; padding: 0 12px;
+        background: #f8fafc; border-bottom: 1px solid #e2e8f0;
+        font-size: 8.5px; letter-spacing: .05em; text-transform: uppercase;
+        font-weight: 600; color: #64748b;
+      }
+      .as-list { padding: 5px 6px 6px; display: flex; flex-direction: column; gap: 4px; }
+      .as-row {
+        padding: 6px; border-radius: 8px; border: 1px solid transparent;
+        background: #ffffff; min-height: 34px;
+      }
+      /* row grounds — the parts queue's own tint rules, one per status family */
+      .as-row.fam-pricing { background: #fefce8; }                          /* Parts Pricing, claimed  */
+      .as-row.fam-waiting { background: #fff1f2; }                          /* Waiting for Parts       */
+      .as-row.fam-plain   { background: #ffffff; border-color: #e2e8f0; }   /* everything else = white */
+
+      .as-ro {
+        display: inline-flex; align-items: center; gap: 3px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 11px; font-weight: 600; color: #1d4ed8;
+        border-radius: 6px; padding: 1px 4px;
+      }
+      .as-ro svg { opacity: .7; flex: none; }
+      .as-veh { display: flex; align-items: center; gap: 3px; min-width: 0; color: #1e293b; font-size: 10px; }
+      .as-veh span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .as-veh svg { flex: none; color: #94a3b8; }
+      .as-status {
+        display: inline-block; border-radius: 9999px; padding: 2px 7px;
+        font-size: 9.5px; font-weight: 500; line-height: 1.25;
+      }
+      .fam-pricing .as-status { background: #fef9c3; color: #854d0e; }
+      .fam-waiting .as-status { background: #ffe4e6; color: #9f1239; }
+      .fam-ready   .as-status { background: #d1fae5; color: #065f46; }
+      .as-lines { display: flex; flex-wrap: wrap; gap: 4px; }
+      .as-pill {
+        border-radius: 4px; padding: 1px 5px; white-space: nowrap;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 9.5px; font-weight: 600; font-variant-numeric: tabular-nums;
+      }
+      .as-pill.ok   { background: #ecfdf5; color: #047857; }
+      .as-pill.wait { background: #fffbeb; color: #b45309; }
+      .as-pill.no   { background: #fff1f2; color: #be123c; }
+      .as-pill.pull { background: #e0f2fe; color: #075985; box-shadow: 0 0 0 3px rgba(56,189,248,.35); }
+      .as-team { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+      .as-team i { font-style: normal; font-size: 8.5px; letter-spacing: .04em; text-transform: uppercase; color: #94a3b8; }
+      .as-team b { font-weight: 500; font-size: 10px; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .as-team b.none { color: #94a3b8; font-style: italic; }
+      .as-when { display: flex; align-items: center; gap: 3px; font-size: 10px; color: #334155; white-space: nowrap; }
+      .as-when svg { flex: none; color: #94a3b8; }
+      .as-when.none { color: #cbd5e1; }
+
+      .as-below { padding: 0 6px 9px; }
+      .as-ghost {
+        display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+        border: 1px dashed #cbd5e1; border-radius: 8px; background: #f8fafc;
+        padding: 7px 8px; color: #94a3b8; font-size: 10px;
+      }
+      .as-ghost b { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 600; color: #64748b; }
+      .as-ghost i { font-style: normal; color: #cbd5e1; }
+      .as-tag {
+        display: inline-flex; align-items: center; gap: 3px; margin-top: 6px;
+        background: #fee2e2; border: 1px solid #fecaca; color: #b91c1c;
+        border-radius: 9999px; padding: 2px 8px; font-size: 9.5px; font-weight: 600;
+      }
+
+      .conseq {
+        margin: 16px 0 0; padding: 11px 13px;
+        border: 1px solid var(--teal); border-left-width: 3px; border-radius: var(--radius);
+        background: var(--teal-soft); color: var(--ink-2);
+        font-size: 13.5px; line-height: 1.5;
+      }
+
+      @media (max-width: 760px) { .story { grid-template-columns: repeat(2, 1fr); } }
+      @media (max-width: 430px) {
+        .story { grid-template-columns: 1fr; padding: 11px; }
+        .screens { padding: 10px; gap: 12px; }
+      }
+      </style>
+
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>What happens today, step by step</span></figcaption>
+        <ol class="story">
+          <li>
+            <span class="stephead">
+              <span class="n">1</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12.4v6.8a1 1 0 0 1-.63.93l-6.75 2.7a1.7 1.7 0 0 1-1.24 0l-6.75-2.7A1 1 0 0 1 4 19.2V8.3a1 1 0 0 1 .63-.93l6.75-2.7a1.7 1.7 0 0 1 1.24 0l2.88 1.15"/><path d="M18.5 2.5v6M15.5 5.5h6"/></svg>
+            </span>
+            <p>Parts adds a part to a line on an RO that is already <b>Ready for Pickup</b>.</p>
+          </li>
+          <li>
+            <span class="stephead">
+              <span class="n">2</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.4 12.3l2.4 2.4 4.8-5"/></svg>
+            </span>
+            <p>The advisor <b>OK&rsquo;s</b> it &mdash; the part is now owed to that car.</p>
+          </li>
+          <li class="bad">
+            <span class="stephead">
+              <span class="n">3</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5.5h17M3.5 11h17M3.5 16.5h7"/><path d="M14.5 14.5l5.5 5.5M20 14.5l-5.5 5.5"/></svg>
+            </span>
+            <p><b>Today:</b> the RO drops out of the parts queue. It is on nobody&rsquo;s list.</p>
+          </li>
+          <li class="bad">
+            <span class="stephead">
+              <span class="n">4</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13.6l1.9-5.2A2 2 0 0 1 6.8 7h10.4a2 2 0 0 1 1.9 1.4L21 13.6V18h-2.6M8.6 18H3v-4.4h18"/><circle cx="6.9" cy="18" r="1.7"/><circle cx="17.1" cy="18" r="1.7"/></svg>
+            </span>
+            <p>Nobody pulls the part. The car is <b>delivered without it</b>.</p>
+          </li>
+        </ol>
+        <div class="viz-foot">Your rule: the queue is what parts owes. This RO owes a part and isn&rsquo;t there.</div>
+      </figure>
+
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>The parts queue &mdash; today vs proposed</span><span class="hint">screens scroll &rarr;</span></figcaption>
+        <div class="screens">
+
+          <div class="screen-col">
+            <!-- app frame: literal light colours on purpose — see the note at the top of the style block -->
+            <div class="app-screen">
+              <div class="as-bar">
+                <span class="as-search">Search RO, VIN, customer</span>
+                <span class="as-seg"><span class="on">All <em>42</em></span><span>Mine <em>7</em></span><span class="un">Unclaimed <em>12</em></span></span>
+              </div>
+              <div class="as-scroll">
+                <div class="as-table">
+                  <div class="as-head"><span>RO #</span><span>Vehicle</span><span>RO Status</span><span>Lines</span><span>Team</span><span>In Queue</span></div>
+                  <div class="as-list">
+                    <div class="as-row fam-waiting">
+                      <span><span class="as-ro">4471<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></span>
+                      <span class="as-veh"><span>2019 F&#8209;150</span></span>
+                      <span><span class="as-status">Waiting for Parts</span></span>
+                      <span class="as-lines"><span class="as-pill ok">&#10003; 2</span><span class="as-pill wait">&#8987; 1</span></span>
+                      <span class="as-team"><i>Parts</i><b>Jay A.</b></span>
+                      <span class="as-when none">&mdash;</span>
+                    </div>
+                    <div class="as-row fam-pricing">
+                      <span><span class="as-ro">4478<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></span>
+                      <span class="as-veh"><span>2022 Camry</span></span>
+                      <span><span class="as-status">Parts Pricing</span></span>
+                      <span class="as-lines"><span class="as-pill wait">&#8987; 3</span></span>
+                      <span class="as-team"><i>Parts</i><b class="none">unclaimed</b></span>
+                      <span class="as-when"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 1.6"/></svg>5h 12m</span>
+                    </div>
+                    <div class="as-row fam-waiting">
+                      <span><span class="as-ro">4485<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></span>
+                      <span class="as-veh"><span>2020 Equinox</span></span>
+                      <span><span class="as-status">Waiting for Parts</span></span>
+                      <span class="as-lines"><span class="as-pill ok">&#10003; 4</span><span class="as-pill no">&#10005; 1</span></span>
+                      <span class="as-team"><i>Parts</i><b>Marisol R.</b></span>
+                      <span class="as-when none">&mdash;</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="as-below">
+                <div class="as-ghost">
+                  <b>4482</b><i>&middot;</i>2021 Silverado<i>&middot;</i>Ready for Pickup<i>&middot;</i>2 parts OK&rsquo;d, not pulled
+                </div>
+                <span class="as-tag">
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                  not in the queue
+                </span>
+              </div>
+            </div>
+            <p class="scap"><b>Today</b> &mdash; RO 4482 fell off the list the moment it went Ready.</p>
+          </div>
+
+          <div class="screen-col">
+            <!-- app frame: literal light colours on purpose — see the note at the top of the style block -->
+            <div class="app-screen">
+              <div class="as-bar">
+                <span class="as-search">Search RO, VIN, customer</span>
+                <span class="as-seg"><span class="on">All <em>43</em></span><span>Mine <em>8</em></span><span class="un">Unclaimed <em>12</em></span></span>
+              </div>
+              <div class="as-scroll">
+                <div class="as-table">
+                  <div class="as-head"><span>RO #</span><span>Vehicle</span><span>RO Status</span><span>Lines</span><span>Team</span><span>In Queue</span></div>
+                  <div class="as-list">
+                    <div class="as-row fam-ready fam-plain">
+                      <span><span class="as-ro">4482<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></span>
+                      <span class="as-veh"><span>2021 Silverado</span></span>
+                      <span><span class="as-status">Ready for Pickup</span></span>
+                      <span class="as-lines"><span class="as-pill ok">&#10003; 3</span><span class="as-pill pull">2 to pull</span></span>
+                      <span class="as-team"><i>Parts</i><b>Jay A.</b></span>
+                      <span class="as-when none">&mdash;</span>
+                    </div>
+                    <div class="as-row fam-waiting">
+                      <span><span class="as-ro">4471<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></span>
+                      <span class="as-veh"><span>2019 F&#8209;150</span></span>
+                      <span><span class="as-status">Waiting for Parts</span></span>
+                      <span class="as-lines"><span class="as-pill ok">&#10003; 2</span><span class="as-pill wait">&#8987; 1</span></span>
+                      <span class="as-team"><i>Parts</i><b>Jay A.</b></span>
+                      <span class="as-when none">&mdash;</span>
+                    </div>
+                    <div class="as-row fam-pricing">
+                      <span><span class="as-ro">4478<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></span>
+                      <span class="as-veh"><span>2022 Camry</span></span>
+                      <span><span class="as-status">Parts Pricing</span></span>
+                      <span class="as-lines"><span class="as-pill wait">&#8987; 3</span></span>
+                      <span class="as-team"><i>Parts</i><b class="none">unclaimed</b></span>
+                      <span class="as-when"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 1.6"/></svg>5h 12m</span>
+                    </div>
+                    <div class="as-row fam-waiting">
+                      <span><span class="as-ro">4485<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span></span>
+                      <span class="as-veh"><span>2020 Equinox</span></span>
+                      <span><span class="as-status">Waiting for Parts</span></span>
+                      <span class="as-lines"><span class="as-pill ok">&#10003; 4</span><span class="as-pill no">&#10005; 1</span></span>
+                      <span class="as-team"><i>Parts</i><b>Marisol R.</b></span>
+                      <span class="as-when none">&mdash;</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="scap"><b>Proposed</b> &mdash; it stays until every OK&rsquo;d part is pulled; the Lines column says why.</p>
+          </div>
+
+        </div>
+      </figure>
+
+      <p class="conseq">Parts sees the RO again, with the reason, and it drops off by itself when the last part is pulled &mdash; no new status, no new screen.</p>
+
+      <div class="ballot">
+        <div class="ballot-head">Ballot</div>
+        <ol>
+          <li><span class="opt">A1</span><span>Keep the RO in the queue whatever its status, as long as it isn&rsquo;t closed. <span class="rec">rec: yes</span><span class="why">Why: the part is owed no matter where the RO sits.</span></span></li>
+          <li><span class="opt">A2</span><span>Show the &ldquo;2 to pull&rdquo; marker in the Lines column. <span class="rec">rec: yes</span><span class="why">Why: without it the RO reappears and parts can&rsquo;t tell why.</span></span></li>
+          <li><span class="opt">A3</span><span>ROs already stuck like this today &mdash; McGrath has some. Fix those too, or only new ones from here on? <span class="rec">rec: fix them too</span><span class="why">Why: forward&#8209;only leaves the ROs that caused the complaint exactly where they are; it&rsquo;s a one&#8209;time cleanup you run after the deploy.</span></span></li>
+          <li><span class="opt">A4</span><span>This needs one new piece of stored information on each RO &mdash; &ldquo;has OK&rsquo;d parts not yet pulled&rdquo;. Build it as part of this. <span class="rec">rec: yes</span><span class="why">Why: it&rsquo;s the only way the queue can know.</span></span></li>
+        </ol>
+      </div>
+    </article>
+
+    <!-- Card B -->
+    <article class="card">
+      <div class="card-head">
+        <span class="key">B</span>
+        <h3>&ldquo;N of N parts pulled&rdquo; counts lines still awaiting approval</h3>
+        <span class="status">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          groomed &mdash; vote by letter
+        </span>
+      </div>
+      <p class="sub">The ring reads &ldquo;0 of 4&rdquo; on an RO where only two lines are approved &mdash; the other two aren&rsquo;t parts&rsquo; job yet.</p>
+
+      <ul class="dims">
+        <li class="hi">
+          UX Med
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>
+          reliability
+        </li>
+        <li>S</li>
+        <li>Codex 0&ndash;1</li>
+        <li class="data">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v13c0 1.7 3.6 3 8 3s8-1.3 8-3v-13"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+          touches data
+        </li>
+      </ul>
+      <p class="pop"><b>Who hits it</b>Parts users on any RO with a pending-approval line. Not user-reported yet &mdash; spotted in a fixture screenshot.</p>
+
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>Same RO, two denominators</span><span class="hint">scroll &rarr;</span></figcaption>
+        <div class="scroller">
+          <table>
+            <thead>
+              <tr><th scope="col">On the RO</th><th scope="col">Today &mdash; counts</th><th scope="col">After &mdash; counts</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="surface-name">Approved line<span class="code">2 parts &middot; in scope</span></td>
+                <td class="gate-now"><span class="gate bad">both counted</span></td>
+                <td class="gate-next"><span class="gate good">both counted</span></td>
+              </tr>
+              <tr>
+                <td class="surface-name">Pending line<span class="code">2 parts &middot; awaiting approval</span></td>
+                <td class="gate-now"><span class="gate bad">both counted</span></td>
+                <td class="gate-next"><span class="gate good">out of scope</span></td>
+              </tr>
+              <tr>
+                <td class="surface-name">Ring shows<span class="code">header ring + dashboard LINES hover</span></td>
+                <td class="gate-now"><span class="gate bad">0 of 4</span></td>
+                <td class="gate-next"><span class="gate good">0 of 2</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dirs">
+          <div class="dir pick">
+            <div class="pred-lbl"><span>B2 &middot; as-is</span><span>rec</span></div>
+            <div class="lrow"><span>Pending line</span><span>Brake pads</span><span class="cb">&#9744; Pulled</span></div>
+            <p class="tradeoff">Parts can still pull ahead of the decision (#1468).</p>
+          </div>
+          <div class="dir">
+            <div class="pred-lbl"><span>B2 &middot; greyed</span></div>
+            <div class="lrow"><span>Pending line</span><span>Brake pads</span><span class="cb off">&#9744; Pulled</span></div>
+            <p class="tradeoff">Blocks pre-pull &mdash; an edit lock bolted onto a counting bug.</p>
+          </div>
+          <div class="dir">
+            <div class="pred-lbl"><span>B2 &middot; hidden</span></div>
+            <div class="lrow"><span>Pending line</span><span>Brake pads</span><span class="cb gone">no checkbox</span></div>
+            <p class="tradeoff">Cleanest row &mdash; parts loses a control it uses today.</p>
+          </div>
+        </div>
+        <div class="viz-foot"><code>summarizeLineApproval</code> counts every deliverable part regardless of line state (<code>line-approval-summary.ts:205&ndash;214</code>, on purpose today). Proposed: count parts only where <code>isLineInScope(&hellip;)</code> is true &mdash; the same predicate the tech ring and the server gate use (<code>parts-rollup.ts:159/599</code>). Both surfaces move together: the parts RO header ring (<code>parts-repair-order.tsx ~1146</code>) and the dashboard LINES hover read the same numbers.</div>
+        <div class="prov">
+          <span class="plbl">Provenance</span>
+          <span class="p exists">line_approval_summary.parts_total / parts_pulled <em>exists</em></span>
+          <span class="p exists">isLineInScope <em>exists</em></span>
+          <span class="p exists">resolveLineApprovalState <em>exists</em></span>
+        </div>
+      </figure>
+
+      <div class="ballot">
+        <div class="ballot-head">
+          Ballot
+          <span class="pending">3 to vote</span>
+        </div>
+        <ol>
+          <li><span class="opt">B1</span><span>Denominator = parts on in-scope lines only &mdash; approved + warranty/recall/internal-authorized. <span class="rec">rec</span><span class="why">Why: mirrors D4 and the tech ring exactly; one shared predicate.</span></span></li>
+          <li><span class="opt">B2</span><span>Pending-line Pulled checkbox stays as-is <span class="rec">rec</span> vs greyed vs hidden.<span class="why">Why: it&rsquo;s a COUNT fix, not an edit lock &mdash; parts sometimes pull ahead (#1468).</span></span></li>
+          <li><span class="opt">B3</span><span>Re-run <code>backfill:line-approval</code> after deploy &mdash; you run it. <span class="rec">rec</span><span class="why">Why: stored denorm; the dashboard hover shows old numbers until each RO is touched.</span></span></li>
+        </ol>
+      </div>
+    </article>
+
+    <!-- Card C -->
+    <article class="card">
+      <div class="card-head">
+        <span class="key">C</span>
+        <h3>Parts RO page: primary CTA after the advisor already decided</h3>
+        <span class="status">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          groomed &mdash; vote by letter
+        </span>
+      </div>
+      <p class="sub">The big blue &ldquo;Send to advisor&rdquo; stays primary even once every line is decided, so parts sends it back and the RO ping-pongs.</p>
+
+      <ul class="dims">
+        <li class="hi">UX High</li>
+        <li>M</li>
+        <li>Codex 2&ndash;3</li>
+        <li class="safe">revert-cheap</li>
+      </ul>
+      <p class="pop"><b>Who hits it</b>McGrath &mdash; RO 832805 bounced parts&harr;advisor 3&times; in 4 days.</p>
+
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>The pricing-actions row &mdash; today, then three directions</span><span class="hint">scroll &rarr;</span></figcaption>
+        <div class="preds">
+          <div class="pred">
+            <div class="pred-lbl"><span>Today</span><span>SendToAdvisorCTA.tsx:288</span></div>
+            <div class="pane-line">All 4 lines already decided by the advisor</div>
+            <div class="btn-mock primary">Send to advisor</div>
+            <div class="btn-mock text">Send back to tech</div>
+            <div class="outcome bad">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              Always primary, no inert variant &mdash; PATCHes <code>workflowStatus: 'advisor_review'</code> and re-sends
+            </div>
+          </div>
+        </div>
+        <div class="dirs">
+          <div class="dir pick">
+            <div class="pred-lbl"><span>C-A &middot; label follows the lines</span><span>rec</span></div>
+            <div class="mini-lbl">waiting &gt; 0</div>
+            <div class="btn-mock primary sm">Send to advisor</div>
+            <div class="mini-lbl">waiting = 0 &middot; approved &gt; 0</div>
+            <div class="btn-mock good sm">Move to Waiting for Parts &rarr;</div>
+            <div class="mini-lbl">all declined</div>
+            <div class="btn-mock gone">no primary &mdash; only &ldquo;Send back to tech&rdquo;</div>
+            <p class="tradeoff">Clearest next step &mdash; but it picks a destination for the store.</p>
+          </div>
+          <div class="dir">
+            <div class="pred-lbl"><span>C-B &middot; inert while waiting</span></div>
+            <div class="mini-lbl">stage = parts_pricing</div>
+            <div class="btn-mock primary sm">Send to advisor</div>
+            <div class="mini-lbl">stage = advisor_review / awaiting_customer</div>
+            <div class="btn-mock inert sm">Waiting on advisor &middot; 2 lines</div>
+            <div class="btn-mock text">Resend</div>
+            <p class="tradeoff">Stops the re-send &mdash; doesn&rsquo;t tell parts what&rsquo;s next.</p>
+          </div>
+          <div class="dir">
+            <div class="pred-lbl"><span>C-C &middot; no big button once decided</span></div>
+            <div class="mini-lbl">waiting = 0 &mdash; the CTA row collapses</div>
+            <div class="btn-mock gone">&mdash;</div>
+            <div class="dir-note">All lines decided &mdash; set the RO status &uarr;</div>
+            <div class="lrow"><span>Job status</span><span class="pill new">Ready for Pickup &#9662;</span></div>
+            <p class="tradeoff">Zero new status logic &mdash; relies on parts noticing the plate&rsquo;s picker (#1569).</p>
+          </div>
+        </div>
+        <div class="viz-foot">The signal is already on the page &mdash; <code>summarizeLineApproval</code> at <code>parts-repair-order.tsx:1030</code> (<code>approved / waiting / declined</code>). Any status change resolves through <code>getStatusOptions</code> and renders via <code>getStatusLabel</code>, never a literal &mdash; orgs rename their statuses.</div>
+        <div class="prov">
+          <span class="plbl">Provenance</span>
+          <span class="p exists">approved / waiting / declined <em>exists</em></span>
+          <span class="p exists">waiting_for_parts label <em>exists</em></span>
+          <span class="p exists">&ldquo;sent to advisor&rdquo; stage <em>exists</em></span>
+          <span class="p missing">&ldquo;Recs Approved&rdquo; status <em>missing</em></span>
+        </div>
+      </figure>
+
+      <p class="note cluster"><b>Cluster</b>Decide the primary signal here &mdash; F and G are complements or drops once this lands.</p>
+
+      <div class="ballot">
+        <div class="ballot-head">
+          Ballot
+          <span class="pending">2 to vote</span>
+        </div>
+        <ol>
+          <li><span class="opt">C1</span><span>Ask Jay (McGrath) which destination they want after a decision, showing him A/B/C &mdash; your stated intent <span class="rec">rec</span> vs decide now.<span class="why">Why: the destination is a store-process question, not a UX one.</span></span></li>
+          <li><span class="opt">C2</span><span>If we build without waiting: <strong>C-A</strong> <span class="rec">rec</span> vs C-B vs C-C.<span class="why">Why: C-A is the only one that answers &ldquo;what next&rdquo;.</span></span></li>
+        </ol>
+      </div>
+    </article>
+
+    <!-- Card D -->
+    <article class="card">
+      <div class="card-head">
+        <span class="key">D</span>
+        <h3>Mobile &ldquo;how much work is left on this RO&rdquo; indicator</h3>
+        <span class="status">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          groomed &mdash; vote by letter
+        </span>
+      </div>
+      <p class="sub">On a phone a tech sees about three and a half line tabs out of ten, and nothing tells him how many are left.</p>
+
+      <ul class="dims">
+        <li class="hi">UX High</li>
+        <li>M</li>
+        <li>Codex 0&ndash;1</li>
+        <li class="safe">revert-cheap</li>
+      </ul>
+      <p class="pop"><b>Who hits it</b>Every tech on a phone &mdash; the primary persona.</p>
+
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>What the number is &mdash; then three places to put it</span><span class="hint">scroll &rarr;</span></figcaption>
+        <div class="scroller">
+          <div class="strip">
+            <div class="strip-row">
+              <span class="lbl">What counts as &ldquo;left&rdquo;</span>
+              <span class="tag on">in-scope lines not complete</span>
+              <span class="tag">inScopeCompletionCounts &rarr; {complete, total} &mdash; parts-rollup.ts:599</span>
+              <span class="tag">the same number the tech work-complete ring uses</span>
+            </div>
+            <div class="strip-row">
+              <span class="lbl">What does not</span>
+              <span class="tag">MPI tools</span>
+              <span class="tag">Video tools</span>
+              <span class="tag">not lines &mdash; excluded unless voted in</span>
+            </div>
+          </div>
+        </div>
+        <div class="scroller">
+          <div class="dirs phones">
+            <div class="dir pick">
+              <div class="pred-lbl"><span>D-A &middot; header pill</span><span>rec</span></div>
+              <div class="phone">
+                <div class="phone-bar">
+                  <span class="phone-title">2021 Chevrolet Silverado</span>
+                  <span class="push phone-sub">&#9662;</span>
+                </div>
+                <div class="phone-bar">
+                  <span class="phone-sub">RO #4482</span>
+                  <span class="left-pill">3 of 10 left</span>
+                  <span class="push chip-amber">In progress</span>
+                </div>
+                <div class="tabstrip">
+                  <span class="tab sel">Brake noise</span>
+                  <span class="tab">Oil leak</span>
+                  <span class="tab">No start</span>
+                  <span class="tab">Alignment check</span>
+                </div>
+              </div>
+              <p class="tradeoff">Always visible, zero layout change, S. The only free slot in the strip today (<code>VehicleHeaderStrip.tsx:106&ndash;119</code>). Tap scrolls to the next to-do tab.</p>
+            </div>
+            <div class="dir">
+              <div class="pred-lbl"><span>D-B &middot; strip edge counter</span></div>
+              <div class="phone">
+                <div class="phone-bar">
+                  <span class="phone-title">2021 Chevrolet Silverado</span>
+                  <span class="push phone-sub">&#9662;</span>
+                </div>
+                <div class="phone-bar">
+                  <span class="phone-sub">RO #4482</span>
+                  <span class="push chip-amber">In progress</span>
+                </div>
+                <div class="tabstrip">
+                  <span class="tab sel">Brake noise</span>
+                  <span class="tab">Oil leak</span>
+                  <span class="tab">No start</span>
+                  <span class="tab">Alignment check</span>
+                  <span class="edge-chip">6 more &rarr;</span>
+                </div>
+                <div class="progress"><i></i></div>
+              </div>
+              <p class="tradeoff">Lives where the problem is &mdash; but fights the fade and the scroll gestures (horizontal scroller vs pull-to-refresh).</p>
+            </div>
+            <div class="dir">
+              <div class="pred-lbl"><span>D-C &middot; bottom bar</span></div>
+              <div class="phone">
+                <div class="phone-bar">
+                  <span class="phone-title">2021 Chevrolet Silverado</span>
+                  <span class="push phone-sub">&#9662;</span>
+                </div>
+                <div class="phone-bar">
+                  <span class="phone-sub">RO #4482</span>
+                  <span class="push chip-amber">In progress</span>
+                </div>
+                <div class="tabstrip">
+                  <span class="tab sel">Brake noise</span>
+                  <span class="tab">Oil leak</span>
+                  <span class="tab">No start</span>
+                  <span class="tab">Alignment check</span>
+                </div>
+                <div class="bottom-bar">
+                  <span>3 of 10 lines done</span>
+                  <span class="go">Next line &rarr;</span>
+                </div>
+              </div>
+              <p class="tradeoff">Most tappable &mdash; biggest build, and a second sticky bar on a page that already has one.</p>
+            </div>
+          </div>
+        </div>
+        <div class="viz-foot">&ldquo;N left&rdquo; = <code>total &minus; complete</code> &mdash; derived at render, nothing stored. All three sketches are the tech RO header <code>VehicleHeaderStrip</code> at 390px.</div>
+        <div class="prov">
+          <span class="plbl">Provenance</span>
+          <span class="p exists">Issue.status complete <em>exists</em></span>
+          <span class="p exists">inScopeCompletionCounts <em>exists</em></span>
+          <span class="p deriv">&ldquo;N left&rdquo; <em>derivable</em></span>
+          <span class="p">MPI / Video completion <em>not counted</em></span>
+        </div>
+      </figure>
+
+      <div class="ballot">
+        <div class="ballot-head">
+          Ballot
+          <span class="pending">4 to vote</span>
+        </div>
+        <ol>
+          <li><span class="opt">D1</span><span>Count = in-scope lines not complete, same as the ring <span class="rec">rec</span> vs also MPI/Video.<span class="why">Why: one number, one predicate, no drift with the work-complete strip.</span></span></li>
+          <li><span class="opt">D2</span><span>Tech only <span class="rec">rec</span> vs all roles.<span class="why">Why: advisors and parts have the desktop tabs and dashboards; the phone gap is the tech&rsquo;s.</span></span></li>
+          <li><span class="opt">D3</span><span>Placement: <strong>D-A</strong> <span class="rec">rec</span> vs D-B vs D-C.<span class="why">Why: the slot exists, no new sticky surface, ships in one evening.</span></span></li>
+          <li><span class="opt">D4</span><span>Tap jumps the strip to the next to-do tab <span class="rec">rec</span> vs display-only.<span class="why">Why: cheap &mdash; the <code>scrollLeft</code> rect math is already in <code>tab-settle.ts</code> &mdash; and it turns a number into a next step.</span></span></li>
+        </ol>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============ 3. TO GROOM · BEHIND THE SCENES ============ -->
+  <section class="section">
+    <div class="sec-head">
+      <span class="node"></span>
+      <h2>To groom &middot; behind the scenes</h2>
+      <p class="sec-sub">Tech debt, plumbing and process</p>
+    </div>
+
+    <!-- Card E -->
+    <article class="card">
+      <div class="card-head">
+        <span class="key">E</span>
+        <h3>Unmatched <code>/api/*</code> returns the SPA&rsquo;s index.html with a 200</h3>
+        <span class="status">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          groomed &mdash; vote by letter
+        </span>
+      </div>
+      <p class="sub">A wrong verb or a typo&rsquo;d route gets the app shell back as a 200, so the caller reads &ldquo;success&rdquo; for a write that never happened.</p>
+      <p class="note"><b>Outranks F and G</b>It fooled the build agent twice in one day, and it&rsquo;s a 20-line fix.</p>
+
+      <ul class="dims">
+        <li class="hi">
+          UX Low
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>
+          reliability
+        </li>
+        <li>S</li>
+        <li>Codex 0&ndash;1</li>
+        <li class="safe">revert-cheap</li>
+      </ul>
+      <p class="pop"><b>Who hits it</b>Every client and every future agent hitting a wrong verb or a typo&rsquo;d route. No human report yet.</p>
+
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>What a missing route returns today &mdash; and after</span><span class="hint">scroll &rarr;</span></figcaption>
+        <div class="scroller">
+          <div class="flow">
+            <div class="step"><span class="who">Caller</span><code>PATCH /api/organization/settings</code></div>
+            <div class="link">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="m13 6 6 6-6 6"/></svg>
+            </div>
+            <div class="step"><span class="who">Express</span>No router matches</div>
+            <div class="link cut">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="m13 6 6 6-6 6"/></svg>
+            </div>
+            <div class="step"><span class="who">Catch-all</span><code>app.use("*")</code> &mdash; static.ts:101 prod / vite.ts:52 dev</div>
+            <div class="link cut">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="m13 6 6 6-6 6"/></svg>
+            </div>
+            <div class="step break">
+              <span class="who">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                Reads as success
+              </span>
+              <code>200 text/html</code>
+            </div>
+          </div>
+          <div class="flow">
+            <div class="step dead"><span class="who">Proposed</span><code>app.all('/api/*')</code> mounted after the last router &mdash; index.ts:258</div>
+            <div class="link ok">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="m13 6 6 6-6 6"/></svg>
+            </div>
+            <div class="step good"><span class="who">Caller sees</span><code>404 {error:'NOT_FOUND', path}</code></div>
+          </div>
+          <div class="strip">
+            <div class="strip-row">
+              <span class="lbl">Mount order</span>
+              <span class="tag">/service-worker.js + /api/version &mdash; static.ts</span>
+              <span class="sep">&rarr;</span>
+              <span class="tag">last /api router</span>
+              <span class="sep">&rarr;</span>
+              <span class="tag on">app.all('/api/*') &mdash; JSON 404 &mdash; NEW</span>
+              <span class="sep">&rarr;</span>
+              <span class="tag">serveStatic / setupVite &mdash; index.ts:258</span>
+            </div>
+          </div>
+        </div>
+        <div class="viz-foot"><code>server/index.ts:258</code> mounts the static / vite catch-all. The JSON 404 must sit after the last <code>/api</code> router and before <code>serveStatic</code>/<code>setupVite</code>; the <code>/service-worker.js</code> and <code>/api/version</code> handlers in <code>static.ts</code> stay ahead of it.</div>
+        <div class="prov">
+          <span class="plbl">Provenance</span>
+          <span class="none">no data rendered &mdash; nothing to source</span>
+        </div>
+      </figure>
+
+      <div class="ballot">
+        <div class="ballot-head">
+          Ballot
+          <span class="pending">3 to vote</span>
+        </div>
+        <ol>
+          <li><span class="opt">E1</span><span><code>404 {error:'NOT_FOUND', path}</code> for every unmatched <code>/api/*</code> verb <span class="rec">rec</span> vs 405 when the path exists for another verb.<span class="why">Why: 405 needs a route-table walk for marginal value.</span></span></li>
+          <li><span class="opt">E2</span><span>Ship solo tonight <span class="rec">rec</span> vs ride the next server PR.<span class="why">Why: S and isolated &mdash; the only risk is mount order, and a pin catches it.</span></span></li>
+          <li><span class="opt">E3</span><span>Add an API-suite pin: <code>GET/PATCH /api/nope</code> &rarr; JSON 404, and <code>GET /</code> still &rarr; HTML. <span class="rec">rec</span><span class="why">Why: it&rsquo;s the whole point.</span></span></li>
+        </ol>
+        <p class="sens">Sensitivity: <code>server/</code> = full Codex scope; no auth or org change.</p>
+      </div>
+    </article>
+
+    <!-- Card F -->
+    <article class="card">
+      <div class="card-head">
+        <span class="key">F</span>
+        <h3>System note when an advisor approves or declines lines</h3>
+      </div>
+      <p class="sub">A machine-written note per decision round would light the parts dashboard&rsquo;s unread-notes badge &mdash; the only push-style signal parts can get today.</p>
+
+      <ul class="dims">
+        <li>UX Low</li>
+        <li>S&ndash;M</li>
+        <li>Codex 2&ndash;3</li>
+        <li class="data">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v13c0 1.7 3.6 3 8 3s8-1.3 8-3v-13"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+          touches data (notes)
+        </li>
+      </ul>
+      <p class="pop"><b>Who hits it</b>Parts users at stores relying on the unread-notes badge &mdash; chips and the LINES column (#1566) may already cover it.</p>
+
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>Where a note would be emitted</span><span class="hint">scroll &rarr;</span></figcaption>
+        <div class="scroller">
+          <div class="flow">
+            <div class="step"><span class="who">Advisor</span>Decides the lines</div>
+            <div class="link">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="m13 6 6 6-6 6"/></svg>
+            </div>
+            <div class="step dead"><span class="who">Server</span><code>applyApprovalLanding</code> &mdash; approval-rollup.ts:406, emits nothing today</div>
+            <div class="link">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="m13 6 6 6-6 6"/></svg>
+            </div>
+            <div class="step good"><span class="who">Proposed</span>One system note per all-decided round &mdash; <code>appendNoteToRO</code>, internal-notes.ts:101 (reset-note precedent)</div>
+          </div>
+        </div>
+      </figure>
+
+      <div class="ballot">
+        <div class="ballot-head">
+          Ballot
+          <span class="pending">3 to vote</span>
+        </div>
+        <ol>
+          <li><span class="opt">B1</span><span>Drop it until McGrath asks after #1566. <span class="rec">rec</span></span></li>
+          <li><span class="opt">B2</span><span>Only on the all-decided landing &mdash; one note per round. Sub-question: does a decline-only round post?</span></li>
+          <li><span class="opt">B3</span><span>Per line.</span></li>
+        </ol>
+      </div>
+    </article>
+
+    <!-- Card G -->
+    <article class="card">
+      <div class="card-head">
+        <span class="key">G</span>
+        <h3>Parts notification channel (bell or email on approval)</h3>
+      </div>
+      <p class="sub">The original McGrath complaint was &ldquo;we don&rsquo;t get a notification.&rdquo; Today no channel reaches the parts role at all.</p>
+
+      <ul class="dims">
+        <li class="hi">UX Med</li>
+        <li>L</li>
+        <li>Codex 4+</li>
+        <li class="safe">revert-cheap code</li>
+      </ul>
+      <p class="pop"><b>Who hits it</b>The parts role &mdash; bell and banner are advisor|admin (<code>open-questions.ts:97</code>), and the email sweep routes to exactly one advisor (<code>question-alert-sweep.ts:100&ndash;115</code>). New pref surface either way.</p>
+
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>Channel &times; who gets it today</span><span class="hint">scroll &rarr;</span></figcaption>
+        <div class="scroller">
+          <table class="plain">
+            <thead>
+              <tr><th scope="col">Channel</th><th scope="col">Who it reaches today</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="surface-name">Bell<span class="code">QuestionBell</span></td>
+                <td class="gate-now"><span class="gate good">advisor, admin</span></td>
+              </tr>
+              <tr>
+                <td class="surface-name">Banner / strip<span class="code">open-questions.ts:97</span></td>
+                <td class="gate-now"><span class="gate good">advisor, admin</span></td>
+              </tr>
+              <tr>
+                <td class="surface-name">Email<span class="code">question-alert-sweep.ts</span></td>
+                <td class="gate-now"><span class="gate warn">exactly one advisor</span></td>
+              </tr>
+              <tr>
+                <td class="surface-name">Parts role<span class="code">any channel</span></td>
+                <td class="gate-now"><span class="gate bad">&mdash; nothing reaches them</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </figure>
+
+      <div class="ballot">
+        <div class="ballot-head">
+          Ballot
+          <span class="pending">3 to vote</span>
+        </div>
+        <ol>
+          <li><span class="opt">B1</span><span>Wait for McGrath feedback after #1566 before building. <span class="rec">rec</span></span></li>
+          <li><span class="opt">B2</span><span>In-app only, or in-app plus email?</span></li>
+          <li><span class="opt">B3</span><span>Who is &ldquo;the parts user&rdquo;: checkout holder / all parts-role members / the org&rsquo;s parts roster?</span></li>
+        </ol>
+      </div>
+    </article>
+
+    <!-- Card H -->
+    <article class="card">
+      <div class="card-head">
+        <span class="key">H</span>
+        <h3>Session hygiene: stale primary checkout, over-specified source pins</h3>
+      </div>
+      <p class="sub">Two time sinks from one day &mdash; a just-merged script &ldquo;wasn&rsquo;t there,&rdquo; and a test that breaks on refactors it has no opinion about.</p>
+
+      <ul class="dims">
+        <li>UX none (process)</li>
+        <li>S</li>
+        <li>Codex 0 (docs/hook)</li>
+        <li class="safe">revert-cheap</li>
+      </ul>
+      <p class="pop"><b>Who hits it</b>Claude sessions only &mdash; cost 3 Codex rounds on #1563 and one false &ldquo;script missing.&rdquo;</p>
+
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>Two sinks, two fixes</span><span class="hint">scroll &rarr;</span></figcaption>
+        <div class="scroller">
+          <table class="plain">
+            <thead>
+              <tr><th scope="col">Time sink</th><th scope="col">Fix</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="surface-name">Primary main lags origin<span class="code">a merged script reads as missing</span></td>
+                <td class="gate-next"><span class="gate good"><code>git pull --ff-only</code> at session start</span><span class="code">RULE #4 text, or seed-worktree-env.sh &mdash; the hook already exists</span></td>
+              </tr>
+              <tr>
+                <td class="surface-name">Statement-order pins<span class="code">break on behavior-preserving refactors</span></td>
+                <td class="gate-next"><span class="gate good">sweep on next touch</span><span class="code">workflow-savebar-wiring is now 139 lines / 13 tests; workflow-board-model still to sweep</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </figure>
+
+      <div class="ballot">
+        <div class="ballot-head">
+          Ballot
+          <span class="pending">2 to vote</span>
+        </div>
+        <ol>
+          <li><span class="opt">B1</span><span>Put the fast-forward in the session-start hook <span class="rec">rec</span> vs RULE #4 text.</span></li>
+          <li><span class="opt">B2</span><span>Sweep the pins now, or on next touch of that file. <span class="rec">rec: next touch</span></span></li>
+        </ol>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============ 4. RISK GRID + ICEBOX ============ -->
+  <section class="section">
+    <div class="sec-head">
+      <span class="node"></span>
+      <h2>Risk grid &amp; icebox</h2>
+      <p class="sec-sub">What could bite, and what waits</p>
+    </div>
+
+    <article class="card">
+      <div class="card-head">
+        <h3>Known risks, plotted</h3>
+      </div>
+
+      <figure class="viz">
+        <figcaption class="viz-cap"><span>Likelihood &times; impact</span><span class="hint">scroll &rarr;</span></figcaption>
+        <div class="risk-body">
+          <div class="scroller">
+          <div class="grid-shell">
+            <div class="y-axis"><span>Likelihood &rarr;</span></div>
+            <div class="plot-col">
+              <div class="plot">
+                <span class="quad" style="left:10px; top:8px;">watch closely</span>
+                <span class="quad" style="right:10px; top:8px;">act now</span>
+                <span class="quad" style="left:10px; bottom:8px;">ignore</span>
+                <span class="quad" style="right:10px; bottom:8px;">plan for it</span>
+
+                <span class="dot now flip" style="left:78%; top:22%;">
+                  <i></i><b>A &mdash; OK&rsquo;d, not pulled</b>
+                </span>
+                <span class="dot todo" style="left:60%; top:35%;">
+                  <i></i><b>B &mdash; pulled count</b>
+                </span>
+                <span class="dot todo" style="left:70%; top:55%;">
+                  <i></i><b>E &mdash; api 404 fallback</b>
+                </span>
+                <span class="dot ice flip" style="left:70%; top:72%;">
+                  <i></i><b>Legacy status writers</b>
+                </span>
+                <span class="dot fixing" style="left:45%; top:74%;">
+                  <i></i><b>Settings-error sweep</b>
+                </span>
+              </div>
+              <div class="x-axis">
+                <span>Low impact</span>
+                <span>High impact &rarr;</span>
+              </div>
+            </div>
+          </div>
+          </div>
+
+          <ul class="scenarios">
+            <li class="now">
+              <i></i>
+              <span><strong>A &mdash; OK&rsquo;d but not pulled</strong> &mdash; a part added after the RO was Ready is approved, never pulled, and the car is delivered without it. <em>Act now.</em></span>
+            </li>
+            <li class="todo">
+              <i></i>
+              <span><strong>B &mdash; pulled count</strong> &mdash; parts sees &ldquo;0 of 4&rdquo; on a car with 2 approved lines and keeps waiting. <em>To groom.</em></span>
+            </li>
+            <li class="todo">
+              <i></i>
+              <span><strong>E &mdash; api 404 fallback</strong> &mdash; an agent or client PATCHes a route that doesn&rsquo;t exist, reads 200, and reports the write landed. <em>To groom.</em></span>
+            </li>
+            <li class="ice">
+              <i></i>
+              <span><strong>Legacy status writers bypass role checks</strong> &mdash; a reopened RO gets set to a status the role matrix would forbid; only via the API, no path through the UI. <em>Iceboxed.</em></span>
+            </li>
+            <li class="fixing">
+              <i></i>
+              <span><strong>Settings-error sweep</strong> &mdash; a settings lookup fails mid-shift and a single-player shop briefly sees multi-player controls. <em>Being fixed tonight.</em></span>
+            </li>
+          </ul>
+        </div>
+      </figure>
+    </article>
+
+    <article class="card">
+      <div class="card-head">
+        <h3>Icebox</h3>
+        <span class="status" style="background:var(--surface-2); color:var(--muted);">not scheduled</span>
+      </div>
+      <ul class="icebox">
+        <li>
+          <span class="what">Per-part pulled dates</span>
+          <span class="trig"><b>Revisit</b> a parts user asks when a part was pulled</span>
+        </li>
+        <li>
+          <span class="what">Legacy status writers bypass role checks</span>
+          <span class="trig"><b>Revisit</b> the extension goes live, or an audit-trail anomaly shows up</span>
+        </li>
+        <li>
+          <span class="what">Cluster band label shade</span>
+          <span class="trig"><b>Revisit</b> it bothers you in prod</span>
+        </li>
+      </ul>
+    </article>
+  </section>
+
+  <footer>
+    <div class="how">
+      <div><span class="lbl">Advance an item</span><span>Name it: <code>groom B</code></span></div>
+      <div><span class="lbl">Vote a ballot</span><span>Reply with the id: <code>A2 backfill</code></span></div>
+      <div><span class="lbl">Where it lands</span><span>Everything decided is written into <code>BACKLOG.md</code> verbatim.</span></div>
+    </div>
+  </footer>
+
+</div>
