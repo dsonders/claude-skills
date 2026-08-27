@@ -79,13 +79,19 @@ Make a todo list and work through it.
   `templates/agent-prompt-block.md` + a pointer to the brief section. Agents READ the brief
   file; the prompt stays short.
 - Parallel only when file territories are disjoint; overlapping territories = ONE agent,
-  sequential stacked PRs (rebase after each squash).
+  sequential stacked PRs (rebase after each squash). **Stacked child PRs get NO Tests/Codex
+  while their base is the parent branch** (`pull_request: branches: [main]`), and the parent's
+  squash auto-closes the child + clears auto-merge — so a child's first real review lands
+  after retarget: budget a fresh Codex round for it (memory `reference_stacked_pr_actions_gotchas`).
 - Worktrees per CLAUDE.md RULE #4 (atomic `.claim`, or mint fresh). Never the primary checkout.
 
 ### Step 4 — Manager loop (triage rules)
 On each agent report / Codex block:
 - **Real defect in groomed scope** → agent fixes the whole class, ONE re-push. Second block →
-  agent stops; manager triages.
+  agent stops; manager triages. "Whole class" = a CENSUS of every consumer of the derivation
+  (grep the field/flag + every `resolveStage(`/`isTerminalStage(` in touched files), listed in
+  the PR body with a verdict per site — not "every site I edited". #1595 claimed "closed as a
+  class" twice and Codex found the un-edited consumer both times (4 rounds, one class).
 - **Finding = an un-ruled decision** → park the PR with the question stated plainly; ledger it.
 - **Finding sized by data you can get** → run a read-only Firestore probe (memory:
   `reference_firestore_readonly_probe_recipe`) and convert "can't size the population" into a
@@ -95,6 +101,12 @@ On each agent report / Codex block:
   their own review surface — next time, split the PR.
 - **Last small Codex-endorsed finding at night** → hold it and batch with Dave's morning
   decisions (one paid round instead of two) UNLESS the PR is otherwise mergeable tonight.
+- **Re-firing dropped gates** → only ONE close/reopen, after `gh pr view --json mergeable` reads
+  MERGEABLE (events fired during UNKNOWN are dropped), then re-arm auto-merge. Every extra
+  reopen = a duplicate Codex run on identical code, and a second run CAN return a different
+  verdict (#1595: pass, then block) — it's a required check, so the stricter one stands.
+- **Sentinel strings** → copy from the SOURCE, not the agent's report (a curly ’ vs ' made a live
+  deploy read as absent); `verify:deploy` on a shorter substring when in doubt.
 - **Agent transcript lost** (account reset, cap) → spawn fresh; the brief and working files
   on disk are the state. Never re-litigate rulings from memory.
 
@@ -126,6 +138,9 @@ Dave reads, reverts if needed, republishes.
 - `/handoff-session` — NOT needed mid-run; the brief is the handoff
 
 ## Troubleshooting
+- **Every workflow dies in seconds with 0 steps, repo-wide** → GitHub org BILLING (failed payment /
+  spending limit), not code: read the job's annotation (`gh api …/check-runs/<id>`). Only Dave
+  can clear it; then `gh run rerun` the killed runs.
 - **Agent dies silently, no notification** → check the usage cap first (the documented cause);
   respawn from the brief.
 - **Two agents want the same file** → you mis-planned Step 3; stop one, convert to stacked PRs.
