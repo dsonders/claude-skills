@@ -124,6 +124,13 @@ For each advanced item, extend its card on the SAME board per "Card anatomy" 4�
 - **Behind-the-scenes items:** the same anatomy in product words (what the user/agent asked
   for → what they got today → what they'd get). Include the risk-grid dot + the one-line
   scenario.
+- **Real figures only + a before/after table when a rule changes money (2026-08-26, card K):**
+  every $ on a mockup is read from the actual record (read-only probe of the real RO + the org's
+  rates), never an illustrative number; every story step is what the app actually allows for
+  that role today (probe `requested_by`/authorship — a row's author can contradict the code
+  comment). When a proposed rule changes arithmetic, the card carries a per-line table
+  (decision · inputs · today · after rule A · after rule A+B) so Dave can see the logic, not
+  just the new total. Use the app's own nouns; a coined term ("note row") stops the vote.
 - **Data provenance check (engineering step, not a card element):** before drawing, verify
   every datum a mockup RENDERS (a name, timestamp, count, status label) exists / is derivable /
   is MISSING — and that any status or vocabulary the mock uses actually exists in the app
