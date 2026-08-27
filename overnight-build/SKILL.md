@@ -63,6 +63,8 @@ Make a todo list and work through it.
   and finish grooming in conversation — do not launch.
 - Spend headroom: warn Dave if a recent run hit the usage cap (agents die silently on it).
 - Keep the machine awake: `nohup caffeinate -i >/dev/null 2>&1 & disown` (verify with `pgrep`).
+- Decide parallel vs serial NOW: parallel agents need an un-isolated manager (see Step 3);
+  if this session already entered a worktree, plan one agent running workstreams in sequence.
 - Note which PRs will be review-first anyway (un-ruled edges you already know about).
 - **Cross-check §Queued against merged PRs** before writing the brief: `gh pr list --state merged
   --limit 40` and grep each Queued heading's key phrase against merged titles. A groom-pass doc PR
@@ -89,6 +91,14 @@ Make a todo list and work through it.
   squash auto-closes the child + clears auto-merge — so a child's first real review lands
   after retarget: budget a fresh Codex round for it (memory `reference_stacked_pr_actions_gotchas`).
 - Worktrees per CLAUDE.md RULE #4 (atomic `.claim`, or mint fresh). Never the primary checkout.
+- **Parallel is only possible if the MANAGER session is not worktree-isolated.** A session that
+  entered a worktree (EnterWorktree / `.claude/worktrees/*` cwd) pins EVERY subagent's shell to that
+  one tree — a second agent in build-2/build-3 fails every Bash call with "This session is isolated
+  in the worktree … refusing to run" (2026-08-27 run 2: Agent B and its helper were dead on arrival).
+  Decide in Step 1: (a) run the manager from the primary checkout (read-only for the manager; agents
+  claim their own trees) when ≥2 disjoint workstreams justify parallelism, or (b) serialize all
+  workstreams through the one claimed tree (5 PRs took ~3h serially — usually fine). Never let an
+  agent route around the guard by entering another agent's live tree or spawning helper agents.
 
 ### Step 4 — Manager loop (triage rules)
 On each agent report / Codex block:
