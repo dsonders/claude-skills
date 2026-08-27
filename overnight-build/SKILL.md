@@ -64,6 +64,11 @@ Make a todo list and work through it.
 - Spend headroom: warn Dave if a recent run hit the usage cap (agents die silently on it).
 - Keep the machine awake: `nohup caffeinate -i >/dev/null 2>&1 & disown` (verify with `pgrep`).
 - Note which PRs will be review-first anyway (un-ruled edges you already know about).
+- **Cross-check §Queued against merged PRs** before writing the brief: `gh pr list --state merged
+  --limit 40` and grep each Queued heading's key phrase against merged titles. A groom-pass doc PR
+  can silently RE-INTRODUCE sections a ledger PR removed (#1603 relisted four items #1593–#1596
+  had shipped; two agents launched on them, 2026-08-27). The BACKLOG is the source of rulings,
+  not of ship state — git is.
 
 ### Step 2 — Write the durable brief
 - Source of items: `docs/overnight/BACKLOG.md` in the app repo — consume the **Queued** section
@@ -105,8 +110,13 @@ On each agent report / Codex block:
   MERGEABLE (events fired during UNKNOWN are dropped), then re-arm auto-merge. Every extra
   reopen = a duplicate Codex run on identical code, and a second run CAN return a different
   verdict (#1595: pass, then block) — it's a required check, so the stricter one stands.
-- **Sentinel strings** → copy from the SOURCE, not the agent's report (a curly ’ vs ' made a live
-  deploy read as absent); `verify:deploy` on a shorter substring when in doubt.
+- **Sentinel strings** → copy from the MERGED diff yourself, never from the agent's report (a curly
+  ’ vs ' made a live deploy read as absent; 2026-08-27 an agent named a FUNCTION as its sentinel —
+  minification mangles identifiers, so it read as "not live" — and another reported an object key
+  "removed" that the merged diff still added). Valid sentinels: a user-visible string literal, a
+  `data-testid`, or an OBJECT KEY (property names survive minification); confirm with
+  `git diff <merge>~1 <merge> -- client/src | grep '^+' | grep <string>` before `verify:deploy`.
+  Server-only literals need a curl, not a bundle grep.
 - **Agent transcript lost** (account reset, cap) → spawn fresh; the brief and working files
   on disk are the state. Never re-litigate rulings from memory.
 
