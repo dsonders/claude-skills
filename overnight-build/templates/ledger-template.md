@@ -1,23 +1,32 @@
 # ☀️ Morning ledger — overnight run of <DATE>
 
-**Bottom line:** <N merged, M parked, what's blocked on Dave — one sentence.>
+FORMAT RULE (Dave, 2026-08-28): scannable, never prose. One idea per line; tables for anything
+with ≥3 parallel items; a state glyph at the left edge of every row (✅ merged · 🟡 needs Dave ·
+⛔ blocked · 📝 review · 🔍 needs a check · ⏸ parked · 🚫 not built); a decision = the question in
+bold on its own line, then `➜ rec:` on the next. Detail lives in PR bodies + memory, not here.
 
-## Merged overnight (nothing is live until you republish)
-| PR | What a user sees (before → after) | Revert |
-|---|---|---|
-| #NNNN | <one plain-language line> | `git revert -m 1 <sha>` |
+**Bottom line:** <one sentence — N merged, M waiting on you, what's blocked.>
 
-## Waiting on you
-- **#NNNN — <name>**: <the question, answerable in one word, with my recommendation first>
+## Board
+| | PR | Item | State | You |
+|---|---|---|---|---|
+| ✅ | #NNNN | <name> | merged | nothing — revert `git revert -m 1 <sha>` if you dislike it |
+| 🟡 | #NNNN | <name> | open, Dave reviews | <one-word ask> |
+| ⛔ | #NNNN | <name> | Codex-blocked rN | round N+1 or park? |
 
-## Hard floor — merged but NOT executed
-- <backfill/script>: run with `<command>` after your go.
+## Your calls (answer top to bottom)
+**1. <question, one line>** — #NNNN
+➜ rec: <one line>
+<one line of why, optional>
+
+## Not built / hard floor
+- 🚫 <item> — <one-line reason>
+- ⏸ <backfill/script>: merged, NOT run; `<command>` after your go
 
 ## Watch-outs
-- <anything a reverting eye should look at first; new-visibility notes; population facts>
+- <one line each>
 
 ## After you republish (mine)
-- `npm run smoke:prod` · `verify:deploy -- --expect "<sentinel>"` per PR · live pass on
-  <highest-risk surface> · kanban + memory updates · fixture cleanup (<ids>)
+`smoke:prod` · `verify:deploy -- --expect "<sentinel>"` per PR · live pass on <surface> · fixtures <ids> · memory
 
-Rounds spent: <Codex rounds per PR>. Parked follow-ups recorded in <memory entry>.
+Rounds spent: <per PR>.
