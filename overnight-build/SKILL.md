@@ -91,6 +91,11 @@ Make a todo list and work through it.
   squash auto-closes the child + clears auto-merge — so a child's first real review lands
   after retarget: budget a fresh Codex round for it (memory `reference_stacked_pr_actions_gotchas`).
 - Worktrees per CLAUDE.md RULE #4 (atomic `.claim`, or mint fresh). Never the primary checkout.
+  **Claim with a FILE inside the dir** (`mkdir .claim && touch .claim/lock`): an empty `.claim/` dir was
+  eaten by an agent's `git stash -u` round-trip twice on 2026-08-28 and the tree sat unlocked for most
+  of the run. **Manager shell hygiene:** a `cd <worktree>` inside any manager Bash command PERSISTS as
+  the session cwd (subagents launched afterwards inherit the pin and `EnterWorktree` is refused) — end
+  every worktree command with `cd <primary>` or run it as `git -C`.
 - **Parallel is only possible if the MANAGER session is not worktree-isolated.** A session that
   entered a worktree (EnterWorktree / `.claude/worktrees/*` cwd) pins EVERY subagent's shell to that
   one tree — a second agent in build-2/build-3 fails every Bash call with "This session is isolated
@@ -102,6 +107,14 @@ Make a todo list and work through it.
 
 ### Step 4 — Manager loop (triage rules)
 On each agent report / Codex block:
+- **"Dave reviews" in the launch prompt ≠ hold a green PR.** Under the overnight policy a Codex-clean
+  PR whose rulings are all Dave's gets auto-merge ARMED even if the prompt labeled it Dave-reviews; only
+  an un-ruled decision parks it (Dave, 2026-08-29: "If codex is clean… isn't the protocol… merge?").
+- **A verifier/grounding feature or a client-value/clock FENCE = one Codex finding per input path.**
+  #1655 took 17 rounds (facts/recommendation/cue × words/numbers/negation/clauses/sources), #1650 took
+  12 (wall-clock fence patched 3× before the model was replaced by a server generation). On the FIRST
+  block of that shape, stop patching the flagged line: enumerate the whole matrix (or replace the
+  instrument) in one round — see app `docs/lessons-learned/video-batch-2026-08-28.md`.
 - **Real defect in groomed scope** → agent fixes the whole class, ONE re-push. Second block →
   agent stops; manager triages. "Whole class" = a CENSUS of every consumer of the derivation
   (grep the field/flag + every `resolveStage(`/`isTerminalStage(` in touched files), listed in
