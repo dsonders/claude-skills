@@ -27,6 +27,16 @@ visuals only on what survived. Output = ⛔ rulings written verbatim into
 4. **Priority order:** UX-impacting items first; among those, reliability/performance
    implications outrank pure polish. Behind-the-scenes (tech debt, security) after. Icebox last.
 5. **Votes come back by letter in chat** (or as artifact comments — those reach the session).
+6. **Each open decision sits directly under the options it decides** (Dave, 2026-08-28: "It's hard to
+   follow the design options and the decisions that need to be made. Put each open decision adjacent to
+   its design options."). No single ballot block at the bottom while a card still has open questions; a
+   "Decisions — all ruled" block at the end is fine once everything is ruled.
+7. **"I need to see each of these mocked up" = every direction on EVERY screen it claims to cover**, as a
+   matrix (rows = directions, columns = screens, like-for-like; a column a direction leaves alone is still
+   drawn, with "no notice here"). One frame per direction is not enough when a direction spans screens.
+8. **When redrawing a ruled direction, keep every existing control the ruling didn't remove** (the V1
+   checklist lost its drag handles; Dave: "we're not losing the drag and drop handles, right?"). A ruling
+   that strips chrome lists what goes; everything else stays.
 
 ## Card anatomy (the approved example — copy it, don't reinvent it)
 
@@ -148,6 +158,27 @@ For each advanced item, extend its card on the SAME board per "Card anatomy" 4�
 ### Close
 - Recap in chat: what's Queued (run-ready), what's still open, what got iceboxed with its
   revisit trigger. If Dave says run tonight → invoke `/overnight-build`.
+
+## Building the board — what actually works (2026-08-27/28)
+- **One Opus builder per card (or per pass), never one giant rewrite** — a builder asked to regenerate the
+  whole board stalled at the 600s no-progress watchdog after writing the file; it recovered only because
+  the file was already on disk. Brief: write each card to `scratchpad/cards/<key>.html`, splice with a
+  short Python script, run three checks (article count, banned-term grep, every class defined), STOP.
+- **The template's shared mock CSS lives inside the archived cards' `<style>` blocks** (`.story`,
+  `.screens`, `.app-screen`, `.as-*`, `.conseq`, phone plate/tabs) — hoist them into the main stylesheet
+  before dropping the archive, or every new card renders unstyled.
+- **Read the real screens and the real records BEFORE the brief** (Explore agent for component anatomy +
+  a read-only Firestore probe for a real RO/video): the sweep changed the V6 story (there is no Stop
+  button) and produced the whole V1 fixture (RO 832936's shot list). Shot numbering: content shots only,
+  bookends unnumbered — a locked ruling the builder will get wrong unless told.
+- **Screenshot every card before publishing and check the datums, not just the layout** — the builder
+  invented a line title, a $ figure, a note and a status label across four cards in one pass; only the
+  screenshot pass caught them. Silhouettes (grey bars, "Part 1", "Line title") are the fix when no real
+  value exists.
+- The publish gate requires the live artifact file to be Read in full (4–5 chunks of ≤1000 lines) before
+  the first republish of a session; budget for it.
+- A deleted artifact ends the watch with "artifact not found"; republish WITHOUT `url` to a new one and
+  update the URL in BACKLOG.md's header + the pipeline memory the same turn.
 
 ## Cost control
 Triage cards are cheap on purpose; mockups only after Dave advances an item. A deep UX groom
