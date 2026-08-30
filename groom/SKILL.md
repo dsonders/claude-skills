@@ -31,9 +31,14 @@ visuals only on what survived. Output = ⛔ rulings written verbatim into
    follow the design options and the decisions that need to be made. Put each open decision adjacent to
    its design options."). No single ballot block at the bottom while a card still has open questions; a
    "Decisions — all ruled" block at the end is fine once everything is ruled.
-7. **"I need to see each of these mocked up" = every direction on EVERY screen it claims to cover**, as a
-   matrix (rows = directions, columns = screens, like-for-like; a column a direction leaves alone is still
-   drawn, with "no notice here"). One frame per direction is not enough when a direction spans screens.
+7. **Default (Dave, 2026-08-30): draw ONLY the recommended direction, as one short walkthrough per actor** —
+   "Case 1 — the tech…: what they see → what the approver sees", ≤ ~6 frames per card; alternatives are one
+   text row each in a small table, never drawn. A full directions × screens matrix is built ONLY when Dave
+   explicitly asks to see each option ("I need to see each of these mocked up") — rejected 8/30 as "too many
+   UI drawings, too much redundancy". Every frame's caption names the actor AND that it is THEIR OWN action
+   ("The parts user, when they price a part") — without it a per-actor frame reads as "everyone sees everyone's
+   change" (the SA-7-C misread). Mock copy follows app design.md "Notice & status copy": event + consequence
+   plainly; one subject one surface; never render what's derivable.
 8. **When redrawing a ruled direction, keep every existing control the ruling didn't remove** (the V1
    checklist lost its drag handles; Dave: "we're not losing the drag and drop handles, right?"). A ruling
    that strips chrome lists what goes; everything else stays.
@@ -55,8 +60,8 @@ BETTER"). Card A on it is the template. Every groomed card, top to bottom:
    app's slate greys, its real row colors/pills/chips, system sans), side by side, wrapping on
    narrow widths. Read the real component first so the drawing matches (columns, labels, pill
    styles). The proposed change gets a soft highlight ring so the eye lands on it. When there's
-   no single obvious design: THREE lettered directions (C-A / C-B / C-C), one trade-off line
-   each. Mobile surfaces = 390px phone frames of the real header/strip. The board renders in
+   no single obvious design: pick a recommendation, draw ONLY it, and list the other lettered
+   directions as text rows with one trade-off line each (rule 7 — drawn variants only on request). Mobile surfaces = 390px phone frames of the real header/strip. The board renders in
    light or dark; the screen frames pin their own literal light palette (scoped `.app-screen`)
    so they look like the app in both.
 6. **Consequence line** — one sentence: what the user gets, e.g. "Parts sees the RO again, with
@@ -128,8 +133,8 @@ the bad outcome occurs.
 ### Pass 2 — Groom (deep, only what Dave picked)
 For each advanced item, extend its card on the SAME board per "Card anatomy" 4–7:
 - **UX items:** today vs proposed app screens (desktop + mobile when the surface has both);
-  three lettered directions when there's no single obvious design. Text = captions and
-  trade-off lines only. (Full multi-round ballots may graduate to a design canvas — link it
+  the recommended direction drawn, other lettered directions as text rows (rule 7). Text =
+  captions and trade-off lines only. (Full multi-round ballots may graduate to a design canvas — link it
   from the card, but the decision summary stays on the board.)
 - **Behind-the-scenes items:** the same anatomy in product words (what the user/agent asked
   for → what they got today → what they'd get). Include the risk-grid dot + the one-line
