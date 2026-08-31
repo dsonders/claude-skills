@@ -62,7 +62,7 @@ Make a todo list and work through it.
 - Confirm every workstream is groomed: each open question has a ruling. If any remain, STOP
   and finish grooming in conversation — do not launch.
 - Spend headroom: warn Dave if a recent run hit the usage cap (agents die silently on it).
-- Keep the machine awake: `nohup caffeinate -i >/dev/null 2>&1 & disown` (verify with `pgrep`).
+- Keep the machine awake: `nohup caffeinate -dis >/dev/null 2>&1 & disown` (verify with `pgrep`) — `-i` alone does NOT stop lid/system sleep (2026-08-30: the machine slept 30 min in, killing all 4 agents mid-turn). Lid stays open. **Sleep recovery:** agents die with context INTACT — SendMessage each one "the machine slept; re-orient from disk (`git status`/`log` in your tree), continue" instead of respawning; all 4 resumed cleanly.
 - Decide parallel vs serial NOW: parallel agents need an un-isolated manager (see Step 3);
   if this session already entered a worktree, plan one agent running workstreams in sequence.
 - Note which PRs will be review-first anyway (un-ruled edges you already know about).
@@ -144,6 +144,9 @@ On each agent report / Codex block:
   on disk are the state. Never re-litigate rulings from memory.
 
 ### Step 5 — Morning ledger
+
+**Morning review protocol (Dave's preferred flow, 2026-08-31):** after delivering the ledger, walk the needs-Dave items ONE at a time — a succinct briefing (user-visible before/after table, review state, what's baked in that he hasn't ruled) ending in ONE call with a rec; EXECUTE each ruling (merge/retarget/fix) before briefing the next item. Stacked children retarget via `git rebase --onto origin/main <ORIGINAL fork point>` — after the parent was itself rebased, its branch tip is NOT the child's upstream (memory `reference_stacked_pr_actions_gotchas`).
+
 Produce the debrief from `templates/ledger-template.md`: bottom line first; one plain-language
 line per merged PR (what a user sees before/after) + `git revert -m 1 <sha>` command; parked
 PRs with their question reduced to a one-word-answerable ask; hard-floor items awaiting
