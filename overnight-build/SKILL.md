@@ -156,7 +156,7 @@ Dave reads, reverts if needed, republishes.
 ### Step 6 — After republish
 - `npm run smoke:prod`; `npm run verify:deploy -- --expect "<sentinel>"` per PR (collect
   sentinels in the brief as you go — client-bundle strings only, never server-only literals).
-- Live-verify the highest-risk surface by hand (browser) — one representative flow per PR.
+- **Live-verify EVERY PR's user-facing surfaces on prod, per actor** — not one representative flow. 2026-09-01: the full pass found 4 client misses in a PR that had 12k green tests + mirror + Codex-clean (#1688 → fix #1705). Protocol: smoke FIRST; then 1–2 Opus agents on disjoint surfaces, TD1 only, fixtures closed on exit, verdict PROVED / FAILED-with-evidence / NOT-DRIVABLE-why per item, evidence in the scratchpad; a PR-body line "pinned by tests, not seen in a browser" names the first surfaces to drive.
 - Update the kanban cards; write/refresh the memory entry (rulings + follow-ups) so no future
   session re-litigates; `/compound` if the run surfaced a reusable lesson.
 

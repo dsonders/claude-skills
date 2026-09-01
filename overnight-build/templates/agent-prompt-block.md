@@ -13,6 +13,7 @@ Non-negotiables (also in the brief header — they bind you):
 - Merge per the brief's policy line for your workstream.
 - Park, don't guess.
 
+Kill every background watcher/log-tail you started BEFORE your final report (each one that exits later re-wakes you for nothing).
 Report: PR number(s) + URL(s), merge state, gates, probe table, prod-verify sentinel,
 parked items, any deviation from the brief and why.
 
