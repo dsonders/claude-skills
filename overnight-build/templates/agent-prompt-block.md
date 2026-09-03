@@ -12,6 +12,9 @@ Non-negotiables (also in the brief header — they bind you):
   Codex block, ONE re-push, then stop and report.
 - Merge per the brief's policy line for your workstream.
 - Park, don't guess.
+- Shell: ABSOLUTE paths in every file argument; never `cd X && cmd relative-file`, never a recursive
+  grep/cp over a dir holding a `.env` (app root, `client/`) — use the Grep tool or scope to `shared/`,
+  `server/`, `client/src`. Each violation raises a permission prompt Dave must answer by hand (CC ≥2.1.259).
 
 Kill every background watcher/log-tail you started BEFORE your final report (each one that exits later re-wakes you for nothing).
 Report: PR number(s) + URL(s), merge state, gates, probe table, prod-verify sentinel,
