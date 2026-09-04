@@ -46,6 +46,8 @@ Both modes run the same steps and produce the same artifacts — non-interactive
 
 ## Delegation (token economics)
 
+**Every agent brief opens with this constraint, verbatim:** "NEVER `cd` in a Bash command — every command uses absolute paths (`git -C /abs/repo …`); a `cd` + relative path raises a permission prompt for Dave even under bypass mode." And tell Dave in one line, before launching, that helper agents may raise read-only permission prompts that are safe to approve (memory `feedback_no_cd_in_subagent_bash`).
+
 When the main session runs a premium model (Fable) and cheaper capable agents exist (Opus), the read-heavy and draft-heavy steps delegate; every gate and judgment stays in the main loop. This also keeps the bulk reads OUT of the main session's context — which matters, since compound usually runs when that context is at its heaviest.
 
 - **Delegate to ONE background agent (Agent tool, `model: "opus"`)**: Step 1's `git diff`/`git log` gather (return a change summary, not the raw diff), Step 2.7's overlap grep (return candidate docs + their 5-dimension scores + quoted evidence), Step 7's prune sweep (return candidates + evidence — the agent never deletes), and — once the main session has decided what to capture — Step 3's doc drafting against the template (main session reviews for accuracy + terseness per Step 8).

@@ -33,6 +33,7 @@ not the merge button. First validated 2026-08-25 (P1 batch: 8 PRs, #1555–#1564
 4. **Park, don't guess.** Ambiguity goes in the PR body and the ledger, never into code.
 5. **Fable manages, Opus builds.** The manager session briefs, triages, probes, and reports;
    it does not write feature code.
+   **Every agent brief opens with this constraint, verbatim:** "NEVER `cd` in a Bash command — every command uses absolute paths (`git -C /abs/repo …`); a `cd` + relative path raises a permission prompt for Dave even under bypass mode." And tell Dave in one line, before launching, that helper agents may raise read-only permission prompts that are safe to approve (memory `feedback_no_cd_in_subagent_bash`).
 6. **Paid reviews are budgeted.** Codex rounds cost money; the triage rules below decide when
    to spend another one.
 

@@ -71,6 +71,8 @@ Read the Codex comment in full. Note every `**[P0|P1]** file:line — problem �
 
 ### Step 3 — Run the thorough multi-agent review (the Workflow)
 
+**Warn Dave first, brief agents second:** before launching, tell Dave in one line that the review's helper agents may raise read-only permission prompts (a harness path check; safe to approve). Any agent YOU brief opens with, verbatim: "NEVER `cd` in a Bash command — every command uses absolute paths (`git -C /abs/repo …`); a `cd` + relative path raises a permission prompt for Dave even under bypass mode." (memory `feedback_no_cd_in_subagent_bash`)
+
 Invoke the bundled review workflow. It maps the diff, fans out reviewers across Codex's rubric, adversarially verifies each finding, sweeps the whole class repo-wide, and returns one ordered fix plan. Pass the gathered context as `args`:
 
 ```
