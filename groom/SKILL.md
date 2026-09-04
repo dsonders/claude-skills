@@ -30,7 +30,12 @@ visuals only on what survived. Output = ⛔ rulings written verbatim into
 6. **Each open decision sits directly under the options it decides** (Dave, 2026-08-28: "It's hard to
    follow the design options and the decisions that need to be made. Put each open decision adjacent to
    its design options."). No single ballot block at the bottom while a card still has open questions; a
-   "Decisions — all ruled" block at the end is fine once everything is ruled.
+   "Decisions — all ruled" block at the end is fine once everything is ruled. **And feedback on a mockup is
+   answered IN the mockup (Dave, 2026-09-04: "I want to work mainly from the UX / UI spaces (review, iterate,
+   make decisions)… I expect iteration to happen in that mockup, not simply that new content / decisions needed
+   in the DECISIONS / VOTING area"):** a question about a frame ("what happens if he taps Link?") → draw the
+   frame and its result; never a chat answer, a table, or a new ballot line in its place. Each decision strip
+   sits full-width right under the frame it decides; the bottom ballot exists only once everything is ruled.
 7. **Default (Dave, 2026-08-30): draw ONLY the recommended direction, as one short walkthrough per actor** —
    "Case 1 — the tech…: what they see → what the approver sees", ≤ ~6 frames per card; alternatives are one
    text row each in a small table, never drawn. A full directions × screens matrix is built ONLY when Dave
