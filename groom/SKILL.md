@@ -116,10 +116,11 @@ the bad outcome occurs.
    (b) population — how many real users hit it, how often; (c) risk-grid position for
    bugs/risks (likelihood × impact); (d) anything Dave flagged urgent or a customer reported;
    (e) cluster/sequencing dependencies (an item that unblocks others rises). State the #1
-   item's why in one line on its card. Section structure stays (Ready to run / To groom UX /
-   To groom behind-the-scenes / Icebox) but WITHIN sections the order is the ranking — and if
-   a behind-the-scenes item genuinely outranks a UX item, say so on its card rather than
-   silently reshuffling sections.
+   item's why in one line on its card. Sections are PRODUCT SURFACES (Dave, 2026-09-03: "that's how I'd like
+   to roll through the backlog, with MPI and Video items at the top"): MPI & Video → Parts page &
+   queue → RO page (advisor/admin/tech) → Dashboards → Customer page → Store settings (labor rates &
+   money) → Platform & tooling → Risk grid → Icebox → Archive. Queued (ruled) cards sit at the TOP of
+   their surface section, collapsed; WITHIN a section the order is the ranking.
 3. Build/refresh the board in that order (Opus agent builds the HTML from `reference-board.html`
    + a content brief written in product words; load `artifact-design` before writing). Triage
    cards per "Card anatomy". No mockups yet.
