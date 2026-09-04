@@ -72,10 +72,12 @@ BETTER"). Card A on it is the template. Every groomed card, top to bottom:
 6. **Consequence line** — one sentence: what the user gets, e.g. "Parts sees the RO again, with
    the reason, and it drops off by itself when the last part is pulled — no new status, no new
    screen."
-7. **Ballot** — plain questions, ids = card letter + number (A1, A2…), the recommended answer
-   marked `REC: YES` / `REC: FIX THEM TOO` first, one-sentence why about the person. The
-   data-provenance check (below) collapses to at most ONE ballot line: "This needs one new
-   piece of stored information on each RO — build it as part of this?"
+7. **Decisions** — ids = card letter + number (A1, A2…), each one a full-width strip DIRECTLY UNDER
+   the frame it decides (rule 6); plain question, the recommended answer marked `REC: YES` /
+   `REC: THE SHEET` first, one-sentence why about the person. A single "Decisions — all ruled"
+   block at the bottom only once every line is ruled. The data-provenance check (below) collapses
+   to at most ONE line: "This needs one new piece of stored information on each RO — build it as
+   part of this?"
 
 **Never on a card:** file names, function/field names, predicates, `code` chips, provenance
 strips, "sensitivity" banners in engineering terms, counts like "4 to vote", status IDs
@@ -163,8 +165,12 @@ For each advanced item, extend its card on the SAME board per "Card anatomy" 4�
 - Screenshot-check again before publishing.
 5. Dave votes by letter in chat → write each ruling VERBATIM (⛔) into BACKLOG.md, move the
    item to Queued with files-to-read + sensitivity + sentinel notes (THIS is where the
-   file:line anchors from the Explore sweep land), commit the doc (doc-only branch + PR +
-   auto-merge), republish the board showing the item as Ready to run.
+   file:line anchors from the Explore sweep land), commit the doc, republish the board showing
+   the item as Ready to run. **ONE open doc branch per voting session** — each ruling is a new
+   commit on it (auto-merge takes it when the session pauses); back-to-back PRs inserting at the
+   same BACKLOG anchor go DIRTY on GitHub as each merges (6 PRs, 2 rebuilds on 2026-09-04). A
+   "sensitivity" note picks the pre-push mirror and the ledger emphasis — NEVER a merge hold: a
+   groomed item's every decision is Dave's, so green = merge (his standing rule; re-asked 9/4).
 
 ### Close
 - Recap in chat: what's Queued (run-ready), what's still open, what got iceboxed with its
@@ -190,6 +196,19 @@ For each advanced item, extend its card on the SAME board per "Card anatomy" 4�
   the first republish of a session; budget for it.
 - A deleted artifact ends the watch with "artifact not found"; republish WITHOUT `url` to a new one and
   update the URL in BACKLOG.md's header + the pipeline memory the same turn.
+- **An account switch (`/login` to another email) makes the artifact invisible too** — publish
+  without `url`, update the header URL + memory (2026-09-03: dsonders@gmail → dave@tenthgear).
+- **Probe the COUNT, not the excerpt.** MPI-6's frames drew 3 notes; the record had 4, and "McGrath
+  techs are saying this" was ONE tech on ONE inspection — the read-only probe over the whole org
+  caught both. Before drawing from a real record, query the full population and state it honestly.
+- **Edit the board with tag-depth-aware splicing, never `.*?</div>` regexes** — a row-cloning regex
+  nested the 4th note inside the 3rd on two sheets; a 12-line depth counter (`<div`/`</div>` tokens →
+  block end) fixed it. Keep `cards/<KEY>.html` as the unit; re-splice by `<span class="key">` match.
+- **Screenshot only after `document.fonts.ready`** — before the webfont lands, ballot lines render
+  unwrapped and look clipped; a real bug was chased for a round on that false alarm.
+- **Every builder/Explore brief opens with, verbatim:** "NEVER `cd` in a Bash command — every
+  command uses absolute paths"; a soft "use absolute paths" mid-brief was ignored and each
+  `cd … && grep relative-file` popped a permission prompt for Dave even under claude-yolo.
 
 ## Cost control
 Triage cards are cheap on purpose; mockups only after Dave advances an item. A deep UX groom
