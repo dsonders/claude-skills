@@ -155,6 +155,13 @@ If both pass, route per Step 2.5: cross-project → shared INDEX; stack-specific
 
 Every INDEX row flows into a CLAUDE.md's context and carries a compliance cost. One row per session is how a CLAUDE.md grows from 100 to 335 lines.
 
+**Row shape (Dave, 2026-09-04):** an INDEX/pitfalls row is ONE line — the tell, the rule, a pointer to the doc. PR numbers, round-by-round narratives and "3rd hit" histories live in the linked doc, never in the row. The 9/5 audit found the always-loaded rulebook at ~25k words (5× since May) while its most-emphasized rule (org isolation) still drew 28 Codex findings in two weeks — prose emphasis doesn't scale.
+
+**Promotion ladder — prose is a TODO for code.** When a lesson recurs, don't lengthen the row; move it up:
+- **1st hit** → a lessons-learned doc (and a row only if the gate above passes).
+- **2nd hit** → the fix ships with a **pin** (a test or a grep guard that goes red if the pattern returns) and the doc records the hit count.
+- **3rd hit** → the rule becomes **code**: a helper that is the only way to do the operation, or a required CI check (the way `check:org-scoping` / `check:status-literals` already do). The row shrinks to one line pointing at the helper/guard. Ask, every time: *"what code would make this lesson unnecessary?"* — and if there is no code shape (a design smell like "a write path satisfies part of a read gate"), keep a short checklist, not a paragraph.
+
 ### Step 5: Skill / Command Creation Gate (default: NO)
 
 Creating a skill costs context in every session. Default: **don't create.**
