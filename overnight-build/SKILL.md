@@ -48,9 +48,10 @@ not the merge button. First validated 2026-08-25 (P1 batch: 8 PRs, #1555–#1564
   2. Pricing / billing changes
   3. Destructive or irreversible operations
   These aren't reviewable-by-revert; a bad one is already spent.
-- **Blocking-domain PRs still run `/pre-push-mirror` before their first push** (org-isolation,
-  auth, schema, customer-facing, unattended writes). Green=merge changes who approves, not
-  how carefully we build.
+- **Auth / login and org-isolation PRs still run `/pre-push-mirror` before their first push** —
+  ONLY those two domains (Dave, 2026-09-04: the 9/5 audit found no measurable round reduction
+  from the mirror on size-matched PRs, so it's kept where a miss is a security hole, not as a
+  blanket step). Green=merge changes who approves, not how carefully we build.
 - **Morning gate:** Dave reviews the ledger (below), reverts anything he dislikes (cheap —
   nothing is deployed), then republishes. Daytime/normal sessions keep CLAUDE.md RULE #7
   unchanged — this policy is scoped to overnight-build runs.
@@ -80,6 +81,13 @@ Make a todo list and work through it.
 - Copy `templates/brief-template.md` → session scratchpad (`overnight-<date>-brief.md`).
 - One section per workstream: the rulings VERBATIM (mark each ⛔ don't-re-decide), files/
   lesson-docs to read, sensitivity notes, merge instruction per PR, prod-verify sentinel.
+- **Size the PRs in the brief, not in the agent's head: ~800 non-test changed lines is the cap
+  per PR** (CLAUDE.md RULE #7; 9/5 audit — blockers scale with lines at every size, ~1 per 900,
+  and PRs ≥800 lines were 36% of PRs but 76% of blocking rounds, while <100-line PRs passed
+  first try 94%). A workstream that will exceed it is split HERE into stacked PRs with named
+  seams (server model → client → follow-ups), each independently mergeable. The agent reports
+  `git diff --stat` before its first push; over the cap = split before pushing, not after a
+  block. Stacked children still get no Tests/Codex until retarget (Step 3) — budget for it.
 - Header rules come from the template — don't retype them.
 
 ### Step 3 — Launch build agents
@@ -116,6 +124,11 @@ On each agent report / Codex block:
   12 (wall-clock fence patched 3× before the model was replaced by a server generation). On the FIRST
   block of that shape, stop patching the flagged line: enumerate the whole matrix (or replace the
   instrument) in one round — see app `docs/lessons-learned/video-batch-2026-08-28.md`.
+  **Since #1827 (2026-09-05) a phrasing counterexample on the three heuristic-parser files
+  (`mpi-voice-processor.ts`, `video-findings.ts`, `video-talking-points-job.ts`) is P2 —
+  advisory, not a block.** Don't patch the regex for it; add the sentence to the eval corpus
+  (`__tests__/eval/mpi-matching/run.ts`) and `npm run eval:mpi` is the gate. What still
+  blocks there: fabrication on the primary AI path, control-flow loss/dup, org-scoping, crashes.
 - **Real defect in groomed scope** → agent fixes the whole class, ONE re-push. Second block →
   agent stops; manager triages. "Whole class" = a CENSUS of every consumer of the derivation
   (grep the field/flag + every `resolveStage(`/`isTerminalStage(` in touched files), listed in
@@ -170,7 +183,7 @@ Dave reads, reverts if needed, republishes.
 
 ## Integration
 - Grooming (conversation, before) → **overnight-build** → `/compound` (after)
-- `/pre-push-mirror` — blocking-domain PRs, before first push
+- `/pre-push-mirror` — auth/login + org-isolation PRs ONLY, before first push
 - `/codex-fix` — available to agents for a full recovery on a blocked PR
 - `/handoff-session` — NOT needed mid-run; the brief is the handoff
 
