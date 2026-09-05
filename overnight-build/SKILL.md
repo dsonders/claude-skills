@@ -176,7 +176,7 @@ On each agent report / Codex block:
 
 ### Step 5 — Morning ledger
 
-**Morning review protocol (Dave's preferred flow, 2026-08-31):** after delivering the ledger, walk the needs-Dave items ONE at a time — a succinct briefing (user-visible before/after table, review state, what's baked in that he hasn't ruled) ending in ONE call with a rec; EXECUTE each ruling (merge/retarget/fix) before briefing the next item. Stacked children retarget via `git rebase --onto origin/main <ORIGINAL fork point>` — after the parent was itself rebased, its branch tip is NOT the child's upstream (memory `reference_stacked_pr_actions_gotchas`).
+**Morning review protocol (Dave's preferred flow, 2026-08-31):** after delivering the ledger, walk the needs-Dave items ONE at a time — a succinct briefing (user-visible before/after table, review state, what's baked in that he hasn't ruled) ending in ONE call with a rec; EXECUTE each ruling (merge/retarget/fix) before briefing the next item. A call about what a USER SEES (row copy, what a tick does, a state label) gets its mockup WITH the briefing (2026-09-05: "This case needs a mockup so I can see the full flow"); Dave then edits copy inline on the frame — redraw, mark the decision on the frame, and ship the copy as a follow-up PR. Stacked children retarget via `git rebase --onto origin/main <ORIGINAL fork point>` — after the parent was itself rebased, its branch tip is NOT the child's upstream (memory `reference_stacked_pr_actions_gotchas`).
 
 Produce the debrief from `templates/ledger-template.md`: bottom line first; one plain-language
 line per merged PR (what a user sees before/after) + `git revert -m 1 <sha>` command; parked
