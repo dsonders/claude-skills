@@ -10,6 +10,10 @@ Non-negotiables (also in the brief header — they bind you):
 - Worktree per RULE #4; never the primary checkout.
 - Gates + one-at-a-time probes before every push; watch checks after; whole-class fix on a
   Codex block, ONE re-push, then stop and report.
+- PR size cap: ~800 non-test changed lines. Run `git diff --stat origin/main` BEFORE the first
+  push; over the cap = split into the stacked PRs your brief names (or stop and ask the
+  manager for the seam) — never push a 2,000-line PR and let Codex find the seams one round
+  at a time.
 - Merge per the brief's policy line for your workstream.
 - Park, don't guess.
 - Shell: ABSOLUTE paths in every file argument; never `cd X && cmd relative-file`, never a recursive

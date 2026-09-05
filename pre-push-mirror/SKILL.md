@@ -1,6 +1,6 @@
 ---
 name: pre-push-mirror
-description: Pre-push mirror review for RO-bot app PRs in blocking domains — run BEFORE the first push of any PR touching org-isolation/tenancy, auth, schema/migrations, billing, destructive ops, customer-facing surfaces, or background/unattended writes. Runs /code-review high on the unpushed diff, triages findings by the mirror rules (fix correctness + whole class; defer behavior-preserving refactors; meta-probe fail-open guards), fixes, then pushes ONCE. Use when about to push a sensitive or blocking-domain PR, when the user says "pre-push mirror", "mirror review", or "run the mirror", or before opening any PR where a Codex block is plausible. RO-bot app only (/ro-bot/app/).
+description: Pre-push mirror review for RO-bot app PRs that touch AUTH/LOGIN or ORG-ISOLATION/tenancy — run BEFORE the first push of those PRs only (Dave, 2026-09-04; scoped down from all blocking domains after the 9/5 audit found no round reduction from the mirror on size-matched PRs). Runs /code-review high on the unpushed diff, triages findings by the mirror rules (fix correctness + whole class; defer behavior-preserving refactors; meta-probe fail-open guards), fixes, then pushes ONCE. Use when about to push an auth or org-isolation PR, or when the user says "pre-push mirror", "mirror review", or "run the mirror". RO-bot app only (/ro-bot/app/).
 argument-hint: [none — operates on the current branch's unpushed diff]
 ---
 
@@ -14,17 +14,12 @@ The Codex review gate is a PAID adversarial reviewer that reports the first wall
 
 ## When to Use This Skill
 
-**Use when the unpushed diff touches ANY blocking domain:**
-- `organization_id` isolation / tenancy / auth (any of the three auth patterns)
-- DB/Firestore schema, migrations, backfills
-- Pricing, billing, subscriptions
-- Destructive or bulk data operations
-- Customer-facing surfaces that can leak internal data
-- Background / unattended / fire-and-forget writes, transactions, race-prone ordering
-- Any RULE #7 sensitive-category PR (Dave reviews these — the mirror is what makes his review cheap)
-- Low confidence in the change, regardless of category
+**Use ONLY when the unpushed diff touches one of these two domains** (Dave's ruling, 2026-09-04 — the 9/5 audit of 201 code PRs found mirrored and un-mirrored PRs of the same size bounced the same number of times, so the mirror is kept where a miss is a security hole, not as a blanket step):
+- `organization_id` isolation / tenancy (RULE #1)
+- Auth / login / access control (any of the three auth patterns)
 
 **Don't use for:**
+- Schema, pricing, destructive ops, customer-facing surfaces, background writes — these ship on the Codex gate alone now; the PR-size cap (~800 non-test lines, RULE #7) does more for their round count than a mirror did.
 - A PR that already FAILED the Codex gate → `/codex-fix` (the reactive complement).
 - Trivial or advisory-scope diffs (docs, secret-free test-only) — Codex doesn't block there; push.
 - Repos without a Codex gate (`website/`, `GTM/`).

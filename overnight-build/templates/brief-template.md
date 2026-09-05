@@ -18,8 +18,12 @@ RULES FOR ALL AGENTS
   implements only the rulings below — sensitive categories included. EXCEPTIONS: a PR
   carrying an un-ruled decision parks (no auto-merge, question in the PR body); never
   EXECUTE backfills/migrations/bulk-data scripts or touch billing overnight (merging the
-  code is fine). Blocking-domain diffs (auth/org/schema/customer-facing/unattended writes):
-  run the pre-push-mirror skill BEFORE the first push.
+  code is fine). Auth/login or org-isolation diffs ONLY: run the pre-push-mirror skill
+  BEFORE the first push (every other domain ships on the Codex gate alone).
+- PR SIZE CAP: ~800 non-test changed lines per PR. `git diff --stat origin/main` before the
+  first push; over the cap = split into the stacked PRs named in your workstream section
+  (or ask the manager for the seam). Blockers scale with lines — a 2,000-line PR is 4–5 rounds
+  by construction.
 - Commits end with: Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
 - PR bodies: plain language for a non-engineer owner first (role × status-label before/after
   tables for permission changes), technical detail after, screenshots for visual changes,
