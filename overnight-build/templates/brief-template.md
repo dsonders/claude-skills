@@ -24,6 +24,8 @@ RULES FOR ALL AGENTS
   first push; over the cap = split into the stacked PRs named in your workstream section
   (or ask the manager for the seam). Blockers scale with lines — a 2,000-line PR is 4–5 rounds
   by construction.
+- Git/runtime hygiene: never `reset --soft <remote ref>`; three-dot scope stat in the push call; commit before
+  git-touching scripts; background long commands; unique scratchpad filenames; `npm --prefix <tree>` for jest.
 - Commits end with: Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
 - PR bodies: plain language for a non-engineer owner first (role × status-label before/after
   tables for permission changes), technical detail after, screenshots for visual changes,

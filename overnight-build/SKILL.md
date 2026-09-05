@@ -105,6 +105,17 @@ Make a todo list and work through it.
   of the run. **Manager shell hygiene:** a `cd <worktree>` inside any manager Bash command PERSISTS as
   the session cwd (subagents launched afterwards inherit the pin and `EnterWorktree` is refused) — end
   every worktree command with `cd <primary>` or run it as `git -C`.
+- **Shared `.git`, moving base (2026-09-05, #1825 wiped MPI-9 off main, CI stayed green):** agents never
+  `git reset --soft <remote ref>` to squash — squash via `rebase -i`/`--amend` on the branch's own history —
+  and every push runs `git fetch origin && git diff origin/main...HEAD --stat` (three dots) IN THE SAME Bash
+  call and confirms only the PR's files. A squash whose `--stat` deletes test files = stop the line
+  (`git grep <sibling symbol> origin/main`). A pure revert of a safety change is un-mergeable by construction
+  (Codex refuses it) — re-land in the same PR. Memory `feedback_no_reset_soft_squash_shared_git`.
+- **Agent hygiene that bit 2026-09-05:** commit BEFORE any script that touches git (probe/eval scripts
+  `git checkout` files — 3 uncommitted-fix wipes); long silent commands (eval, full sweeps, probe loops) trip
+  the 10-min stream watchdog — background/tee; the scratchpad is SHARED — unique per-agent filenames
+  (`pr-body.md` collision published the wrong PR body); jest in a `.claude` worktree tests the PRIMARY unless
+  cwd is the tree (`npm --prefix <tree> run test -- …`); `cp` of `.env` into a minted tree is denied — symlink.
 - **Parallel is only possible if the MANAGER session is not worktree-isolated.** A session that
   entered a worktree (EnterWorktree / `.claude/worktrees/*` cwd) pins EVERY subagent's shell to that
   one tree — a second agent in build-2/build-3 fails every Bash call with "This session is isolated
@@ -147,6 +158,12 @@ On each agent report / Codex block:
   MERGEABLE (events fired during UNKNOWN are dropped), then re-arm auto-merge. Every extra
   reopen = a duplicate Codex run on identical code, and a second run CAN return a different
   verdict (#1595: pass, then block) — it's a required check, so the stricter one stands.
+- **Eval-gated PRs:** a PROMPT addition is a behaviour change — require a per-case differential on the CRIT
+  cases (OLD / branch / branch-minus-prompt-hunk ×6), not just a green eval; a hand-rolled scorer must IMPORT
+  the eval's assertion (a lenient re-implementation called a real regression "a flake"); never read the rounded
+  "100%" — compare exact counts (2026-09-05: 209/210 printed 100% and passed).
+- **~7 rounds → fresh agent** stays; also split when the reviewer finds a NARROWER escape each round on one
+  predicate (both → fallback → numeric → spoken): define the vocabulary once, table-driven test.
 - **Sentinel strings** → copy from the MERGED diff yourself, never from the agent's report (a curly
   ’ vs ' made a live deploy read as absent; 2026-08-27 an agent named a FUNCTION as its sentinel —
   minification mangles identifiers, so it read as "not live" — and another reported an object key

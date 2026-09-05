@@ -20,6 +20,14 @@ Non-negotiables (also in the brief header — they bind you):
   grep/cp over a dir holding a `.env` (app root, `client/`) — use the Grep tool or scope to `shared/`,
   `server/`, `client/src`. Each violation raises a permission prompt Dave must answer by hand (CC ≥2.1.259).
 
+- Git: NEVER `git reset --soft <remote ref>` to squash (shared .git, moving base → silently deletes siblings' merged
+  code); squash via `rebase -i`/`--amend`; in the SAME Bash call as every push: `git fetch origin && git diff
+  origin/main...HEAD --stat` and confirm only your files. COMMIT before any script that touches git.
+- Runtime: long silent commands (eval, full sweeps, probe loops) trip a 10-min watchdog — `run_in_background` or tee +
+  poll. Scratchpad is shared — unique filenames (`<item>-pr-body.md`); re-read before `--body-file`. Jest in a
+  `.claude` tree: `npm --prefix <tree> run test -- --runTestsByPath … --testPathIgnorePatterns=…` (else it tests the
+  primary). Minted tree: symlink `.env` + `node_modules` (`cp .env` is denied).
+
 Kill every background watcher/log-tail you started BEFORE your final report (each one that exits later re-wakes you for nothing).
 Report: PR number(s) + URL(s), merge state, gates, probe table, prod-verify sentinel,
 parked items, any deviation from the brief and why.
