@@ -19,7 +19,7 @@ The learning loop:
 5. Repeated workflows get turned into skills or commands
 6. **Stale knowledge gets deleted** so signal-to-noise stays high
 
-If a session adds more to the always-loaded files (CLAUDE.md, any Pattern Index, MEMORY.md) than it removes, you're probably compounding in the wrong direction. Dead weight degrades compliance on *every other* rule.
+If a session adds more to the always-loaded files (AGENTS.md — the shared rulebook — and the CLAUDE.md that imports it, design.md, any Pattern Index, MEMORY.md) than it removes, you're probably compounding in the wrong direction. Dead weight degrades compliance on *every other* rule.
 
 **Two artifacts compound, not one.** Most compound workflows only capture *technical* lessons. This one also captures *process* lessons — what this session revealed about how Claude and the user should work together — because improving the collaboration compounds across every future feature, not just the next one in this domain.
 
@@ -81,12 +81,12 @@ Answer internally — the last two are the ones most workflows skip:
 | **Failure/Fix** | Bug root cause + prevention | `docs/lessons-learned/` (consider a hook if deterministically catchable) |
 | **Process / Collaboration** | How Claude and the user should work together — a correction, confirmed approach, or preference | Memory `feedback_*` entry (see Step 6). Never a lessons-learned doc. |
 | **Workflow** | Repeated sequence of steps | New skill ONLY if Step 5 gate passes |
-| **Rule** | Constraint that must always hold | CLAUDE.md cardinal rule ONLY if truly non-negotiable (rare; most go in `@docs/pitfalls.md` or memory) |
-| **Product fact** | A user-facing fact copy/marketing depends on (counts, mode names, workflow names) | A shared/source-of-truth file if one exists (e.g., `shared/product-facts.md`); else the closest single-source doc. Never duplicate across CLAUDE.mds. |
+| **Rule** | Constraint that must always hold | `AGENTS.md` cardinal rule ONLY if truly non-negotiable (rare; most go in `docs/pitfalls.md` or memory). AGENTS.md is the SHARED rulebook (Codex loads it natively; CLAUDE.md `@`-imports it) — a rule written into CLAUDE.md's Claude-only section is invisible to Codex, so only Claude mechanics (skills, memory paths, `@` auto-imports) go there. |
+| **Product fact** | A user-facing fact copy/marketing depends on (counts, mode names, workflow names) | A shared/source-of-truth file if one exists (e.g., `shared/product-facts.md`); else the closest single-source doc. Never duplicate across rulebooks. |
 
 ### Step 2.5: Route the Learning (read the project's routing table)
 
-Before writing anything, check whether the project's root or workspace CLAUDE.md has a **routing table** for where each learning type belongs. Multi-subproject workspaces usually have a shared knowledge area for cross-cutting facts and a per-subproject docs area for stack-specific patterns.
+Before writing anything, check whether the project's root or workspace rulebook (`AGENTS.md`; its `CLAUDE.md` is an import stub) has a **routing table** for where each learning type belongs. Multi-subproject workspaces usually have a shared knowledge area for cross-cutting facts and a per-subproject docs area for stack-specific patterns.
 
 If a routing table exists, use it:
 - Cross-project insight (helps an unrelated project) → shared INDEX/docs.
@@ -228,11 +228,12 @@ The step most compounding workflows skip. Before committing, actively look for d
 | **Delete** | Code/problem-domain gone, or fully redundant. Remove it. |
 
 Sweep:
-- [ ] **CLAUDE.md size:** `wc -l CLAUDE.md`. Target <150. Over? Cut or move sections to `@docs/...` imports.
+- [ ] **Rulebook size:** `wc -c AGENTS.md CLAUDE.md design.md`. Baseline after the 2026-09-06 prune (app): AGENTS.md ~12.5K, CLAUDE.md ~1.8K, design.md ~9.8K — every session loads all three. Over? Cut, or move rationale/spec into a linked doc (`docs/worktree-sop.md`, `docs/plans/...`), never into another auto-loaded file.
+- [ ] **Rewriting a rulebook or doctrine file?** Read it from `origin/main` inside the worktree (never an earlier primary-checkout read — a 3-day-stale read silently dropped four rules, #1849), diff the rewrite against that same copy, and grep `__tests__/` for source pins (`read('design.md')`, literal doctrine phrases) before rewording anything (#1850 lost a CI round to one).
 - [ ] **Pattern Index rows** referencing deleted code, superseded approaches, or moderate-overlap pairs from Step 2.7 → Update/Consolidate/Delete.
 - [ ] **Lessons-learned docs** that overlap (drift silently) or reference code that no longer exists → Consolidate or Delete.
 - [ ] **MEMORY.md entries** for merged features still marked "active" → Delete.
-- [ ] **Dead rules** in CLAUDE.md naming renamed files or past projects → Delete.
+- [ ] **Dead rules** in AGENTS.md / CLAUDE.md naming renamed files or past projects → Delete. (Every workspace dir — root, app, website, GTM, shared — uses the AGENTS.md-shared + CLAUDE.md-stub pair since 2026-09-06; edit the rule in AGENTS.md so both tools see it.)
 
 **Delete, don't archive.** Git history *is* the archive (`git log --diff-filter=D` recovers anything). A `docs/lessons-learned/archived/` directory just accumulates docs nobody reads and pollutes search — skip it. A session that adds 0 INDEX rows and removes 1 stale one is a **WIN**. Net-negative compounding is the goal once a repo is mature.
 
@@ -258,10 +259,11 @@ cd ~/.claude/skills && git add -A && git diff --cached --quiet || git commit -m 
 
 If you edited a **shared/source-of-truth** repo:
 ```bash
-cd <project>/shared && git add -A && git diff --cached --quiet || git commit -m "compound: <what fact changed>" && git push origin main 2>/dev/null || echo "shared has no remote — skipping push"
+git -C <abs>/shared add <the files you edited> && git -C <abs>/shared diff --cached --quiet || git -C <abs>/shared commit -m "compound: <what fact changed>" && git -C <abs>/shared push origin main 2>/dev/null || echo "shared has no remote — skipping push"
 ```
+(No `cd`, explicit paths, never `-A` — the same rules the agent briefs open with.)
 
-Do NOT auto-commit the subproject repos — those follow normal commit/PR rules per the subproject's CLAUDE.md. This skill commits only the meta-files (skills + shared knowledge + memory).
+Do NOT auto-commit the subproject repos — those follow normal commit/PR rules per the subproject's AGENTS.md. This skill commits only the meta-files (skills + shared knowledge + memory).
 
 ---
 

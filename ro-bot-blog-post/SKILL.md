@@ -35,7 +35,7 @@ Do not use this skill for:
 ## Mandatory Reading Before Starting
 
 Read these files before Phase 1:
-- `CLAUDE.md` (project instructions, banned words, voice rules)
+- `AGENTS.md` (the website's shared rulebook — `CLAUDE.md` is a stub that imports it; brand + banned words live in `../shared/brand.md`)
 - `src/content/config.ts` (current frontmatter schema)
 - `src/layouts/BlogPost.astro` (how frontmatter renders)
 
@@ -390,7 +390,7 @@ Think Wall Street Journal feature photography, not stock photo. No hands in fram
 | Tailwind brand colors | `tailwind.config.mjs` |
 | SEO keyword tracker | `docs/seo/keyword-tracker.md` |
 | Distribution drafts | `docs/distribution/{slug}.md` |
-| Project rules | `CLAUDE.md` |
+| Project rules | `AGENTS.md` (imported by `CLAUDE.md`) |
 
 ---
 
