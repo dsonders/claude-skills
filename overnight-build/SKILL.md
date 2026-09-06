@@ -68,6 +68,15 @@ Make a todo list and work through it.
 - Decide parallel vs serial NOW: parallel agents need an un-isolated manager (see Step 3);
   if this session already entered a worktree, plan one agent running workstreams in sequence.
 - Note which PRs will be review-first anyway (un-ruled edges you already know about).
+- **Guardrails due are auto-queued — no ruling needed (Dave, 2026-09-06).** Run
+  `python3 scripts/review-economics.py --since <last run date> --guardrails --guardrails-json <scratchpad>/guardrails.json`
+  (read-only; ~2–3 min; run in background). Every `LESSON` (a lesson doc at ≥3 hits with `guard=none`) and
+  every `CLASS` (one Codex finding class on ≥3 PRs) becomes ONE Queued card in the brief with the standing
+  ruling written in: "⛔ Dave 2026-09-06: guardrail work is auto-approved — build without grooming." Scope of
+  such a card = the smallest code guard that makes the mistake impossible or fails CI on it (a helper that
+  is the only way to do the operation, or a `check:*` script with probe fixtures), plus setting `guard=` on
+  the lesson's recurrence line and shrinking its INDEX row to a pointer. A `LESSON-NOLINE` is a docs
+  fix, not a guardrail — stamp the line in the same run. Dave still sees the list in the ledger (Step 5).
 - **Cross-check §Queued against merged PRs** before writing the brief: `gh pr list --state merged
   --limit 40` and grep each Queued heading's key phrase against merged titles. A groom-pass doc PR
   can silently RE-INTRODUCE sections a ledger PR removed (#1603 relisted four items #1593–#1596
@@ -181,7 +190,9 @@ On each agent report / Codex block:
 Produce the debrief from `templates/ledger-template.md`: bottom line first; one plain-language
 line per merged PR (what a user sees before/after) + `git revert -m 1 <sha>` command; parked
 PRs with their question reduced to a one-word-answerable ask; hard-floor items awaiting
-execution; then the checklist (republish → smoke → sentinels → kanban → fixtures cleanup).
+execution; a **Guardrails** line — which due items were built this run, which are queued for the
+next (from Step 1's `--guardrails` output; informational, never a question for Dave); then the
+checklist (republish → smoke → sentinels → kanban → fixtures cleanup).
 Dave reads, reverts if needed, republishes.
 
 ### Step 6 — After republish
