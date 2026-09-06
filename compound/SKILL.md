@@ -233,7 +233,7 @@ Sweep:
 - [ ] **Pattern Index rows** referencing deleted code, superseded approaches, or moderate-overlap pairs from Step 2.7 → Update/Consolidate/Delete.
 - [ ] **Lessons-learned docs** that overlap (drift silently) or reference code that no longer exists → Consolidate or Delete.
 - [ ] **MEMORY.md entries** for merged features still marked "active" → Delete.
-- [ ] **Dead rules** in AGENTS.md / CLAUDE.md naming renamed files or past projects → Delete. (Every workspace dir — root, app, website, GTM, shared — uses the AGENTS.md-shared + CLAUDE.md-stub pair since 2026-09-06; edit the rule in AGENTS.md so both tools see it.)
+- [ ] **Dead rules** in AGENTS.md / CLAUDE.md naming renamed files or past projects → Delete. (app, website, GTM, shared use the AGENTS.md-rulebook + CLAUDE.md-import-stub pair since 2026-09-06 — edit the rule in AGENTS.md so both tools see it. The workspace ROOT is INVERTED: Claude Code does not expand `@`-imports inside an ancestor-directory CLAUDE.md (verified 2.1.263), so `/ro-bot/CLAUDE.md` holds the full rulebook and `/ro-bot/AGENTS.md` is a pointer — edit root rules in CLAUDE.md.)
 
 **Delete, don't archive.** Git history *is* the archive (`git log --diff-filter=D` recovers anything). A `docs/lessons-learned/archived/` directory just accumulates docs nobody reads and pollutes search — skip it. A session that adds 0 INDEX rows and removes 1 stale one is a **WIN**. Net-negative compounding is the goal once a repo is mature.
 
