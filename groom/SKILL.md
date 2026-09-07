@@ -147,6 +147,7 @@ For each advanced item, extend its card on the SAME board per "Card anatomy" 4�
 - **Behind-the-scenes items:** the same anatomy in product words (what the user/agent asked
   for → what they got today → what they'd get). Include the risk-grid dot + the one-line
   scenario.
+- **AI-generated output = a gallery of ≥10 REAL worst-shape inputs on the board BEFORE the decision strip (2026-09-07):** the 28 Aug golden set was hand-written and short; the real McGrath write-ups (10–30 sentences) turned a three-times-recommended cue-card direction into "back to the drawing board" the moment Dave saw ten of each. Probe the real population, take the longest/messiest ten, render them under the rule, print the counts.
 - **Real figures only + a before/after table when a rule changes money (2026-08-26, card K):**
   every $ on a mockup is read from the actual record (read-only probe of the real RO + the org's
   rates), never an illustrative number; every story step is what the app actually allows for
@@ -168,7 +169,10 @@ For each advanced item, extend its card on the SAME board per "Card anatomy" 4�
    file:line anchors from the Explore sweep land), commit the doc, republish the board showing
    the item as Ready to run. **ONE open doc branch per voting session** — each ruling is a new
    commit on it (auto-merge takes it when the session pauses); back-to-back PRs inserting at the
-   same BACKLOG anchor go DIRTY on GitHub as each merges (6 PRs, 2 rebuilds on 2026-09-04). A
+   same BACKLOG anchor go DIRTY on GitHub as each merges (6 PRs, 2 rebuilds on 2026-09-04). Auto-merge lands
+  each doc PR in ~2 minutes, so "one branch per session" only holds if you ARM auto-merge at the session's close —
+  otherwise it is one PR per ruling (nine on 6–7 Sep; harmless, but sequential). A per-ruling script (move the card
+  to Queued + mark the board card ruled + re-splice) makes each vote a one-call turn. A
    "sensitivity" note picks the pre-push mirror and the ledger emphasis — NEVER a merge hold: a
    groomed item's every decision is Dave's, so green = merge (his standing rule; re-asked 9/4).
 
