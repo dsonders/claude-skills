@@ -133,9 +133,11 @@ each tap into the artifact's own store; nothing reads it until a session sweeps 
 5. Rebuild the phone board whenever the backlog changes (new to-vote cards, a card re-drawn): source in
    `phone-board/` next to this file (README there) — `decisions.py` turns every card's questions into lettered
    options with the rec marked (open-ended questions = text-only decisions) and `STAGE` marks which cards are still
-   triage (⛔ Dave 9/8: a not-yet-groomed item shows the groom-it-or-not decision at the TOP of its page, with the
-   feedback field mirrored under it, and its questions below as "what grooming would settle"; on the dashboard it wears
-   an amber "groom?" pill); `python3 build.py`, run the Playwright checks, republish with the phone board's URL as `url`.
+   triage. ⛔ Dave 9/8, the not-yet-groomed page is CURATED for a fast call: title + one-line sub, "Not yet groomed",
+   ONE basic app-UI mockup (`triage_frames.py` — visual beats text; a UX item always gets one), the three buttons
+   (Advance to grooming / Keep in backlog / Send to Icebox), the feedback field, and nothing else — the grooming
+   questions and chips fold under Details. No helper sentences. On the dashboard it wears an amber "groom?" pill.
+   `python3 build.py`, run the Playwright checks, republish with the phone board's URL as `url`.
    Keep the card keys stable — the store is keyed on them.
 
 ### Pass 1 — Triage (cheap, whole backlog)

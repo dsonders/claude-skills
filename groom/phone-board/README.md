@@ -8,6 +8,7 @@ passing that URL as `url` from any session).
   Keys are the board card keys; ids are `<KEY>-<n>` and the store is keyed on them — keep them stable.
 - `cards.json` — title / sub / dims / figures per to-vote card, extracted from the desktop board's HTML
   (the extraction script is in the 2026-09-08 session; re-extract with the same regexes when cards change).
+- `triage_frames.py` — the ONE basic mockup per not-yet-groomed item (keyed in `build.py`'s `TRIAGE_MOCK`).
 - `lib.py`, `parts_card.py`, `admin_card.py` — the drawn app frames (RO line panel, customer page, parts card, admin
   Parts & Labor card). Add a `frames_for(key)` branch in `build.py` for each new Flip / walkthrough item.
 - `board.css` — the desktop board's stylesheet, carried in so ported figures render.

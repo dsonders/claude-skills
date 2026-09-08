@@ -4,6 +4,7 @@ from lib import ro_panel, owner_page, step, sil
 from parts_card import parts_card
 exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'admin_card.py')).read())
 from decisions import DEC, STAGE, STAGE_NOTE
+from triage_frames import parts_card_tall, stock_answer_row
 O=os.path.dirname(os.path.abspath(__file__))
 cards=json.load(open(O+'/cards.json'))
 board_css=open(O+'/board.css').read()
@@ -28,6 +29,10 @@ def frames_for(key):
         return dict(kind="walk", caption="Same line, two minutes apart", today=f'<div class="m-steps">{today}</div>', proposed=f'<div class="m-steps">{prop}</div>')
     return dict(kind="none")
 
+TRIAGE_MOCK = {
+ "Q": dict(html=parts_card_tall(), caption="Today — the parts counter, on one line with two parts: the card runs past the bottom of the phone (≈ 830 px), so the counter scrolls constantly."),
+ "SA-20b": dict(html=stock_answer_row(), caption="Today — the parts counter answers “In stock? Yes” while pricing, and the part is recorded as in stock for delivery before anyone has pulled it. Proposed: the answer stays an answer; delivery is recorded when the counter pulls or orders."),
+}
 data_cards=[]
 for c in cards:
     decs=[]
@@ -35,7 +40,7 @@ for c in cards:
         decs.append(dict(id=f"{c['key']}-{i}", n=i, q=q, options=[dict(l=l,t=t,rec=r) for l,t,r in opts], text=(len(opts)==0)))
     fr=frames_for(c['key'])
     blocks=''.join(c['blocks']) if fr['kind']=='none' else ''
-    data_cards.append(dict(key=c['key'], section=c['section'], title=c['title'], sub=c['sub'], dims=c['dims'], pop=c['pop'], ruled=c['ruled'], blocks=blocks, frames=fr, decisions=decs, stage=STAGE.get(c['key'],'groomed'), stageNote=STAGE_NOTE.get(c['key'],'')))
+    data_cards.append(dict(key=c['key'], section=c['section'], title=c['title'], sub=c['sub'], dims=c['dims'], pop=c['pop'], ruled=c['ruled'], blocks=blocks, frames=fr, decisions=decs, stage=STAGE.get(c['key'],'groomed'), triageMock=TRIAGE_MOCK.get(c['key'])))
 
 # ruled / queued items for the dashboard (from the live board)
 ruled_items=[
@@ -72,7 +77,10 @@ PAGE_CSS = """
 .m-total{font-size:15.5px}
 .m-status{font-size:13px}
 /* ---------- stage ---------- */
-.m-stage{margin:12px 16px 0;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.m-stage{margin:12px 16px 0;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);padding:9px 14px;display:flex;flex-direction:column;gap:8px}
+.m-stage.triage.ruled{border-color:var(--teal);background:var(--teal-soft)}
+.m-stage.triage.ruled .m-stage-lbl{color:var(--teal)}
+.m-stage.triage.ruled .m-stage-lbl i{background:var(--teal)}
 .m-stage.triage{border-color:var(--amber);background:var(--amber-soft)}
 .m-stage-lbl{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--ink-2)}
 .m-stage.triage .m-stage-lbl{color:var(--amber)}
@@ -117,7 +125,7 @@ html,body{overflow-x:hidden}
 .m-seg{display:flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--surface);font-size:13px;font-weight:500;margin:14px 16px 0}
 .m-seg button{flex:1;text-align:center;padding:7px 0;border-radius:999px;color:var(--muted);min-height:38px;border:0;background:none;font:inherit;cursor:pointer}
 .m-seg button.on{background:var(--ink);color:#fff}
-.m-frame{margin:10px 16px 0;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff}
+.m-frame{margin:12px 16px 0;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff}
 .m-frame-cap{margin:6px 16px 0;font-size:12.5px;color:var(--muted);line-height:1.45}
 .m-steps{padding:6px 16px 0;display:flex;flex-direction:column;gap:14px}
 .m-steps .frame{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff}
@@ -230,17 +238,19 @@ JS = r"""
     var h = '<div class="m-top"><div style="display:flex;align-items:center;justify-content:space-between"><a class="m-back" href="#/">'+'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg><span>Board</span></a><span class="m-cap">'+(idx+1)+' of '+CARDS.length+'</span></div>';
     h += '<div class="m-title"><span class="key">'+esc(c.key)+'</span><div>'+esc(c.title)+'</div></div><div class="m-sub">'+esc(c.sub)+'</div></div>';
     var note0 = notes[key] && notes[key].text || '';
+    var FEEDBACK_LBL = 'Questions / feedback for the next session';
     if (c.stage==='triage') {
       var sr = stageRuling(c);
-      h += '<div class="m-stage triage" id="stage-block"><div class="m-stage-lbl"><i></i>Not yet groomed — your call: groom it or not</div>';
-      if (c.stageNote) h += '<div class="m-note">'+esc(c.stageNote)+'</div>';
-      h += '<div class="m-q">What happens to this item?</div>';
+      h += '<div class="m-stage triage'+(sr?' ruled':'')+'" id="stage-block"><div class="m-stage-lbl"><i></i>Not yet groomed</div></div>';
+      if (c.triageMock) h += '<div class="m-frame">'+c.triageMock.html+'</div><div class="m-frame-cap">'+esc(c.triageMock.caption)+'</div>';
+      h += '<div class="m-dec" id="stage-dec"><div class="m-q">What happens to this item?</div>';
       STAGE_OPTS.forEach(function(o){ h += '<button class="m-btn'+(sr&&sr.choice===o[0]?' chosen':'')+'" data-stage="'+o[0]+'">'+esc(o[1])+'</button>'; });
-      h += '<div class="m-ruled-line" id="rl-stage">'+(sr?'<span>'+esc(stageLabel(sr.choice))+' · '+fmt(sr.at)+'</span><button data-stage-clear="1">clear</button>':'')+'</div>';
-      h += '<div class="m-q" style="margin-top:6px">Questions &amp; feedback — staged for the next session</div><textarea class="m-field'+(note0.trim()?' filled':'')+'" data-note-mirror="1" rows="3" placeholder="Anything to work through before you can rule — a question about a frame, a redraw you want, a concern…">'+esc(note0)+'</textarea></div>';
+      h += '<div class="m-ruled-line" id="rl-stage">'+(sr?'<span>'+esc(stageLabel(sr.choice))+' · '+fmt(sr.at)+'</span><button data-stage-clear="1">clear</button>':'')+'</div></div>';
+      h += '<div class="m-dec"><div class="m-q">'+FEEDBACK_LBL+'</div><textarea class="m-field'+(note0.trim()?' filled':'')+'" id="note-field" rows="4">'+esc(note0)+'</textarea><div class="m-hint" id="note-hint">'+(note0.trim()?'Staged '+fmt(notes[key].at):'')+'</div></div>';
+      var qlist = c.decisions.map(function(d){ return '<li>'+esc(d.q)+'</li>'; }).join('');
+      h += '<div class="m-foot"><details class="m-details"><summary><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg><span>Details — what grooming would settle</span></summary><div>'+esc(c.dims.join(' · '))+(c.pop?'<br><b>Who hits it</b> '+esc(c.pop):'')+(qlist?'<ul style="margin:8px 0 0;padding-left:18px">'+qlist+'</ul>':'')+'</div></details>'+(next?'<a class="m-next" href="#/item/'+encodeURIComponent(next.key)+'">Next: '+esc(next.key)+' '+chev()+'</a>':'<a class="m-next" href="#/">Back to the board '+chev()+'</a>')+'</div>';
     } else {
       h += '<div class="m-stage"><div class="m-stage-lbl"><i></i>Groomed — ready to rule</div></div>';
-    }
     if (c.ruled && c.ruled.length) { h += '<div style="padding:10px 16px 0"><div class="m-empty" style="border-style:solid;border-color:var(--teal);color:var(--ink-2)"><span class="m-cap" style="color:var(--teal)">Already ruled</span><br>'+c.ruled.map(esc).join('<br>')+'</div></div>'; }
     if (c.frames.kind !== 'none') {
       var st = flipState[key] || 'proposed';
@@ -252,21 +262,20 @@ JS = r"""
     } else {
       h += '<div style="padding:14px 16px 0"><div class="m-empty">No screen changes — nothing to draw.</div></div>';
     }
-    if (c.stage==='triage' && c.decisions.length) h += '<div class="m-sechdr">What grooming would settle<small>Rule any of these now if you already know — otherwise they wait for the mockups.</small></div>';
     c.decisions.forEach(function(d){ h += decisionHTML(c, d); });
-    var note = notes[key] && notes[key].text || '';
-    h += '<div class="m-dec"><div class="m-q">Questions &amp; feedback — staged for the next session</div><textarea class="m-field'+(note.trim()?' filled':'')+'" id="note-field" rows="4" placeholder="Anything to work through before you can rule — a question about a frame, a redraw you want, a concern…">'+esc(note)+'</textarea><div class="m-hint" id="note-hint">'+(note.trim()?'Staged '+fmt(notes[key].at):'Saves as you type. The next session answers it here, in the frames.')+'</div></div>';
+    var note = note0;
+    h += '<div class="m-dec"><div class="m-q">'+FEEDBACK_LBL+'</div><textarea class="m-field'+(note.trim()?' filled':'')+'" id="note-field" rows="4">'+esc(note)+'</textarea><div class="m-hint" id="note-hint">'+(note.trim()?'Staged '+fmt(notes[key].at):'')+'</div></div>';
     h += '<div class="m-foot"><details class="m-details"><summary><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg><span>Details</span></summary><div>'+esc(c.dims.join(' · '))+(c.pop?'<br><b>Who hits it</b> '+esc(c.pop):'')+'</div></details>'+(next?'<a class="m-next" href="#/item/'+encodeURIComponent(next.key)+'">Next: '+esc(next.key)+' '+chev()+'</a>':'<a class="m-next" href="#/">Back to the board '+chev()+'</a>')+'</div>';
+    }
     var app = document.getElementById('app'); app.innerHTML = h;
     // wire
     app.querySelectorAll('[data-flip]').forEach(function(b){ b.addEventListener('click', function(){ flipState[key] = b.getAttribute('data-flip'); renderItem(key); }); });
     app.querySelectorAll('[data-choose]').forEach(function(b){ b.addEventListener('click', function(){ var id = b.getAttribute('data-dec'), l = b.getAttribute('data-choose'); var prev = rulings[id] || {}; writeRuling(id, {choice:l, words:prev.words||'', at:now()}); refreshDecision(c, id); }); });
     app.querySelectorAll('[data-clear]').forEach(function(b){ b.addEventListener('click', function(){ var id = b.getAttribute('data-clear'); clearRuling(id); refreshDecision(c, id); }); });
     app.querySelectorAll('[data-words]').forEach(function(t){ var timer; t.addEventListener('input', function(){ clearTimeout(timer); var id = t.getAttribute('data-words'); timer = setTimeout(function(){ var prev = rulings[id] || {}; var d = c.decisions.filter(function(x){ return x.id===id; })[0]; var words = t.value; if (!words.trim() && !prev.choice) { if (rulings[id]) clearRuling(id); } else { writeRuling(id, {choice:prev.choice||'', words:words, at:now()}); } refreshDecision(c, id, true); }, 600); }); });
-    var nf = document.getElementById('note-field'), mirror = app.querySelector('[data-note-mirror]'); var nt;
-    function noteInput(src){ var other = src===nf ? mirror : nf; if (other) other.value = src.value; clearTimeout(nt); nt = setTimeout(function(){ writeNote(key, src.value); var filled = !!src.value.trim(); nf.classList.toggle('filled', filled); if (mirror) mirror.classList.toggle('filled', filled); document.getElementById('note-hint').textContent = filled ? 'Staged '+fmt(notes[key].at) : 'Saves as you type. The next session answers it here, in the frames.'; }, 600); }
-    nf.addEventListener('input', function(){ noteInput(nf); }); if (mirror) mirror.addEventListener('input', function(){ noteInput(mirror); });
-    function wireStage(){ var blk = document.getElementById('stage-block'); if (!blk) return;
+    var nf = document.getElementById('note-field'); var nt;
+    nf.addEventListener('input', function(){ clearTimeout(nt); nt = setTimeout(function(){ writeNote(key, nf.value); var filled = !!nf.value.trim(); nf.classList.toggle('filled', filled); document.getElementById('note-hint').textContent = filled ? 'Staged '+fmt(notes[key].at) : ''; }, 600); });
+    function wireStage(){ var blk = document.getElementById('stage-dec'); if (!blk) return;
       blk.querySelectorAll('[data-stage]').forEach(function(b){ b.addEventListener('click', function(){ writeRuling(stageId(c), {choice:b.getAttribute('data-stage'), words:'', at:now()}); refreshStage(c); }); });
       var cl = blk.querySelector('[data-stage-clear]'); if (cl) cl.addEventListener('click', function(){ clearRuling(stageId(c)); refreshStage(c); }); }
     wireStage();
@@ -279,9 +288,9 @@ JS = r"""
     h += '<div class="m-ruled-line" id="rl-'+esc(d.id)+'">'+(ruled?'<span>Ruled'+(r.choice?' · '+esc(r.choice):'')+' · '+fmt(r.at)+'</span><button data-clear="'+esc(d.id)+'">clear</button>':'')+'</div></div>';
     return h;
   }
-  function refreshStage(c){ var blk = document.getElementById('stage-block'); if (!blk) return; var sr = stageRuling(c);
+  function refreshStage(c){ var blk = document.getElementById('stage-dec'); if (!blk) return; var sr = stageRuling(c);
     blk.querySelectorAll('[data-stage]').forEach(function(b){ b.classList.toggle('chosen', !!(sr && sr.choice===b.getAttribute('data-stage'))); });
-    blk.classList.toggle('ruled', !!sr);
+    blk.classList.toggle('ruled', !!sr); var sb = document.getElementById('stage-block'); if (sb) sb.classList.toggle('ruled', !!sr);
     document.getElementById('rl-stage').innerHTML = sr ? '<span>'+esc(stageLabel(sr.choice))+' · '+fmt(sr.at)+'</span><button data-stage-clear="1">clear</button>' : '';
     var cl = blk.querySelector('[data-stage-clear]'); if (cl) cl.addEventListener('click', function(){ clearRuling(stageId(c)); refreshStage(c); }); }
   function refreshDecision(c, id, keepFocus){
@@ -313,7 +322,7 @@ JS = r"""
       var typing = el && document.activeElement && el.contains(document.activeElement);
       refreshDecision(c, d.id, !!typing);
     });
-    if (notesToo) { var nf = document.getElementById('note-field'); if (nf && document.activeElement !== nf) { var t = notes[key] && notes[key].text || ''; nf.value = t; nf.classList.toggle('filled', !!t.trim()); var hint = document.getElementById('note-hint'); if (hint) hint.textContent = t.trim() ? 'Staged '+fmt(notes[key].at) : 'Saves as you type. The next session answers it here, in the frames.'; } }
+    if (notesToo) { var nf = document.getElementById('note-field'); if (nf && document.activeElement !== nf) { var t = notes[key] && notes[key].text || ''; nf.value = t; nf.classList.toggle('filled', !!t.trim()); var hint = document.getElementById('note-hint'); if (hint) hint.textContent = t.trim() ? 'Staged '+fmt(notes[key].at) : ''; } }
   }
 
   // ---------- store ----------
