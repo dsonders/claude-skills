@@ -61,6 +61,10 @@ not the merge button. First validated 2026-08-25 (P1 batch: 8 PRs, #1555–#1564
 Make a todo list and work through it.
 
 ### Step 1 — Preflight
+- **Sweep the phone board first** (groom skill Step 0): `read_db` the `rulings` and `notes` collections of
+  https://claude.ai/code/artifact/5089d5b5-577e-402b-95ec-8b0fd421576d, file every ruling ⛔-verbatim into BACKLOG.md
+  (an item ruled on the phone may be Queued-ready without ever being ruled in chat), land it on `origin/main`, then
+  delete the swept docs. A staged note is a QUESTION — it holds its item back from the run until answered in the frames.
 - Confirm every workstream is groomed: each open question has a ruling. If any remain, STOP
   and finish grooming in conversation — do not launch.
 - Spend headroom: warn Dave if a recent run hit the usage cap (agents die silently on it).

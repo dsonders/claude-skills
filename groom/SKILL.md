@@ -24,6 +24,7 @@ visuals only on what survived. Output = ⛔ rulings written verbatim into
 3. **One standing artifact, stable URL.** Republish the same board every cycle (its URL is
    kept in BACKLOG.md's header; from a new session, pass it as `url`). Never a new page per
    session. Everything to be triaged AND groomed lives on it — no terminal↔Chrome bouncing.
+   Its phone twin (Step 0) is the SECOND standing artifact: same items, same keys, republished in the same turn.
 4. **Priority order:** UX-impacting items first; among those, reliability/performance
    implications outrank pure polish. Behind-the-scenes (tech debt, security) after. Icebox last.
 5. **Votes come back by letter in chat** (or as artifact comments — those reach the session).
@@ -111,6 +112,26 @@ risk items as dots — a glance, not paragraphs) + ONE line: the real-world scen
 the bad outcome occurs.
 
 ## Workflow
+
+### Step 0 — Sweep the phone board (EVERY groom or overnight-build session, before anything else)
+Dave rules from his phone with no session running (built 2026-09-08). The **phone board** —
+https://claude.ai/code/artifact/5089d5b5-577e-402b-95ec-8b0fd421576d (URL also in BACKLOG.md's header) — saves
+each tap into the artifact's own store; nothing reads it until a session sweeps it. The sweep:
+1. `Artifact action:"read_db" db_op:"list" collection:"rulings"` and the same for `collection:"notes"`.
+   Docs: `rulings/<KEY>-<n>` = `{choice:"A", words:"…", at}` — a choice decision is ruled when `choice` is set, a
+   text-only decision when `words` is non-empty; `notes/<KEY>` = `{text, at}` = the "Questions & feedback" field.
+2. Write every ruling ⛔-VERBATIM into `docs/overnight/BACKLOG.md` under its item (`words` is Dave's wording; the
+   letter maps to the option text in the phone board's `decisions` data — quote the option text, never just "A").
+   An item whose every decision is ruled moves to **Queued** with files-to-read + sensitivity, exactly as a chat ruling.
+3. Every staged note is a question to answer IN THE FRAMES (rule 6): redraw / extend the item's card on the board
+   and the phone board, never a chat reply or a ballot line. A note that is itself a ruling gets filed as one.
+4. Commit the doc (one branch per session, auto-merge), republish both boards, THEN delete the swept docs with
+   `write_db db_op:"delete"` (rulings and notes) so the phone's counts reset and nothing files twice. Delete
+   only what landed on `origin/main` — a ruling is not swept until its ⛔ line is on main.
+5. Rebuild the phone board whenever the backlog changes (new to-vote cards, a card re-drawn): source in
+   `phone-board/` next to this file (README there) — `decisions.py` turns every card's questions into lettered
+   options with the rec marked (open-ended questions = text-only decisions); `python3 build.py`, run the two
+   Playwright checks, republish with the phone board's URL as `url`. Keep the card keys stable — the store is keyed on them.
 
 ### Pass 1 — Triage (cheap, whole backlog)
 1. Read `docs/overnight/BACKLOG.md` (from `origin/main` — the primary checkout lags) + any new
@@ -223,6 +244,7 @@ he chose drawn, in the app's style); assume the rest and say what you assumed.
 ## Integration
 - Upstream: Notion (capture inbox) → items named in chat → this skill.
 - Downstream: `docs/overnight/BACKLOG.md` (Queued, ⛔ rulings) → `/overnight-build`.
+- Sideways: the phone board's store (Step 0) → swept into BACKLOG.md at the start of every session; ⛔ Dave 9/8: the phone shows APP-UI frames only (Flip for simple items, the walkthrough inside a Flip for complex ones, no drawing for non-UX items) — memory `project_groom_board_mobile_ruling`.
 - `artifact-design` loaded before board HTML; mockup/board building delegated to Opus agents
   briefed in product words with `reference-board.html` as the template.
 

@@ -1,0 +1,517 @@
+[
+ {
+  "section": "Parts page & queue",
+  "key": "SA-20b",
+  "title": "Answering \u201cIn stock? Yes\u201d while pricing already reads as \u201cIn stock\u201d",
+  "sub": "The 8/30 run stopped the approval-time pre-fill; the same Yes \u2192 \u201cIn stock\u201d / No \u2192 \u201cOn order\u201d rule still fires the moment the answer is given while pricing.",
+  "dims": [
+   "UX Med",
+   "Size S",
+   "Codex 0\u20131",
+   "Reversible: code only",
+   "Population: every parts user pricing a part before the estimate goes out \u2014 every multi-person shop"
+  ],
+  "pop": "The parts counter \u2014 a part reads \u201cOn order\u201d before the customer has even seen the estimate, and before anyone ordered anything.",
+  "styles": [],
+  "blocks": [
+   "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>What the part reads while pricing</span><span class=\"hint\">scroll &rarr;</span></figcaption>\n        <div class=\"scroller\">\n          <table class=\"plain\">\n            <thead>\n              <tr><th scope=\"col\">Answer while pricing</th><th scope=\"col\">Today the part reads</th><th scope=\"col\">Proposed</th></tr>\n            </thead>\n            <tbody>\n              <tr>\n                <td class=\"surface-name\">Yes</td>\n                <td>In stock</td>\n                <td>Pending &mdash; the Yes stays shown as the answer it is</td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">No</td>\n                <td>On order</td>\n                <td>Pending</td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">? &mdash; not answered</td>\n                <td>Pending</td>\n                <td>Pending</td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n        <div class=\"viz-foot\">Delivery state is set only when a parts user actually does the thing &mdash; pulls it, or orders it.</div>\n      </figure>"
+  ],
+  "questions": [
+   [
+    "",
+    "Plain \u201cPending\u201d at pricing time, or hide the delivery cell until the line is approved? rec: Pending"
+   ],
+   [
+    "check",
+    "The parts queue and the approval roll-ups read this state \u2014 the build confirms an un-filled \u201cPending\u201d doesn\u2019t move an RO in or out of the queue differently."
+   ]
+  ],
+  "ruled": [
+   "Extend the 8/30 ruling \u2014 the Yes / No / ? answer stays displayed as the answer it is; delivery state is set only when a parts user actually does the thing. Dave, 31 Aug"
+  ]
+ },
+ {
+  "section": "Parts page & queue",
+  "key": "Q",
+  "title": "Parts RO page: the labor line card is too tall (one line + 2 parts \u2248 830 px)",
+  "sub": "On the parts user\u2019s RO page a single line with two parts fills most of the screen; the counter scrolls constantly.",
+  "dims": [
+   "UX Med",
+   "Size M (mockup round first)",
+   "Codex 0\u20131 (visual only)",
+   "Reversible: code only",
+   "Population: every parts user, every RO"
+  ],
+  "pop": "The parts counter working a multi-line RO on the dark parts page.",
+  "styles": [],
+  "blocks": [
+   "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>Today&rsquo;s card, on the parts page</span></figcaption>\n        <div class=\"screens\">\n          <div class=\"screen-col\">\n            <div class=\"as-darkscreen\">\n              <div class=\"dk-head\">\n                <span class=\"dk-ro\">RO #</span>\n                <span class=\"dk-veh\">Year Make Model</span>\n              </div>\n              <div class=\"dk-body\">\n                <div class=\"as-darkcard\">\n                  <div class=\"dc-title\">Line title</div>\n                  <div>\n                    <div class=\"dc-band\">Complaint</div>\n                    <div class=\"dc-text\"><span style=\"display:block;height:7px;border-radius:4px;background:#334155;width:96%;margin:4px 0\"></span><span style=\"display:block;height:7px;border-radius:4px;background:#334155;width:88%;margin:4px 0\"></span></div>\n                  </div>\n                  <div>\n                    <div class=\"dc-band\">Cause</div>\n                    <div class=\"dc-text\"><span style=\"display:block;height:7px;border-radius:4px;background:#334155;width:94%;margin:4px 0\"></span><span style=\"display:block;height:7px;border-radius:4px;background:#334155;width:70%;margin:4px 0\"></span></div>\n                  </div>\n                  <div class=\"dc-band\">Parts needed</div>\n                  <div class=\"dc-part\"><span class=\"pn\">Part #</span><b>Part 1</b></div>\n                  <div class=\"dc-part\"><span class=\"pn\">Part #</span><b>Part 2</b></div>\n                  <div class=\"dc-foot\"><span>Labor hours</span><b>Line total</b></div>\n                </div>\n              </div>\n              <div class=\"dk-measure\">\n                <svg width=\"11\" height=\"11\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 3v18M8 6l4-3 4 3M8 18l4 3 4-3\"/></svg>\n                one line + 2 parts &asymp; 830 px\n              </div>\n            </div>\n            <p class=\"scap\"><b>Today</b> &mdash; one line fills most of the screen.</p>\n          </div>\n        </div>\n      </figure>",
+   "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>Three ways to get it shorter</span><span class=\"hint\">scroll &rarr;</span></figcaption>\n        <div class=\"scroller\">\n          <div class=\"sils\">\n            <div class=\"sil-col\">\n              <span class=\"sil-h now\">&asymp; 830 px</span>\n              <div class=\"sil now\" style=\"height:150px;\"></div>\n              <span class=\"sil-lbl\">Today</span>\n            </div>\n            <div class=\"sil-col\">\n              <span class=\"sil-h\">shorter</span>\n              <div class=\"sil\" style=\"height:112px;\"></div>\n              <span class=\"sil-lbl\">Tighter padding</span>\n              <span class=\"sil-tbd\">px saved: TBD</span>\n            </div>\n            <div class=\"sil-col\">\n              <span class=\"sil-h\">shorter</span>\n              <div class=\"sil\" style=\"height:96px;\"></div>\n              <span class=\"sil-lbl\">Complaint/Cause 1 line each</span>\n              <span class=\"sil-tbd\">px saved: TBD</span>\n            </div>\n            <div class=\"sil-col\">\n              <span class=\"sil-h\">shorter</span>\n              <div class=\"sil\" style=\"height:84px;\"></div>\n              <span class=\"sil-lbl\">&ldquo;Parts Needed&rdquo; rail turned sideways</span>\n              <span class=\"sil-tbd\">px saved: TBD</span>\n            </div>\n          </div>\n        </div>\n        <div class=\"viz-foot\">Mockups with a real RO next, if this advances. Re-opens the 8/21 two-line Complaint/Cause rule on purpose.</div>\n      </figure>"
+  ],
+  "questions": [
+   [
+    "",
+    "Which variants go on the ballot \u2014 your 3 + which extras (collapse the notes band, part on one row, one-line footer, per-user density)?"
+   ],
+   [
+    "",
+    "Complaint/Cause: 1 line + hover, or keep 2 and shrink elsewhere?"
+   ],
+   [
+    "",
+    "Sideways \u201cParts Needed\u201d rail worth the legibility cost?"
+   ],
+   [
+    "",
+    "Parts page only, or advisor/tech cards too?"
+   ],
+   [
+    "",
+    "Target height for one line + 2 parts?"
+   ]
+  ],
+  "ruled": []
+ },
+ {
+  "section": "RO page \u2014 advisor, admin, tech",
+  "key": "P",
+  "title": "Admin RO page: the Parts & Labor card hides the parts the counter already added",
+  "sub": "Locked, an admin sees \u201cAdd a part\u2026\u201d, \u201cParts subtotal \u2014\u201d, \u201cPricing to follow\u201d \u2014 while the parts counter\u2019s view of the same line shows RC-FP-002 \u00b7 Fuel pump module (recall) \u00b7 stock ? \u00b7 unpriced.",
+  "dims": [
+   "UX High",
+   "Size M",
+   "Codex 2\u20133 (touches who-may-edit and the checkout hold)",
+   "Reversible: code only",
+   "Population: every admin opening an RO with parts on it"
+  ],
+  "pop": "Admins reviewing an RO before it goes to the customer \u2014 they can\u2019t see what parts has done.",
+  "styles": [],
+  "blocks": [
+   "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>Same line, two minutes apart</span><span class=\"hint\">screens scroll &rarr;</span></figcaption>\n        <div class=\"screens\">\n          <div class=\"screen-col\">\n            <div class=\"app-screen\">\n              <div class=\"as-body\">\n                <div class=\"as-panel\">\n                  <div class=\"as-panel-lbl\">Parts view</div>\n                  <div class=\"as-linelist\">\n                    <div class=\"as-lrow\"><span class=\"grow\"><b>RC-FP-002</b> &middot; Fuel pump module (recall)</span></div>\n                    <div class=\"as-lrow\"><span class=\"grow\">In stock?</span><span class=\"tail\">?</span></div>\n                    <div class=\"as-lrow\"><span class=\"grow\">Note</span><span class=\"tail\" style=\"font-style:italic\">the counter&rsquo;s note</span></div>\n                    <div class=\"as-lrow\"><span class=\"grow\">Qty</span><span class=\"tail\">1</span></div>\n                    <div class=\"as-lrow\"><span class=\"grow\">Unit price</span><span class=\"tail\">unpriced</span></div>\n                    <div class=\"as-lrow count\"><span class=\"grow\">Parts total</span><span class=\"tail\">Sum / Manual</span></div>\n                  </div>\n                </div>\n              </div>\n            </div>\n            <p class=\"scap\"><b>What parts sees</b> &mdash; the part is on the line, named and noted.</p>\n          </div>\n\n          <div class=\"screen-col\">\n            <div class=\"app-screen\">\n              <div class=\"as-body\">\n                <div class=\"as-panel\">\n                  <div class=\"as-panel-lbl\">Admin, locked</div>\n                  <div class=\"as-linelist\">\n                    <div class=\"as-lrow\"><span class=\"mark\">+</span><span class=\"grow\" style=\"color:#94a3b8;\">Add a part&hellip;</span></div>\n                    <div class=\"as-lrow\"><span class=\"grow\">Parts subtotal</span><span class=\"tail\">&mdash;</span></div>\n                    <div class=\"as-lrow\"><span class=\"grow\" style=\"color:#94a3b8;\">Pricing to follow</span></div>\n                  </div>\n                  <span class=\"as-tag\" style=\"margin-top:8px;\">\n                    <svg width=\"9\" height=\"9\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3.4\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M18 6 6 18M6 6l12 12\"/></svg>\n                    the part is invisible here\n                  </span>\n                </div>\n              </div>\n            </div>\n            <p class=\"scap\"><b>What the admin sees</b> &mdash; an empty row where the fuel pump is.</p>\n          </div>\n        </div>\n        <div class=\"viz-foot\"><b>Proposed:</b> locked = the full parts picture, read-only; &ldquo;Edit pricing&rdquo; unlocks all of it &mdash; the way the labor rate already works on this card.</div>\n      </figure>"
+  ],
+  "questions": [
+   [
+    "",
+    "Locked view = the parts page\u2019s row exactly, or the money ledger\u2019s row with stock + note added?"
+   ],
+   [
+    "",
+    "Edit mode gets the Note cell and the Sum/Manual parts total too?"
+   ],
+   [
+    "",
+    "Admin gets the \u26a0 unpriced flag and \u00d7 delete per row?"
+   ],
+   [
+    "",
+    "If a parts user is mid-edit on the line \u2014 take over with the warning, or refuse?"
+   ]
+  ],
+  "ruled": []
+ },
+ {
+  "section": "RO page \u2014 advisor, admin, tech",
+  "key": "SA-6b",
+  "title": "A line the close auto-declined reads \u201cDeclined by the customer\u201d",
+  "sub": "Closing an RO now settles every unanswered line as declined \u2014 the 8/30 rule \u2014 and the line\u2019s banner then borrows the customer\u2019s name for it.",
+  "dims": [
+   "UX Med",
+   "Size S",
+   "Codex 0\u20131",
+   "Reversible: code only",
+   "Population: any RO closed while a line still had no customer answer \u2014 read later by the advisor, or in an audit"
+  ],
+  "pop": "Whoever opens the closed RO and reads that the customer said no, when the customer never answered.",
+  "styles": [],
+  "blocks": [
+   "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>What happens today, step by step</span></figcaption>\n        <ol class=\"story\">\n          <li>\n            <span class=\"stephead\">\n              <span class=\"n\">1</span>\n              <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M2.6 12s3.5-6.4 9.4-6.4S21.4 12 21.4 12s-3.5 6.4-9.4 6.4S2.6 12 2.6 12z\"/><path d=\"M4 20 20 4\"/></svg>\n            </span>\n            <p>The customer <b>never answers</b> on one line.</p>\n          </li>\n          <li>\n            <span class=\"stephead\">\n              <span class=\"n\">2</span>\n              <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M8.4 12.3l2.4 2.4 4.8-5\"/></svg>\n            </span>\n            <p>The advisor <b>closes the RO</b>.</p>\n          </li>\n          <li>\n            <span class=\"stephead\">\n              <span class=\"n\">3</span>\n              <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3.5 6h17M3.5 12h17M3.5 18h9\"/><path d=\"M15.5 15.5 21 21M21 15.5 15.5 21\"/></svg>\n            </span>\n            <p>That line is <b>settled as declined</b> at close.</p>\n          </li>\n          <li class=\"bad\">\n            <span class=\"stephead\">\n              <span class=\"n\">4</span>\n              <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 3 2.5 20h19L12 3z\"/><path d=\"M12 9.5v4.5M12 17h.01\"/></svg>\n            </span>\n            <p>Its banner reads <b>&ldquo;Declined by the customer&rdquo;</b> &mdash; the customer never said no.</p>\n          </li>\n        </ol>\n        <div class=\"viz-foot\">That wording appears on exactly one surface today: the line&rsquo;s banner on the RO page. The customer&rsquo;s own page never shows it, and dashboards and money bands count the line as declined without naming who. The RO already carries a &ldquo;closed without a response&rdquo; mark the label can be read from.</div>\n      </figure>"
+  ],
+  "questions": [
+   [
+    "",
+    "Label it \u201cDeclined at close\u201d, read from the RO\u2019s own closed-without-a-response mark? rec: yes"
+   ],
+   [
+    "",
+    "Dashboards and money bands keep counting it as declined \u2014 only the banner names the reason? rec: yes"
+   ]
+  ],
+  "ruled": []
+ },
+ {
+  "section": "RO page \u2014 advisor, admin, tech",
+  "key": "W",
+  "title": "\u201cSend to advisor\u201d warns about the customer seeing a gap on lines the customer can\u2019t see",
+  "sub": "On a recon-only RO the warning says a customer will see an unpriced part \u2014 there is no customer.",
+  "dims": [
+   "Reliability Low",
+   "Size S",
+   "Codex 0\u20131",
+   "Reversible: code only",
+   "Population: recon stores sending to the advisor"
+  ],
+  "pop": "Anyone at a recon store sending an RO to the advisor \u2014 the warning is always wrong there.",
+  "styles": [],
+  "blocks": [
+   "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>The message &mdash; today vs proposed</span><span class=\"hint\">screens scroll &rarr;</span></figcaption>\n        <div class=\"screens\">\n          <div class=\"screen-col\">\n            <div class=\"app-screen\">\n              <div class=\"as-body\">\n                <div class=\"as-toast bad\">\n                  <svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" style=\"flex:none; color:#dc2626;\"><path d=\"M12 3 2.5 20h19L12 3z\"/><path d=\"M12 9.5v4.5M12 17h.01\"/></svg>\n                  <span>The customer will see <b>2 lines with an unpriced part</b>.</span>\n                </div>\n              </div>\n            </div>\n            <p class=\"scap\"><b>Today</b> &mdash; on a recon RO there is no customer to see anything.</p>\n          </div>\n          <div class=\"screen-col\">\n            <div class=\"app-screen\">\n              <div class=\"as-body\">\n                <div class=\"as-toast ok\">\n                  <svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" style=\"flex:none; color:#059669;\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 8v4.5M12 16h.01\"/></svg>\n                  <span><b>2 recon lines still have a blank price</b>.</span>\n                </div>\n                <div class=\"as-btn none\">&mdash; or no message at all</div>\n              </div>\n            </div>\n            <p class=\"scap\"><b>Proposed</b> &mdash; internal wording, or nothing.</p>\n          </div>\n        </div>\n      </figure>"
+  ],
+  "questions": [
+   [
+    "",
+    "Leave internal lines out entirely, or keep them with internal wording?"
+   ],
+   [
+    "",
+    "Same for warranty/recall (customer sees them at $0)?"
+   ]
+  ],
+  "ruled": []
+ },
+ {
+  "section": "RO page \u2014 advisor, admin, tech",
+  "key": "S",
+  "title": "A tech can re-open labor hours after the estimate went out (park \u2192 un-park)",
+  "sub": "Hours lock once the RO leaves the tech\u2019s stages \u2014 but parking the RO in Holding and un-parking it lands back in In service, where hours are editable again, under an estimate the customer already has.",
+  "dims": [
+   "Reliability Med",
+   "Size M",
+   "Codex 2\u20133 (permission rule \u2014 client + server together)",
+   "Reversible: code only",
+   "Population: stores with a Holding status; no report of it happening"
+  ],
+  "pop": "Nobody yet \u2014 but it moves a total under an estimate the customer is holding.",
+  "styles": [],
+  "blocks": [
+   "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>The two-step way around the lock</span></figcaption>\n        <ol class=\"story\">\n          <li>\n            <span class=\"stephead\"><span class=\"n\">1</span>\n              <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z\"/><path d=\"M14 3v5h5\"/></svg>\n            </span>\n            <p>The RO is <b>awaiting the customer</b> &mdash; hours are locked.</p>\n          </li>\n          <li>\n            <span class=\"stephead\"><span class=\"n\">2</span>\n              <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"3\"/><path d=\"M9.5 9.5v5M14.5 9.5v5\"/></svg>\n            </span>\n            <p>The tech <b>parks</b> it in Holding, then <b>un-parks</b> it.</p>\n          </li>\n          <li class=\"bad\">\n            <span class=\"stephead\"><span class=\"n\">3</span>\n              <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7.5V12l3 1.6\"/></svg>\n            </span>\n            <p>It lands in <b>Ready for Pickup</b>, where hours are editable again.</p>\n          </li>\n          <li class=\"bad\">\n            <span class=\"stephead\"><span class=\"n\">4</span>\n              <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 2.5v19\"/><path d=\"M17 6.5H9.8a3.3 3.3 0 0 0 0 6.6h4.4a3.3 3.3 0 0 1 0 6.6H6.5\"/></svg>\n            </span>\n            <p>The tech <b>adds 2 hours</b> &mdash; the line total moves under a sent estimate.</p>\n          </li>\n        </ol>\n      </figure>"
+  ],
+  "questions": [
+   [
+    "",
+    "Is the rule \u201cno tech hour edits after the estimate is sent\u201d (one-way fact) or \u201conly in these stages\u201d?"
+   ],
+   [
+    "",
+    "If estimate-based: does un-parking legitimately re-open hours for a real re-diagnosis \u2014 and who re-sends?"
+   ],
+   [
+    "",
+    "Same rule for the advisor/admin ledger, which has no stage lock today?"
+   ]
+  ],
+  "ruled": []
+ },
+ {
+  "section": "Dashboards",
+  "key": "D3",
+  "title": "Admin dashboard: the Pipeline / List switch gets squashed to \u201cLi\u201d when a filter is on",
+  "sub": "Turn on any filter and the toolbar runs out of room \u2014 \u201cList\u201d becomes \u201cLi\u201d.",
+  "dims": [
+   "UX Med",
+   "Size S",
+   "Codex 0\u20131",
+   "Reversible: code only",
+   "Population: every admin, every filtered view"
+  ],
+  "pop": "Any admin who filters the dashboard \u2014 that\u2019s most sessions.",
+  "styles": [],
+  "blocks": [
+   "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>The toolbar &mdash; today vs fixed</span><span class=\"hint\">screens scroll &rarr;</span></figcaption>\n        <div class=\"screens\">\n          <div class=\"screen-col\">\n            <div class=\"app-screen\">\n              <div class=\"as-scroll\">\n                <div class=\"as-toolbar tight\">\n                  <span class=\"as-ctl grow\">Search&hellip;</span>\n                  <span class=\"as-ctl\">All statuses <svg width=\"8\" height=\"8\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></span>\n                  <span class=\"as-ctl\">Derek Jozwiak <svg width=\"8\" height=\"8\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></span>\n                  <span class=\"as-ctl\">Technician <svg width=\"8\" height=\"8\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></span>\n                  <span class=\"as-ctl clear\">&times; Clear</span>\n                  <span class=\"as-seg\"><span class=\"on\">Pipeline</span><span class=\"as-cut\">Li</span></span>\n                </div>\n              </div>\n            </div>\n            <p class=\"scap\"><b>Today</b> &mdash; the switch is the thing that gives, so the word breaks in half.</p>\n          </div>\n\n          <div class=\"screen-col\">\n            <div class=\"app-screen\">\n              <div class=\"as-scroll\">\n                <div class=\"as-toolbar tight\">\n                  <span class=\"as-ctl grow squash\">Search&hellip;</span>\n                  <span class=\"as-ctl\">All statuses <svg width=\"8\" height=\"8\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></span>\n                  <span class=\"as-ctl\">Derek Jozwiak <svg width=\"8\" height=\"8\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></span>\n                  <span class=\"as-ctl\">Technician <svg width=\"8\" height=\"8\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></span>\n                  <span class=\"as-ctl clear\">&times; Clear</span>\n                  <span class=\"as-seg\"><span class=\"on\">Pipeline</span><span>List</span></span>\n                </div>\n              </div>\n            </div>\n            <p class=\"scap\"><b>Fixed</b> &mdash; the switch keeps both words whole; the search box gives instead.</p>\n          </div>\n        </div>\n      </figure>"
+  ],
+  "questions": [
+   [
+    "check",
+    "Ship as a plain fix \u2014 no design decision? rec: yes"
+   ]
+  ],
+  "ruled": []
+ },
+ {
+  "section": "Dashboards",
+  "key": "SA-7b",
+  "title": "The dashboard badge went vague: \u201cNeeds approval\u201d on every RO, customer-pay ones included",
+  "sub": "The badge used to read \u201cNeeds customer OK\u201d. Since per-part store approvals shipped, the one number it reads can include parts waiting on the store , so it was widened to \u201cNeeds approval\u201d for everyone \u2014 and parked for you.",
+  "dims": [
+   "UX Med",
+   "Size S\u2013M",
+   "Codex 2\u20133",
+   "Population: every admin and advisor scanning the dashboard \u2014 most ROs are customer-pay"
+  ],
+  "pop": "The advisor who used to read \u201cNeeds customer OK\u201d and now gets a badge that doesn\u2019t say who.",
+  "styles": [],
+  "blocks": [
+   "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>What the badge says</span><span class=\"hint\">scroll &rarr;</span></figcaption>\n        <div class=\"scroller\">\n          <table class=\"plain\">\n            <thead>\n              <tr><th scope=\"col\">What&rsquo;s waiting</th><th scope=\"col\">Badge today</th><th scope=\"col\">Proposed</th></tr>\n            </thead>\n            <tbody>\n              <tr>\n                <td class=\"surface-name\">Two lines waiting on the customer</td>\n                <td>2 need approval</td>\n                <td>2 need customer OK</td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">One part waiting on the store</td>\n                <td>Needs approval</td>\n                <td>Needs store OK</td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">Both</td>\n                <td>3 need approval</td>\n                <td>Two badges, one each</td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n      </figure>"
+  ],
+  "questions": [
+   [
+    "",
+    "This needs one new piece of stored information on each RO so the two families can be told apart \u2014 build it as part of this? The alternative is going back to \u201cNeeds customer OK\u201d and accepting it\u2019s wrong when only the store is waiting. rec: yes"
+   ],
+   [
+    "",
+    "Wording per family \u2014 \u201cNeeds customer OK\u201d / \u201cNeeds store OK\u201d, the same words the RO page\u2019s band already uses? rec: yes"
+   ]
+  ],
+  "ruled": []
+ },
+ {
+  "section": "Dashboards",
+  "key": "D2",
+  "title": "Dashboards: an active filter looks exactly like no filter",
+  "sub": "With the advisor filter set to Derek Jozwiak the dropdown looks untouched; the only clue is a small \u201c\u00d7 Clear\u201d.",
+  "dims": [
+   "UX Med",
+   "Size M",
+   "Codex 0\u20131",
+   "Reversible: code only",
+   "Population: every admin/advisor/parts/tech dashboard user"
+  ],
+  "pop": "Anyone who narrows a list and forgets \u2014 then wonders where the ROs went.",
+  "styles": [],
+  "blocks": [
+   "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>The filter row &mdash; today vs proposed</span><span class=\"hint\">screens scroll &rarr;</span></figcaption>\n        <div class=\"screens\">\n          <div class=\"screen-col\">\n            <div class=\"app-screen\">\n              <div class=\"as-scroll\">\n                <div class=\"as-toolbar\" style=\"min-width:330px;\">\n                  <span class=\"as-ctl\">All statuses <svg width=\"8\" height=\"8\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></span>\n                  <span class=\"as-ctl\">Derek Jozwiak <svg width=\"8\" height=\"8\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></span>\n                  <span class=\"as-ctl\">Newest <svg width=\"8\" height=\"8\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></span>\n                  <span class=\"as-ctl clear\">&times; Clear</span>\n                </div>\n              </div>\n            </div>\n            <p class=\"scap\"><b>Today</b> &mdash; all three controls look identical, filtered or not.</p>\n          </div>\n\n          <div class=\"screen-col\">\n            <div class=\"app-screen\">\n              <div class=\"as-scroll\">\n                <div class=\"as-toolbar\" style=\"min-width:330px;\">\n                  <span class=\"as-ctl\">All statuses <svg width=\"8\" height=\"8\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></span>\n                  <span class=\"as-ctl active\">Derek Jozwiak <svg width=\"8\" height=\"8\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></span>\n                  <span class=\"as-ctl\">Newest <svg width=\"8\" height=\"8\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></span>\n                  <span class=\"as-ctl clear count\">Clear 1</span>\n                </div>\n              </div>\n              <div class=\"as-below\" style=\"padding-top:9px;\">\n                <div class=\"as-ghost\" style=\"border-style:solid; border-color:#93c5fd; background:#eff6ff; color:#1d4ed8;\">\n                  <b>4</b>waiting for dispatch<i>&middot;</i>the selected look to match\n                </div>\n              </div>\n            </div>\n            <p class=\"scap\"><b>Proposed</b> &mdash; the set control carries a ring, and Clear says how many. The &ldquo;N waiting for dispatch&rdquo; tile is the reference for &ldquo;selected&rdquo;.</p>\n          </div>\n        </div>\n      </figure>"
+  ],
+  "questions": [
+   [
+    "",
+    "Ring vs tinted fill vs both \u2014 and which color?"
+   ],
+   [
+    "",
+    "Does a default choice (\u201cNewest\u201d, \u201cAll statuses\u201d) count as active? rec: no"
+   ],
+   [
+    "",
+    "Count on Clear (\u201cClear 2\u201d)?"
+   ]
+  ],
+  "ruled": []
+ },
+ {
+  "section": "Dashboards",
+  "key": "X",
+  "title": "Admin dashboard \u201cBooked\u201d cell lost its \u201cN TBD\u201d count",
+  "sub": "Since every line carries a number, the cell that counted un-priced lines always shows nothing \u2014 the RO page and parts page show price gaps, the dashboard doesn\u2019t.",
+  "dims": [
+   "Reliability Med",
+   "Size S\u2013M",
+   "Codex 0\u20131",
+   "Reversible: code only (one new number sent to the dashboard)",
+   "Population: admins scanning for unpriced work"
+  ],
+  "pop": "Admins scanning the dashboard for work that still has no price on it.",
+  "styles": [],
+  "blocks": [
+   "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>The Booked cell &mdash; today vs proposed</span><span class=\"hint\">screens scroll &rarr;</span></figcaption>\n        <div class=\"screens\">\n          <div class=\"screen-col\">\n            <div class=\"app-screen\">\n              <div class=\"as-body\">\n                <div class=\"as-tile\"><span class=\"tk\">Booked</span><span class=\"tv\">$ total</span></div>\n              </div>\n            </div>\n            <p class=\"scap\"><b>Today</b> &mdash; nothing about the two lines with no price.</p>\n          </div>\n          <div class=\"screen-col\">\n            <div class=\"app-screen\">\n              <div class=\"as-body\">\n                <div class=\"as-tile\">\n                  <span class=\"tk\">Booked</span>\n                  <span class=\"tv\">$ total <span class=\"as-gapchip\">2 price gaps</span></span>\n                </div>\n              </div>\n            </div>\n            <p class=\"scap\"><b>Proposed</b> &mdash; the same rule the RO band already uses.</p>\n          </div>\n        </div>\n      </figure>"
+  ],
+  "questions": [
+   [
+    "",
+    "Show \u201cN price gaps\u201d (blank or $0 part or hours, same rule as the RO band) or only blanks?"
+   ],
+   [
+    "",
+    "Hover lists the lines?"
+   ]
+  ],
+  "ruled": []
+ },
+ {
+  "section": "Dashboards",
+  "key": "D1",
+  "title": "Money row: \u201cTotal booked\u201d \u2192 \u201cTotal\u201d",
+  "sub": "Every place the money row says Total booked should just say Total. Same number.",
+  "dims": [
+   "UX Low",
+   "Size S",
+   "Codex 0\u20131",
+   "Reversible: label only",
+   "Population: everyone who sees a money row"
+  ],
+  "pop": "Everyone who reads a money row \u2014 the word is the only thing changing.",
+  "styles": [],
+  "blocks": [
+   "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>The money row &mdash; label only</span><span class=\"hint\">screens scroll &rarr;</span></figcaption>\n        <div class=\"screens\">\n          <div class=\"screen-col\">\n            <div class=\"app-screen\">\n              <div class=\"as-body\">\n                <div class=\"as-tile\"><span class=\"tk\">Total booked</span><span class=\"tv\">same figure</span></div>\n              </div>\n            </div>\n            <p class=\"scap\"><b>Today</b></p>\n          </div>\n          <div class=\"screen-col\">\n            <div class=\"app-screen\">\n              <div class=\"as-body\">\n                <div class=\"as-tile\"><span class=\"tk\">Total</span><span class=\"tv\">same figure</span></div>\n              </div>\n            </div>\n            <p class=\"scap\"><b>Proposed</b> &mdash; the number never moves.</p>\n          </div>\n        </div>\n      </figure>"
+  ],
+  "questions": [
+   [
+    "check",
+    "Label only, one change, no behavior? rec: yes"
+   ],
+   [
+    "",
+    "Customer page carries the word anywhere?"
+   ]
+  ],
+  "ruled": []
+ },
+ {
+  "section": "Customer page",
+  "key": "U",
+  "title": "Tell the customer when their agreed price went DOWN",
+  "sub": "Staff get a toast when a price drops after approval; the customer\u2019s page just quietly shows the lower number.",
+  "dims": [
+   "UX Med",
+   "Size S\u2013M",
+   "Codex 0\u20131 \u2014 customer-facing, you review",
+   "Reversible: code only",
+   "Population: rare but trust-critical"
+  ],
+  "pop": "Any customer whose approved price moves down before the work is done.",
+  "styles": [],
+  "blocks": [
+   "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>On the customer&rsquo;s own page</span></figcaption>\n        <div class=\"as-body\">\n          <div class=\"app-screen\">\n            <div class=\"as-body\">\n              <div class=\"as-owner\">\n                <div class=\"orow\">\n                  <span class=\"oname\">RF WHEEL BENT</span>\n                  \n                </div>\n                <div class=\"onote\">\n                  <svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M8.4 12.3l2.4 2.4 4.8-5\"/></svg>\n                  <span>Your price for RF WHEEL BENT came down $200 &mdash; nothing you need to do.</span>\n                </div>\n              </div>\n            </div>\n          </div>\n        </div>\n        <div class=\"viz-foot\">RF WHEEL BENT and $200 are real, from the 8/27 record.</div>\n      </figure>"
+  ],
+  "questions": [
+   [
+    "",
+    "Inline under the line, or a banner at the top?"
+   ],
+   [
+    "",
+    "Show the old price, or only the amount?"
+   ],
+   [
+    "",
+    "Every visit, or once?"
+   ],
+   [
+    "ruled",
+    "Out of scope: SMS/email."
+   ]
+  ],
+  "ruled": []
+ },
+ {
+  "section": "Store settings \u2014 labor rates & money",
+  "key": "T",
+  "title": "Remember the labor rate each line was agreed at",
+  "sub": "A line stores its agreed total but not the rate behind it, so every part of the app that touches money has to special-case \u201cnever re-figure a frozen line\u201d \u2014 five places already, and the last miss put $600 on a line the customer approved at $500.",
+  "dims": [
+   "Reliability High",
+   "Size L",
+   "Codex 4+",
+   "Touches data: new stored information on every approved line, plus a one-time cleanup you run",
+   "Population: every approved line, every rate change"
+  ],
+  "pop": "Any customer whose approved price is re-figured after the store changes its rate \u2014 and whoever has to explain it.",
+  "styles": [],
+  "blocks": [
+   "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>Why the guards keep failing</span></figcaption>\n        <ol class=\"story\">\n          <li>\n            <span class=\"stephead\"><span class=\"n\">1</span>\n              <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M8.4 12.3l2.4 2.4 4.8-5\"/></svg>\n            </span>\n            <p>The customer <b>approves at $500</b>.</p>\n          </li>\n          <li>\n            <span class=\"stephead\"><span class=\"n\">2</span>\n              <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 2.5v19\"/><path d=\"M17 6.5H9.8a3.3 3.3 0 0 0 0 6.6h4.4a3.3 3.3 0 0 1 0 6.6H6.5\"/></svg>\n            </span>\n            <p>The store <b>changes its rate</b>.</p>\n          </li>\n          <li class=\"bad\">\n            <span class=\"stephead\"><span class=\"n\">3</span>\n              <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 3 2.5 20h19L12 3z\"/><path d=\"M12 9.5v4.5M12 17h.01\"/></svg>\n            </span>\n            <p><b>Today:</b> five separate &ldquo;don&rsquo;t touch&rdquo; rules stand guard. One missed &rarr; <b>$600</b>.</p>\n          </li>\n          <li class=\"good\">\n            <span class=\"stephead\"><span class=\"n\">4</span>\n              <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 22s7-4.2 7-10V5.6L12 3 5 5.6V12c0 5.8 7 10 7 10z\"/><path d=\"M9.2 12.2l2 2 3.6-3.8\"/></svg>\n            </span>\n            <p><b>Proposed:</b> the line carries its own rate &mdash; nothing to guard.</p>\n          </li>\n        </ol>\n        <div class=\"viz-foot\">Scenario: the store raises its labor rate; a line the customer already approved gets re-figured at the new rate by some path nobody remembered to special-case.</div>\n      </figure>"
+  ],
+  "questions": [
+   [
+    "",
+    "Store the rate only, or the whole agreed snapshot (rate, hours, parts)?"
+   ],
+   [
+    "",
+    "Old approved lines: work the rate back from the stored total, or leave them on the total?"
+   ]
+  ],
+  "ruled": []
+ },
+ {
+  "section": "Platform & tooling",
+  "key": "Y2",
+  "title": "Loose ends from the 8/30 overnight run",
+  "sub": "Three things the build agents flagged instead of guessing. None blocks anything shipped.",
+  "dims": [
+   "Reliability Low\u2013Med",
+   "Size S each",
+   "Codex 0\u20131 each"
+  ],
+  "pop": "Nobody on screen yet \u2014 three things the build agents flagged instead of guessing.",
+  "styles": [],
+  "blocks": [
+   "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>Three small calls</span><span class=\"hint\">scroll &rarr;</span></figcaption>\n        <div class=\"scroller\">\n          <table class=\"plain\">\n            <thead>\n              <tr><th scope=\"col\">Loose end</th><th scope=\"col\">Recommendation</th></tr>\n            </thead>\n            <tbody>\n              <tr>\n                <td class=\"surface-name\">Every advisor screen re-reads every customer question ever asked &mdash; answered ones included &mdash; every 15 seconds, and picks out the open ones afterwards. Fine today; the cost grows with every question a store ever asks. Narrowing it to open questions needs a one-time cleanup you run on the older questions.</td>\n                <td><span class=\"gate good\">fix now, while the cleanup is small</span></td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">A restored line&rsquo;s note can&rsquo;t say who decided or when &mdash; the app keeps one answer time per RO, overwritten by each reply, not one per line. The per-part verbal OK on the parts page records no customer time at all.</td>\n                <td><span class=\"gate warn\">later &mdash; only the restore note wants it</span></td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">Since the one-card redo of video uploads, nothing on screen uses the older &ldquo;an earlier video failed &mdash; Retry / Discard&rdquo; pieces; they live on only in tests. The written rules for a safe discard already live in the lessons doc.</td>\n                <td><span class=\"gate good\">delete them; the written rules stay</span></td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n      </figure>"
+  ],
+  "questions": [
+   [
+    "",
+    "Take the three recommendations as a block, or pull any one out?"
+   ]
+  ],
+  "ruled": []
+ },
+ {
+  "section": "Platform & tooling",
+  "key": "Y",
+  "title": "Loose ends from the 8/27 overnight runs",
+  "sub": "Questions the build agents flagged instead of guessing. None blocks anything shipped.",
+  "dims": [
+   "Reliability Low",
+   "Size S each",
+   "Codex 0\u20131",
+   "Reversible: code only"
+  ],
+  "pop": "Small edges, spread across staff screens \u2014 each one decided on its own line below.",
+  "styles": [],
+  "blocks": [
+   "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>Seven small calls</span><span class=\"hint\">scroll &rarr;</span></figcaption>\n        <div class=\"scroller\">\n          <table class=\"plain\">\n            <thead>\n              <tr><th scope=\"col\">Loose end</th><th scope=\"col\">Recommendation</th></tr>\n            </thead>\n            <tbody>\n              <tr>\n                <td class=\"surface-name\">Staff opening the raw customer link is recorded as &ldquo;Customer moved this RO to Customer Viewed&rdquo; &mdash; fix how staff previews are detected.</td>\n                <td><span class=\"gate good\">fix</span></td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">The &ldquo;moved&rdquo; toast also fires on the admin list / pipeline drag where the change is already visible.</td>\n                <td><span class=\"gate warn\">keep (harmless)</span></td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">Off-roster movers (platform owner cross-org, DMS import) read &ldquo;A teammate&rdquo;.</td>\n                <td><span class=\"gate warn\">leave</span></td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">&ldquo;Paste image&rdquo; right-click item exists only on the parts line card; Ctrl/Cmd+V and drop work everywhere on desktop &mdash; extend the menu item to the RO page tab / MPI / scan?</td>\n                <td><span class=\"gate warn\">later</span></td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">New-RO &ldquo;Scan paper RO&rdquo; accepts paste but has no drop target.</td>\n                <td><span class=\"gate warn\">later</span></td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">Cart-rail 44&times;30 preview and post-capture routing review get no photo card (deliberate).</td>\n                <td><span class=\"gate warn\">leave</span></td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">Hybrid touch+trackpad laptops untested for the MPI photo tap gate.</td>\n                <td><span class=\"gate good\">check once</span></td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n      </figure>"
+  ],
+  "questions": [
+   [
+    "",
+    "Take the seven recommendations as a block, or pull any one out?"
+   ]
+  ],
+  "ruled": []
+ },
+ {
+  "section": "Platform & tooling",
+  "key": "Z",
+  "title": "Process: a sibling session wiped a build worktree another agent had claimed",
+  "sub": "The pool worktree\u2019s claim lock only works if every session honors it; one didn\u2019t (commit recovered).",
+  "dims": [
+   "Reliability Med (agent-side, not product)",
+   "Size S",
+   "Codex 0",
+   "Reversible: tooling only"
+  ],
+  "pop": "Nobody using the product \u2014 this is my own build machinery.",
+  "styles": [],
+  "blocks": [
+   "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>The proposal, in one line</span></figcaption>\n        <div class=\"as-body\">\n          <div class=\"as-toast ok\">\n            <svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" style=\"flex:none; color:#059669;\"><path d=\"M12 22s7-4.2 7-10V5.6L12 3 5 5.6V12c0 5.8 7 10 7 10z\"/><path d=\"M9.2 12.2l2 2 3.6-3.8\"/></svg>\n            <span><b>Proposed:</b> the worktree guard refuses a reset on a claimed tree.</span>\n          </div>\n        </div>\n      </figure>"
+  ],
+  "questions": [
+   [
+    "check",
+    "Make the guard refuse? rec: yes"
+   ],
+   [
+    "",
+    "Also vendor the env-seeding script into the repo? rec: no \u2014 two copies drift."
+   ]
+  ],
+  "ruled": []
+ },
+ {
+  "section": "Platform & tooling",
+  "key": "EX5",
+  "title": "Move the server to the next major version of its web framework (Express 5)",
+  "sub": "Not a version bump \u2014 three \u201cpage not found\u201d catch-alls must be rewritten, errors thrown inside a request are forwarded by the framework itself instead of each handler catching its own (about 200 handlers to watch live), an error\u2019s status must be a whole number, and a pinned query-string package gets unpinned.",
+  "dims": [
+   "Reliability Low",
+   "Size M",
+   "Codex 2\u20133 \u2014 every request goes through it, so it needs a live pass, not just green tests",
+   "Reversible: code only",
+   "Population: nobody today \u2014 the current version is still maintained, and the two published advisories don\u2019t reach this app"
+  ],
+  "pop": "No one, until the current version reaches end of life or an advisory that actually applies appears.",
+  "styles": [],
+  "blocks": [
+   "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>What the move actually costs</span><span class=\"hint\">scroll &rarr;</span></figcaption>\n        <div class=\"scroller\">\n          <table class=\"plain\">\n            <thead>\n              <tr><th scope=\"col\">What changes</th><th scope=\"col\">What it means</th></tr>\n            </thead>\n            <tbody>\n              <tr><td class=\"surface-name\">The three &ldquo;page not found&rdquo; catch-alls</td><td>Rewritten.</td></tr>\n              <tr><td class=\"surface-name\">Errors thrown inside a request</td><td>The framework forwards them itself &mdash; a behaviour change to watch on a live pass, about 200 handlers.</td></tr>\n              <tr><td class=\"surface-name\">An error&rsquo;s status code</td><td>Must be a whole number. One spot today passes whatever the error carried.</td></tr>\n              <tr><td class=\"surface-name\">The pinned query-string package</td><td>Unpinned.</td></tr>\n            </tbody>\n          </table>\n        </div>\n      </figure>"
+  ],
+  "questions": [
+   [
+    "",
+    "Do it at all now? Trigger: the current version\u2019s end of life, or an advisory that reaches us; tell the bot to stop proposing major bumps. rec: icebox"
+   ],
+   [
+    "",
+    "If yes later: two PRs \u2014 routes and types first under the current version, then the flip? rec: two"
+   ]
+  ],
+  "ruled": []
+ }
+]
