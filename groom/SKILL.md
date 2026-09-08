@@ -84,8 +84,8 @@ strips, "sensitivity" banners in engineering terms, counts like "4 to vote", sta
 (use the label the app shows: "Waiting for Parts", never `waiting_for_parts`), or the words
 denorm/flag/predicate/backfill (say "stored information", "a one-time cleanup you run").
 
-**Every card head is a collapse toggle** (Dave, 2026-08-26: "I don't want to look at them after
-they are decided"). The reference board's script does it: click/Enter on `.card-head` toggles
+**Every card head is a collapse toggle, MIRRORED by a "Collapse card" caret at the bottom of every card** (Dave, 2026-08-26: "I don't want to look at them after
+they are decided"; 2026-09-07: "put a mirrored expand/collapse toggle (e.g. caret) at the bottom of each card. I like to collapse a card manually as soon as I've ruled on it" — the script appends `.card-foot .chev-foot` to each card and it shares the head's toggle + localStorage key; it hides itself when collapsed because `.card.collapsed > :not(.card-head)` is display:none). The reference board's script does it: click/Enter on `.card-head` toggles
 `.collapsed` (hides everything but the head); cards with a `Queued` key or a status pill reading
 "ruled …" (and NOT "to vote") start collapsed; the viewer's choice is remembered in
 `localStorage` keyed by the card title. Keep the script when regenerating the board, and keep the
