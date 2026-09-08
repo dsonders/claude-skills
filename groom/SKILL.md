@@ -64,7 +64,7 @@ BETTER"). Card A on it is the template. Every groomed card, top to bottom:
 5. **App screens, today vs proposed** — drawn in the APP's light look (white surface, the
    app's slate greys, its real row colors/pills/chips, system sans), side by side, wrapping on
    narrow widths. Read the real component first so the drawing matches (columns, labels, pill
-   styles). The proposed change gets a soft highlight ring so the eye lands on it. When there's
+   styles). The proposed change gets a soft highlight ring so the eye lands on it — ON ONE ELEMENT per frame at most, never on a header, a button or a whole section, and NEVER on a frame Dave is ruling the DESIGN of (2026-09-07: "there are some unintended blue outlines in the mockup. Please redraw so I can rule on the actual design proposal" — rings on a proposed sheet read as part of the design). When there's
    no single obvious design: pick a recommendation, draw ONLY it, and list the other lettered
    directions as text rows with one trade-off line each (rule 7 — drawn variants only on request). Mobile surfaces = 390px phone frames of the real header/strip. The board renders in
    light or dark; the screen frames pin their own literal light palette (scoped `.app-screen`)
