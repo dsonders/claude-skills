@@ -119,7 +119,9 @@ https://claude.ai/code/artifact/5089d5b5-577e-402b-95ec-8b0fd421576d (URL also i
 each tap into the artifact's own store; nothing reads it until a session sweeps it. The sweep:
 1. `Artifact action:"read_db" db_op:"list" collection:"rulings"` and the same for `collection:"notes"`.
    Docs: `rulings/<KEY>-<n>` = `{choice:"A", words:"…", at}` — a choice decision is ruled when `choice` is set, a
-   text-only decision when `words` is non-empty; `notes/<KEY>` = `{text, at}` = the "Questions & feedback" field.
+   text-only decision when `words` is non-empty; `rulings/<KEY>-stage` = `{choice:"advance"|"keep"|"icebox"}` = Dave's
+   triage call on a NOT-YET-GROOMED item (`advance` → groom it this session with real screens; `keep` → stays in Needs
+   grooming; `icebox` → Icebox with a revisit trigger); `notes/<KEY>` = `{text, at}` = the "Questions & feedback" field.
 2. Write every ruling ⛔-VERBATIM into `docs/overnight/BACKLOG.md` under its item (`words` is Dave's wording; the
    letter maps to the option text in the phone board's `decisions` data — quote the option text, never just "A").
    An item whose every decision is ruled moves to **Queued** with files-to-read + sensitivity, exactly as a chat ruling.
@@ -130,8 +132,11 @@ each tap into the artifact's own store; nothing reads it until a session sweeps 
    only what landed on `origin/main` — a ruling is not swept until its ⛔ line is on main.
 5. Rebuild the phone board whenever the backlog changes (new to-vote cards, a card re-drawn): source in
    `phone-board/` next to this file (README there) — `decisions.py` turns every card's questions into lettered
-   options with the rec marked (open-ended questions = text-only decisions); `python3 build.py`, run the two
-   Playwright checks, republish with the phone board's URL as `url`. Keep the card keys stable — the store is keyed on them.
+   options with the rec marked (open-ended questions = text-only decisions) and `STAGE` marks which cards are still
+   triage (⛔ Dave 9/8: a not-yet-groomed item shows the groom-it-or-not decision at the TOP of its page, with the
+   feedback field mirrored under it, and its questions below as "what grooming would settle"; on the dashboard it wears
+   an amber "groom?" pill); `python3 build.py`, run the Playwright checks, republish with the phone board's URL as `url`.
+   Keep the card keys stable — the store is keyed on them.
 
 ### Pass 1 — Triage (cheap, whole backlog)
 1. Read `docs/overnight/BACKLOG.md` (from `origin/main` — the primary checkout lags) + any new

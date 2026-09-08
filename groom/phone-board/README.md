@@ -14,4 +14,4 @@ passing that URL as `url` from any session).
 - `test.mjs`, `test2.mjs` — Playwright checks at 390px (routing, tapping, words, notes, persistence; scroll stability
   under a simulated store). Run with `node` from `/ro-bot/app` so `playwright` resolves (the scripts use absolute paths).
 
-Store layout: `rulings/<KEY>-<n>` = `{choice, words, at}` · `notes/<KEY>` = `{text, at}`. Sweep protocol: groom skill Step 0.
+Store layout: `rulings/<KEY>-<n>` = `{choice, words, at}` · `rulings/<KEY>-stage` = `{choice: advance|keep|icebox}` (triage items) · `notes/<KEY>` = `{text, at}`. `STAGE` / `STAGE_NOTE` in `decisions.py` mark triage items. Sweep protocol: groom skill Step 0.
