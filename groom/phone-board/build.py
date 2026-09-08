@@ -3,7 +3,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lib import ro_panel, owner_page, step, sil
 from parts_card import parts_card
 exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'admin_card.py')).read())
-from decisions import DEC
+from decisions import DEC, STAGE, STAGE_NOTE
 O=os.path.dirname(os.path.abspath(__file__))
 cards=json.load(open(O+'/cards.json'))
 board_css=open(O+'/board.css').read()
@@ -35,7 +35,7 @@ for c in cards:
         decs.append(dict(id=f"{c['key']}-{i}", n=i, q=q, options=[dict(l=l,t=t,rec=r) for l,t,r in opts], text=(len(opts)==0)))
     fr=frames_for(c['key'])
     blocks=''.join(c['blocks']) if fr['kind']=='none' else ''
-    data_cards.append(dict(key=c['key'], section=c['section'], title=c['title'], sub=c['sub'], dims=c['dims'], pop=c['pop'], ruled=c['ruled'], blocks=blocks, frames=fr, decisions=decs))
+    data_cards.append(dict(key=c['key'], section=c['section'], title=c['title'], sub=c['sub'], dims=c['dims'], pop=c['pop'], ruled=c['ruled'], blocks=blocks, frames=fr, decisions=decs, stage=STAGE.get(c['key'],'groomed'), stageNote=STAGE_NOTE.get(c['key'],'')))
 
 # ruled / queued items for the dashboard (from the live board)
 ruled_items=[
@@ -71,6 +71,22 @@ PAGE_CSS = """
 .m-empty{font-size:14.5px}
 .m-total{font-size:15.5px}
 .m-status{font-size:13px}
+/* ---------- stage ---------- */
+.m-stage{margin:12px 16px 0;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.m-stage.triage{border-color:var(--amber);background:var(--amber-soft)}
+.m-stage-lbl{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.m-stage.triage .m-stage-lbl{color:var(--amber)}
+.m-stage-lbl i{width:9px;height:9px;border-radius:999px;background:var(--teal);display:inline-block;flex:none}
+.m-stage.triage .m-stage-lbl i{background:var(--amber)}
+.m-stage .m-q{font-size:16.5px}
+.m-stage .m-btn{background:var(--surface)}
+.m-stage.ruled .m-btn{opacity:.45}
+.m-stage.ruled .m-btn.chosen{opacity:1;border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.m-stage .m-note{font-size:14px;color:var(--ink-2);line-height:1.45}
+.m-groom{flex:none;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12.5px;font-weight:600;color:var(--amber);background:var(--amber-soft);border:1px solid var(--amber);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.m-row .key.amber{background:var(--amber);color:#fff}
+.m-sechdr{font-size:16.5px;font-weight:600;line-height:1.4;padding:22px 16px 0}
+.m-sechdr small{display:block;font-size:14px;font-weight:400;color:var(--muted);margin-top:2px}
 /* ---------- phone board ---------- */
 .app{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#0f172a;line-height:1.35}
 .sil{display:inline-block;height:10px;border-radius:3px;background:#cbd5e1;vertical-align:middle}
@@ -160,7 +176,12 @@ JS = r"""
   function now(){ return new Date().toISOString(); }
   function fmt(iso){ try { var d=new Date(iso); return d.toLocaleDateString(undefined,{day:'numeric',month:'short'})+' '+d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}); } catch(e){ return ''; } }
   function isRuled(d){ var r = rulings[d.id]; if (!r) return false; return d.text ? !!(r.words && r.words.trim()) : !!r.choice; }
-  function openCount(c){ return c.decisions.filter(function(d){ return !isRuled(d); }).length; }
+  var STAGE_OPTS = [['advance','Advance to grooming'],['keep','Keep in backlog'],['icebox','Send to Icebox']];
+  function stageId(c){ return c.key+'-stage'; }
+  function stageRuling(c){ return rulings[stageId(c)] || null; }
+  function stageLabel(v){ var o = STAGE_OPTS.filter(function(x){ return x[0]===v; })[0]; return o ? o[1] : v; }
+  function openCount(c){ if (c.stage==='triage') return stageRuling(c) ? 0 : 1; return c.decisions.filter(function(d){ return !isRuled(d); }).length; }
+  function waitingGroom(c){ return c.stage==='triage' && !stageRuling(c); }
   function writeRuling(id, body){ rulings[id] = body; saveLocal(); if (db) { db.doc('rulings/'+id).set(body).catch(function(e){ console.warn('ruling save failed', e); setStatus('local'); }); } }
   function clearRuling(id){ delete rulings[id]; saveLocal(); if (db) { db.doc('rulings/'+id).delete().catch(function(e){ console.warn(e); }); } }
   function writeNote(key, text){ var body = {text:text, at:now()}; notes[key] = body; saveLocal(); if (db) { db.doc('notes/'+key).set(body).catch(function(e){ console.warn('note save failed', e); setStatus('local'); }); } }
@@ -172,9 +193,9 @@ JS = r"""
 
   // ---------- dashboard ----------
   function renderDash(){
-    var total = 0, items = 0;
-    CARDS.forEach(function(c){ var n = openCount(c); total += n; if (n) items++; });
-    var h = '<div class="m-hero"><div class="m-cap">Grooming board · '+esc(DATA.built)+'</div><h1>Backlog</h1><div class="m-total">'+total+' open decision'+(total===1?'':'s')+' on '+items+' item'+(items===1?'':'s')+'</div></div>';
+    var total = 0, items = 0, waiting = 0;
+    CARDS.forEach(function(c){ var n = openCount(c); total += n; if (n) items++; if (waitingGroom(c)) waiting++; });
+    var h = '<div class="m-hero"><div class="m-cap">Grooming board · '+esc(DATA.built)+'</div><h1>Backlog</h1><div class="m-total">'+total+' open decision'+(total===1?'':'s')+' on '+items+' item'+(items===1?'':'s')+(waiting?' · <span style="color:var(--amber)">'+waiting+' waiting on a groom call</span>':'')+'</div></div>';
     h += '<div class="m-status '+mode+'"><i></i></div>';
     DATA.sections.forEach(function(sec){
       var rows = '';
@@ -183,7 +204,10 @@ JS = r"""
       });
       CARDS.filter(function(c){ return c.section===sec; }).forEach(function(c){
         var n = openCount(c), hasNote = !!(notes[c.key] && notes[c.key].text && notes[c.key].text.trim());
-        rows += '<a class="m-row'+(n?'':' ruled')+'" href="#/item/'+encodeURIComponent(c.key)+'"><span class="key'+(n?'':' soft')+'">'+esc(c.key)+'</span><span class="t">'+esc(c.title)+'</span>'+(hasNote?'<span class="m-note-dot" title="You staged a note"></span>':'')+(n?'<span class="m-open">'+n+' open</span>':'<span class="m-done">ruled · phone</span>')+chev()+'</a>';
+        var pill, keycls;
+        if (c.stage==='triage') { var sr = stageRuling(c); pill = sr ? '<span class="m-done">'+esc(stageLabel(sr.choice))+'</span>' : '<span class="m-groom">groom?</span>'; keycls = sr ? ' soft' : ' amber'; }
+        else { pill = n ? '<span class="m-open">'+n+' open</span>' : '<span class="m-done">ruled · phone</span>'; keycls = n ? '' : ' soft'; }
+        rows += '<a class="m-row'+(n?'':' ruled')+'" href="#/item/'+encodeURIComponent(c.key)+'"><span class="key'+keycls+'">'+esc(c.key)+'</span><span class="t">'+esc(c.title)+'</span>'+(hasNote?'<span class="m-note-dot" title="You staged a note"></span>':'')+pill+chev()+'</a>';
       });
       if (!rows) return;
       var secItems = DATA.ruled.filter(function(r){ return r.section===sec; }).length, secRuled = secItems;
@@ -205,6 +229,18 @@ JS = r"""
     var idx = CARDS.indexOf(c), next = CARDS[idx+1];
     var h = '<div class="m-top"><div style="display:flex;align-items:center;justify-content:space-between"><a class="m-back" href="#/">'+'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg><span>Board</span></a><span class="m-cap">'+(idx+1)+' of '+CARDS.length+'</span></div>';
     h += '<div class="m-title"><span class="key">'+esc(c.key)+'</span><div>'+esc(c.title)+'</div></div><div class="m-sub">'+esc(c.sub)+'</div></div>';
+    var note0 = notes[key] && notes[key].text || '';
+    if (c.stage==='triage') {
+      var sr = stageRuling(c);
+      h += '<div class="m-stage triage" id="stage-block"><div class="m-stage-lbl"><i></i>Not yet groomed — your call: groom it or not</div>';
+      if (c.stageNote) h += '<div class="m-note">'+esc(c.stageNote)+'</div>';
+      h += '<div class="m-q">What happens to this item?</div>';
+      STAGE_OPTS.forEach(function(o){ h += '<button class="m-btn'+(sr&&sr.choice===o[0]?' chosen':'')+'" data-stage="'+o[0]+'">'+esc(o[1])+'</button>'; });
+      h += '<div class="m-ruled-line" id="rl-stage">'+(sr?'<span>'+esc(stageLabel(sr.choice))+' · '+fmt(sr.at)+'</span><button data-stage-clear="1">clear</button>':'')+'</div>';
+      h += '<div class="m-q" style="margin-top:6px">Questions &amp; feedback — staged for the next session</div><textarea class="m-field'+(note0.trim()?' filled':'')+'" data-note-mirror="1" rows="3" placeholder="Anything to work through before you can rule — a question about a frame, a redraw you want, a concern…">'+esc(note0)+'</textarea></div>';
+    } else {
+      h += '<div class="m-stage"><div class="m-stage-lbl"><i></i>Groomed — ready to rule</div></div>';
+    }
     if (c.ruled && c.ruled.length) { h += '<div style="padding:10px 16px 0"><div class="m-empty" style="border-style:solid;border-color:var(--teal);color:var(--ink-2)"><span class="m-cap" style="color:var(--teal)">Already ruled</span><br>'+c.ruled.map(esc).join('<br>')+'</div></div>'; }
     if (c.frames.kind !== 'none') {
       var st = flipState[key] || 'proposed';
@@ -216,6 +252,7 @@ JS = r"""
     } else {
       h += '<div style="padding:14px 16px 0"><div class="m-empty">No screen changes — nothing to draw.</div></div>';
     }
+    if (c.stage==='triage' && c.decisions.length) h += '<div class="m-sechdr">What grooming would settle<small>Rule any of these now if you already know — otherwise they wait for the mockups.</small></div>';
     c.decisions.forEach(function(d){ h += decisionHTML(c, d); });
     var note = notes[key] && notes[key].text || '';
     h += '<div class="m-dec"><div class="m-q">Questions &amp; feedback — staged for the next session</div><textarea class="m-field'+(note.trim()?' filled':'')+'" id="note-field" rows="4" placeholder="Anything to work through before you can rule — a question about a frame, a redraw you want, a concern…">'+esc(note)+'</textarea><div class="m-hint" id="note-hint">'+(note.trim()?'Staged '+fmt(notes[key].at):'Saves as you type. The next session answers it here, in the frames.')+'</div></div>';
@@ -226,7 +263,13 @@ JS = r"""
     app.querySelectorAll('[data-choose]').forEach(function(b){ b.addEventListener('click', function(){ var id = b.getAttribute('data-dec'), l = b.getAttribute('data-choose'); var prev = rulings[id] || {}; writeRuling(id, {choice:l, words:prev.words||'', at:now()}); refreshDecision(c, id); }); });
     app.querySelectorAll('[data-clear]').forEach(function(b){ b.addEventListener('click', function(){ var id = b.getAttribute('data-clear'); clearRuling(id); refreshDecision(c, id); }); });
     app.querySelectorAll('[data-words]').forEach(function(t){ var timer; t.addEventListener('input', function(){ clearTimeout(timer); var id = t.getAttribute('data-words'); timer = setTimeout(function(){ var prev = rulings[id] || {}; var d = c.decisions.filter(function(x){ return x.id===id; })[0]; var words = t.value; if (!words.trim() && !prev.choice) { if (rulings[id]) clearRuling(id); } else { writeRuling(id, {choice:prev.choice||'', words:words, at:now()}); } refreshDecision(c, id, true); }, 600); }); });
-    var nf = document.getElementById('note-field'); var nt; nf.addEventListener('input', function(){ clearTimeout(nt); nt = setTimeout(function(){ writeNote(key, nf.value); nf.classList.toggle('filled', !!nf.value.trim()); document.getElementById('note-hint').textContent = nf.value.trim() ? 'Staged '+fmt(notes[key].at) : 'Saves as you type. The next session answers it here, in the frames.'; }, 600); });
+    var nf = document.getElementById('note-field'), mirror = app.querySelector('[data-note-mirror]'); var nt;
+    function noteInput(src){ var other = src===nf ? mirror : nf; if (other) other.value = src.value; clearTimeout(nt); nt = setTimeout(function(){ writeNote(key, src.value); var filled = !!src.value.trim(); nf.classList.toggle('filled', filled); if (mirror) mirror.classList.toggle('filled', filled); document.getElementById('note-hint').textContent = filled ? 'Staged '+fmt(notes[key].at) : 'Saves as you type. The next session answers it here, in the frames.'; }, 600); }
+    nf.addEventListener('input', function(){ noteInput(nf); }); if (mirror) mirror.addEventListener('input', function(){ noteInput(mirror); });
+    function wireStage(){ var blk = document.getElementById('stage-block'); if (!blk) return;
+      blk.querySelectorAll('[data-stage]').forEach(function(b){ b.addEventListener('click', function(){ writeRuling(stageId(c), {choice:b.getAttribute('data-stage'), words:'', at:now()}); refreshStage(c); }); });
+      var cl = blk.querySelector('[data-stage-clear]'); if (cl) cl.addEventListener('click', function(){ clearRuling(stageId(c)); refreshStage(c); }); }
+    wireStage();
   }
   function decisionHTML(c, d){
     var r = rulings[d.id] || {}, ruled = isRuled(d);
@@ -236,6 +279,11 @@ JS = r"""
     h += '<div class="m-ruled-line" id="rl-'+esc(d.id)+'">'+(ruled?'<span>Ruled'+(r.choice?' · '+esc(r.choice):'')+' · '+fmt(r.at)+'</span><button data-clear="'+esc(d.id)+'">clear</button>':'')+'</div></div>';
     return h;
   }
+  function refreshStage(c){ var blk = document.getElementById('stage-block'); if (!blk) return; var sr = stageRuling(c);
+    blk.querySelectorAll('[data-stage]').forEach(function(b){ b.classList.toggle('chosen', !!(sr && sr.choice===b.getAttribute('data-stage'))); });
+    blk.classList.toggle('ruled', !!sr);
+    document.getElementById('rl-stage').innerHTML = sr ? '<span>'+esc(stageLabel(sr.choice))+' · '+fmt(sr.at)+'</span><button data-stage-clear="1">clear</button>' : '';
+    var cl = blk.querySelector('[data-stage-clear]'); if (cl) cl.addEventListener('click', function(){ clearRuling(stageId(c)); refreshStage(c); }); }
   function refreshDecision(c, id, keepFocus){
     var d = c.decisions.filter(function(x){ return x.id===id; })[0]; var old = document.getElementById('dec-'+id); if (!old) return;
     if (keepFocus) { // only update the ruled line + classes, keep the textarea
@@ -257,6 +305,7 @@ JS = r"""
     var key = currentItemKey();
     if (!key) { var y = window.scrollY; renderDash(); window.scrollTo(0, y); return; }
     var c = BY[key]; if (!c) return;
+    if (JSON.stringify(prev[stageId(c)]||null) !== JSON.stringify(rulings[stageId(c)]||null)) refreshStage(c);
     c.decisions.forEach(function(d){
       var a = JSON.stringify(prev[d.id]||null), b = JSON.stringify(rulings[d.id]||null);
       if (a === b) return;

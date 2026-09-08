@@ -73,3 +73,15 @@ DEC = {
   ("If yes later: two PRs — routes and types first under the current version, then the flip?", [("A","Two PRs",True),("B","One PR",False)]),
  ],
 }
+
+# Stage per card. "triage" = not yet groomed: the decision needed NOW is whether to groom it at all
+# (Advance to grooming / Keep in backlog / Send to Icebox); its questions are what grooming would settle and
+# may be ruled early. Anything not listed is "groomed" = ready to rule. STAGE_NOTE says why it is waiting.
+STAGE = {
+ "Q": "triage",
+ "SA-20b": "triage",
+}
+STAGE_NOTE = {
+ "Q": "Mockups on a real RO come next if this advances — the three shapes above are silhouettes, not the app.",
+ "SA-20b": "The table above describes stored state, not a screen — the parts pricing grid has no delivery pill. A real frame comes with grooming.",
+}
