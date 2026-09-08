@@ -77,6 +77,7 @@ Make a todo list and work through it.
   is the only way to do the operation, or a `check:*` script with probe fixtures), plus setting `guard=` on
   the lesson's recurrence line and shrinking its INDEX row to a pointer. A `LESSON-NOLINE` is a docs
   fix, not a guardrail — stamp the line in the same run. Dave still sees the list in the ledger (Step 5).
+- **Prove the rulings are on `origin/main` by CONTENT, not by PR number** (2026-09-08: the handoff said "Queued on #1890, merged" — #1890 had auto-merged only the branch's FIRST commit; the 12 ruling commits pushed afterwards sat on the closed PR's branch). `git show origin/main:docs/overnight/BACKLOG.md | grep -c '⛔ RULED'` for each key; if a ruling is missing, `git log origin/main..origin/<groom-branch>` and re-land the tip as a fresh PR before briefing (memory `feedback_branch_commits_after_pr_merge_go_nowhere`).
 - **Cross-check §Queued against merged PRs** before writing the brief: `gh pr list --state merged
   --limit 40` and grep each Queued heading's key phrase against merged titles. A groom-pass doc PR
   can silently RE-INTRODUCE sections a ledger PR removed (#1603 relisted four items #1593–#1596
@@ -144,6 +145,7 @@ On each agent report / Codex block:
   12 (wall-clock fence patched 3× before the model was replaced by a server generation). On the FIRST
   block of that shape, stop patching the flagged line: enumerate the whole matrix (or replace the
   instrument) in one round — see app `docs/lessons-learned/video-batch-2026-08-28.md`.
+  **An acceptance gate over an AI's RE-ORDERING of the tech's words is the worst case of this shape** (#1907, 2026-09-08: four rounds — unordered set → one rotation → contractions + subject reassignment → two unknown nouns, either can front — then Dave closed it): on the SECOND block, split the PR — ship the his-words-only fallback (subject-first, negations never dropped, the cap yields to a reversal) and close or park the acceptance path with Dave's one-word question; never spend a third round teaching a re-ordering rule the catalog cannot ground.
   **Since #1827 (2026-09-05) a phrasing counterexample on the three heuristic-parser files
   (`mpi-voice-processor.ts`, `video-findings.ts`, `video-talking-points-job.ts`) is P2 —
   advisory, not a block.** Don't patch the regex for it; add the sentence to the eval corpus
@@ -199,7 +201,7 @@ Dave reads, reverts if needed, republishes.
 - `npm run smoke:prod`; `npm run verify:deploy -- --expect "<sentinel>"` per PR (collect
   sentinels in the brief as you go — client-bundle strings only, never server-only literals).
 - **Live-verify EVERY PR's user-facing surfaces on prod, per actor** — not one representative flow. 2026-09-01: the full pass found 4 client misses in a PR that had 12k green tests + mirror + Codex-clean (#1688 → fix #1705). Protocol: smoke FIRST; then 1–2 Opus agents on disjoint surfaces, TD1 only, fixtures closed on exit, verdict PROVED / FAILED-with-evidence / NOT-DRIVABLE-why per item, evidence in the scratchpad; a PR-body line "pinned by tests, not seen in a browser" names the first surfaces to drive.
-- Update the kanban cards; write/refresh the memory entry (rulings + follow-ups) so no future
+- Update the board: the run's shipped cards → Archive rows, AND sweep EVERY other section's cards against `gh pr list --state merged` since the last board update — a sibling session's ship (the cue-card rebuild, 8 Sep) leaves a "parked / to vote" card lying about a merged feature (Dave, 2026-09-08: "move anything shipped to the archive area"). Shipped rows are one line: what the user gets + PR numbers; a shipped item's open follow-ups become the new cards. Then write/refresh the memory entry (rulings + follow-ups) so no future
   session re-litigates; `/compound` if the run surfaced a reusable lesson.
 
 ## Success Criteria
