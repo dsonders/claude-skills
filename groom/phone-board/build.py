@@ -37,21 +37,31 @@ def frames_for(key):
 CONTEXT, OPT_VIS, GALLERY = {}, {}, {}
 GALLERY_WIDE = {'Q-1'}
 
+import base64 as _b64
+REAL = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), 'real')
+RH = json.load(open(REAL+'/heights.json'))
+def real_img(name, alt):
+    b = _b64.b64encode(open(f'{REAL}/{name}.jpg','rb').read()).decode()
+    return f'<img src="data:image/jpeg;base64,{b}" alt="{alt}" style="display:block;width:100%;height:auto;">'
 def q_gallery():
-    out=[]
-    base = MEASURED.get('today')
-    for key,label,opts in Q_VARIANTS:
-        h = MEASURED.get(key)
-        note = ''
-        if h and base: note = f'≈ {h} px in this drawing' + ('' if key=='today' else f' · saves ≈ {base-h} px')
-        out.append((label, parts_line_variant(**opts), note))
-    return out
+    ph, dk = RH['heights'], RH['desktopHeights']
+    def note(k): return f"{ph[k]} px on a phone" + (f" · saves {ph['today']-ph[k]}" if k!='today' else f" · {dk['today']} px on desktop")
+    items = [
+      ('today',   'Today'),
+      ('pad',     '① Tighter padding'),
+      ('cc',      '② Complaint / Cause one line each'),
+      ('rail',    '③ “Parts Needed” rail sideways'),
+      ('notes',   '④ Collapse the notes band'),
+      ('onerow',  '⑤ Each part on one text row'),
+      ('compact', '⑦ “Compact” = ①+②+④+⑤ + the Parts Total on one line under the rows'),
+    ]
+    return [(label, real_img('q-'+k, label), note(k)) for k,label in items]
 GALLERY['Q-1'] = q_gallery()
-CONTEXT['Q-1'] = 'Same line, same two parts, drawn from the card’s real paddings and control sizes. Your three are ①–③; the extras are ④–⑦.'
+CONTEXT['Q-1'] = 'Real screens: the parts page on the test store, one recall line with two parts, captured 9 Sep at phone width with each variant applied to the live page. This fixture measures 733 px on a phone and 477 px on desktop; your ≈830 came from a busier RO. Seen on the real page: “hover for all” sits on top of the clamped text, and a phone has no hover — a fix to carry with whichever variant wins. ⑥ (one-line footer) is inside ⑦: on the phone today the Parts Total sits off the right edge of the sideways scroller, invisible.'
 CONTEXT['Q-2'] = 'Compare ② above with Today: one line each, the full text on hover (desktop) or tap (phone).'
 CONTEXT['Q-3'] = 'Compare ③ above: the heading row goes, the label turns sideways on the left edge.'
 OPT_VIS['Q-4'] = {'A': {'why': 'Only the parts counter’s card changes; the advisor’s and tech’s line cards keep today’s height, so the same line looks different per role.'}, 'B': {'why': 'One card shape for everyone; the advisor’s Parts & Labor card and the tech’s line card shrink the same way.'}}
-CONTEXT['Q-5'] = 'Today’s card is ≈ 830 px on the parts page. A number here becomes the build’s target — leave it blank to take whatever the chosen variants give.'
+CONTEXT['Q-5'] = 'Measured on the real page: 733 px on a phone, 477 px on desktop, one line with two parts. A number here becomes the build’s target — leave it blank to take whatever the chosen variants give.'
 OPT_VIS['SA-6b-2'] = {'A': {'why': 'Nothing moves on the dashboards or in the money bands — the line stays a declined line everywhere; only the banner’s words change.'}, 'B': {'why': 'A new bucket: dashboards and money bands would show “declined at close” apart from customer declines — new counts, new columns.'}}
 OPT_VIS['T-1'] = {'A': {'why': 'Each approved line remembers the labor rate it was agreed at. Hours and parts keep re-deriving; a later rate change leaves the line alone.'}, 'B': {'why': 'The line remembers rate, hours and parts as agreed, as one frozen snapshot. Any later edit is visibly a change from the agreed figures — more to store, simpler to reason about.'}}
 OPT_VIS['T-2'] = {'A': {'why': 'A one-time cleanup you run: every already-approved line gets a rate worked back from its stored total and hours. Lines with no hours can’t be worked back and stay on the total.'}, 'B': {'why': 'Old approved lines keep their stored total and the “never re-figure a frozen line” special case until they close; only lines approved after the build carry a rate.'}}

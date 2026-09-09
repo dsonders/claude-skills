@@ -1,0 +1,70 @@
+import { chromium, devices } from '/Users/davidsonders/ro-bot/app/node_modules/playwright/index.mjs';
+import fs from 'fs';
+const O='/private/tmp/claude-501/-Users-davidsonders-ro-bot-app/502c56fe-c8cb-46e3-9c57-a296facb4678/scratchpad/real';
+const ENV = Object.fromEntries(fs.readFileSync('/Users/davidsonders/ro-bot/app/__tests__/workflow/.env.test','utf8').split('\n').filter(l=>l.includes('=')&&!l.trim().startsWith('#')).map(l=>{const i=l.indexOf('=');return [l.slice(0,i).trim(), l.slice(i+1).trim().replace(/^"|"$/g,'')];}));
+const BASE = 'https://app.tenthgear.ai'; const KEY = ENV.VITE_FIREBASE_API_KEY;
+async function login(role){ const r = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${KEY}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:ENV[`E2E_${role}_EMAIL`],password:ENV[`E2E_${role}_PASSWORD`],returnSecureToken:true})}); if(!r.ok) throw new Error('login '+role+' '+r.status); const j=await r.json(); return {token:j.idToken, uid:j.localId, email:j.email, refresh:j.refreshToken, expiresIn:+j.expiresIn}; }
+async function api(tok, method, path, body){ const r = await fetch(BASE+path,{method,headers:{Authorization:'Bearer '+tok, ...(body!==undefined?{'Content-Type':'application/json'}:{})},body:body!==undefined?JSON.stringify(body):undefined}); let d=null; try{ d=await r.json(); }catch{} return {status:r.status, data:d}; }
+const log = (...a)=>console.log(...a);
+const advisor = await login('ADVISOR'), tech = await login('TECH_A'), parts = await login('PARTS'), admin = await login('ADMIN');
+const MODE = process.env.MODE || 'capture'; let roId = process.env.RO_ID ? Number(process.env.RO_ID) : null; const out = {heights:{}, desktopHeights:{}};
+try {
+  if (!roId) {
+  const stamp = new Date().toISOString().replace(/[:.]/g,'-');
+  const veh = await api(advisor.token,'POST','/api/vehicles',{make:'Honda',model:'Pilot',year:2021,vin:`E2E-VIN-${Date.now()}`,color:'Silver',licensePlate:'None',additionalDetails:''}); if (veh.status!==201) throw new Error('vehicle '+veh.status+' '+JSON.stringify(veh.data));
+  const ro = await api(advisor.token,'POST','/api/repair-orders',{vehicleId:veh.data.id,customerName:'E2E Fixture',customerPhone:'555-0100',status:'open',mileage:84120,createdByRole:'advisor',dealerRoNumber:`E2E-Q-${stamp}`,saName:'PJ Macklin',skipPlaceholderIssue:true}); if (ro.status!==201) throw new Error('ro '+ro.status+' '+JSON.stringify(ro.data)); roId = ro.data.id; log('RO', roId);
+  const issue = await api(advisor.token,'POST',`/api/repair-orders/${roId}/issues`,{customerComplaint:'Customer states fuel gauge reads empty after fill-up and engine cranks long before starting. Happens most mornings.',category:'recall'}); if (issue.status!==201) throw new Error('issue '+issue.status+' '+JSON.stringify(issue.data)); const issueId = issue.data.id;
+  let r = await api(advisor.token,'PATCH',`/api/repair-orders/${roId}`,{assignedTechnicianId:tech.uid,workflowStatus:'assigned_to_tech'}); if (r.status!==200) throw new Error('assign '+r.status+' '+JSON.stringify(r.data));
+  r = await api(tech.token,'PATCH',`/api/issues/${issueId}`,{cause:'Fuel pump module losing prime overnight; sender reads low. Matches recall bulletin.',correction:'Replace fuel pump module and sender per recall; clear codes; verify start and gauge.',laborHours:1.5}); if (r.status>=300) throw new Error('3c '+r.status+' '+JSON.stringify(r.data));
+  r = await api(tech.token,'PATCH',`/api/repair-orders/${roId}`,{workflowStatus:'parts_pricing'}); if (r.status!==200) throw new Error('to parts '+r.status+' '+JSON.stringify(r.data));
+  r = await api(parts.token,'POST',`/api/repair-orders/${roId}/take-over-parts`); if (r.status>=300) throw new Error('takeover '+r.status);
+  r = await api(parts.token,'PATCH',`/api/issues/${issueId}`,{parts:[{id:`e2e-p1-${issueId}`,name:'Fuel pump module',quantity:1,partNumber:'RC-FP-002',price:null,inStock:null,customerApproved:true,deliveryState:'pending'},{id:`e2e-p2-${issueId}`,name:'Fuel level sender',quantity:1,partNumber:'RC-FS-011',price:null,inStock:true,customerApproved:true,deliveryState:'pending'}]}); if (r.status>=300) throw new Error('parts '+r.status+' '+JSON.stringify(r.data));
+  log('seeded');
+  }
+  const b = await chromium.launch();
+  async function session(viewport, mobile){
+    const ctx = await b.newContext({viewport, deviceScaleFactor:2, isMobile:mobile, hasTouch:mobile, userAgent: mobile ? devices['iPhone 13'].userAgent : undefined});
+    const p = await ctx.newPage();
+    await p.goto(BASE+'/api/config'); 
+    await p.evaluate(async ({key, user}) => { await new Promise((res, rej) => { const req = indexedDB.open('firebaseLocalStorageDb', 1); req.onupgradeneeded = () => { req.result.createObjectStore('firebaseLocalStorage', {keyPath:'fbase_key'}); }; req.onsuccess = () => { const db = req.result; const tx = db.transaction('firebaseLocalStorage','readwrite'); tx.objectStore('firebaseLocalStorage').put({fbase_key:`firebase:authUser:${key}:[DEFAULT]`, value:{uid:user.uid,email:user.email,emailVerified:true,isAnonymous:false,providerData:[],stsTokenManager:{refreshToken:'',accessToken:user.token,expirationTime:Date.now()+50*60*1000},createdAt:String(Date.now()),lastLoginAt:String(Date.now()),apiKey:key,appName:'[DEFAULT]'}}); tx.oncomplete = () => { db.close(); res(); }; tx.onerror = () => rej(tx.error); }; req.onerror = () => rej(req.error); }); }, {key: KEY, user: {uid: parts.uid, email: parts.email, token: parts.token}});
+    await p.goto(BASE+'/'); await p.waitForTimeout(3000);
+    return p;
+  }
+  const CARD = '[data-testid="parts-line-card-has-parts"]';
+  async function openRO(p){ await p.goto(`${BASE}/parts/repair-order/${roId}`); await p.waitForSelector(CARD, {timeout: 60000}); await p.waitForTimeout(1500); await p.evaluate(()=>document.fonts.ready); }
+  async function measure(p){ return await p.evaluate((sel)=>Math.round(document.querySelector(sel).getBoundingClientRect().height), CARD); }
+  const VARIANTS = {
+    today: async()=>{},
+    pad: async(p)=>{ await p.addStyleTag({content:`${CARD} > div:first-child{padding:12px 12px 8px !important} ${CARD} .p-6.space-y-3.pt-0{padding:0 12px 12px !important} ${CARD} .space-y-3 > * + *{margin-top:8px !important} ${CARD} .grid.grid-cols-1.gap-3{gap:8px !important} ${CARD} .p-3{padding:8px !important} ${CARD} .gap-2{gap:6px !important}`}); },
+    cc: async(p)=>{ await p.evaluate((sel)=>{ document.querySelectorAll(sel+' *').forEach(el=>{ const cs=getComputedStyle(el); if (cs.webkitLineClamp==='2') { el.style.webkitLineClamp='1'; } }); }, CARD); },
+    rail: async(p)=>{ await p.evaluate(()=>{ const lbl=[...document.querySelectorAll('div')].find(e=>/^Parts Needed/.test(e.textContent.trim()) && e.textContent.trim().length<20 && e.className.includes('font-semibold')); if(!lbl) return; const row=lbl.closest('.justify-between'); row.style.display='none'; const panel=row.parentElement; panel.style.position='relative'; panel.style.paddingLeft='36px'; const rail=document.createElement('div'); rail.style.cssText='position:absolute;left:0;top:0;bottom:0;width:24px;background:#f8fafc;border-right:1px solid #e2e8f0;border-radius:8px 0 0 8px;display:flex;align-items:center;justify-content:center;'; const s=document.createElement('span'); s.textContent=lbl.textContent.trim().replace(/(\d+)$/,'· $1'); s.style.cssText='writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#64748b;white-space:nowrap;'; rail.appendChild(s); panel.appendChild(rail); }); },
+    notes: async(p)=>{ await p.evaluate(()=>{ const lbl=[...document.querySelectorAll('div,span,h4,label')].find(e=>e.childElementCount===0 && e.textContent.trim()==='Parts notes'); if(!lbl) return; const tile=lbl.closest('.rounded-lg'); [...tile.children].forEach(ch=>{ if(!ch.contains(lbl)) ch.style.display='none'; }); tile.style.minHeight='44px'; tile.style.flexDirection='row'; tile.style.alignItems='center'; tile.style.justifyContent='space-between'; const hint=document.createElement('span'); hint.textContent='Add a note ›'; hint.style.cssText='font-size:13px;color:#94a3b8;'; tile.appendChild(hint); }); },
+    onerow: async(p)=>{ await p.evaluate(()=>{ const wide=document.querySelector('.min-w-\\[60rem\\]'); if(!wide) return; const hdr=wide.querySelector(':scope > .grid'); if(hdr) hdr.style.display='none'; wide.querySelectorAll('ul > li').forEach(li=>{ const grid=li.querySelector('.grid.items-center'); if(!grid) return; const num=grid.querySelector('input[data-testid^="part-row-part-number"]')?.value||''; const name=grid.querySelector('input[data-testid^="part-row-name"]')?.value||''; const qty=grid.querySelector('input[data-testid^="part-row-qty"]')?.value||''; const stockBtn=[...grid.querySelectorAll('button[data-testid^="part-row-stock-"]')].find(b=>/bg-brand|bg-slate-500/.test(b.className)); const stock=stockBtn?stockBtn.textContent.trim():'?'; grid.style.display='none'; const row=document.createElement('div'); row.style.cssText='display:flex;align-items:center;gap:10px;min-height:28px;font-size:13px;color:#0f172a;'; row.innerHTML='<span style="font-family:ui-monospace,Menlo,monospace;color:#475569">'+num+'</span><span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+name+'</span><span style="font-size:11px;color:#6b7280">×'+qty+'</span><span style="font-size:11px;font-weight:600;border-radius:4px;padding:1px 7px;background:'+(stock==='Yes'?'#78BC61':stock==='No'?'#B9314F':'#64748b')+';color:'+(stock==='Yes'?'#0f172a':'#fff')+'">'+stock+'</span>'; row.style.maxWidth=(wide.closest('.overflow-x-auto').clientWidth)+'px'; li.firstElementChild.prepend(row); }); }); },
+    footer: async(p)=>{ await p.evaluate(()=>{ const f=document.querySelector('[data-testid="parts-total-footer"]'); if(!f) return; const scroller=f.closest('.overflow-x-auto'); const vis=scroller.clientWidth; scroller.parentElement.insertBefore(f, scroller.nextSibling); f.style.cssText='display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px 10px;grid-column:auto;margin-top:8px;width:'+vis+'px;'; [...f.children].forEach(ch=>{ ch.style.gridColumn='auto'; ch.style.width='auto'; ch.style.minWidth='0'; }); const lead=f.firstElementChild; if(lead) lead.style.marginRight='auto'; const inp=f.querySelector('[data-testid="parts-total-input"]'); if(inp){ const wrap=inp.closest('div'); wrap.style.width='104px'; inp.style.width='104px'; } const tog=f.querySelector('[data-testid="parts-total-toggle"]'); if(tog){ const holder=tog.parentElement; holder.style.marginTop='0'; holder.style.flexDirection='row'; holder.style.width='auto'; } }); },
+  };
+  VARIANTS.compact = async(p)=>{ await VARIANTS.pad(p); await VARIANTS.cc(p); await VARIANTS.notes(p); await VARIANTS.onerow(p); await VARIANTS.footer(p); await p.addStyleTag({content:`${CARD} .min-w-\\[60rem\\]{min-width:0 !important}`}); await p.evaluate(()=>{ const lbl=[...document.querySelectorAll('div')].find(e=>/^Parts Needed/.test(e.textContent.trim()) && e.textContent.trim().length<20 && e.className.includes('font-semibold')); if(lbl){ const chip=document.createElement('span'); chip.textContent='Compact'; chip.style.cssText='margin-left:auto;font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#475569;border:1px solid #cbd5e1;border-radius:4px;padding:2px 6px;background:#f8fafc;'; lbl.closest('.justify-between').appendChild(chip); } }); };
+  const p = await session({width:390,height:844}, true);
+  if (MODE==='inspect') {
+    await openRO(p);
+    const html = await p.evaluate((sel)=>{ const c=document.querySelector(sel).cloneNode(true); c.querySelectorAll('svg').forEach(e=>e.replaceWith('<svg/>')); return c.outerHTML; }, CARD);
+    fs.writeFileSync(O+'/card.html', html);
+    const blocks = await p.evaluate((sel)=>{ const c=document.querySelector(sel); const out=[]; const walk=(el,depth)=>{ if(depth>4) return; [...el.children].forEach(ch=>{ const r=ch.getBoundingClientRect(); if(r.height>=20) out.push({depth, tag:ch.tagName, cls:(ch.className||'').toString().slice(0,90), h:Math.round(r.height), w:Math.round(r.width), text:(ch.textContent||'').trim().slice(0,40)}); walk(ch,depth+1); }); }; walk(c,0); return out; }, CARD);
+    fs.writeFileSync(O+'/blocks.json', JSON.stringify(blocks,null,1));
+    log('inspect done; RO', roId); await b.close(); process.exit(0);
+  }
+  for (const [k, apply] of Object.entries(VARIANTS)) {
+    await openRO(p); await apply(p); await p.waitForTimeout(400);
+    out.heights[k] = await measure(p);
+    const card = await p.$(CARD);
+    await card.screenshot({path:`${O}/q-${k}.png`}); await card.screenshot({path:`${O}/q-${k}.jpg`, type:'jpeg', quality:80});
+    if (k==='today') { await p.screenshot({path:`${O}/q-today-viewport.png`}); await p.screenshot({path:`${O}/q-today-viewport.jpg`, type:'jpeg', quality:80}); }
+    log(k, out.heights[k]);
+  }
+  await p.context().close();
+  const d = await session({width:1280,height:900}, false);
+  for (const [k, apply] of Object.entries(VARIANTS)) { await openRO(d); await apply(d); await d.waitForTimeout(400); out.desktopHeights[k] = await measure(d); if (k==='today') { const card = await d.$(CARD); await card.screenshot({path:`${O}/q-today-desktop.jpg`, type:'jpeg', quality:80}); } }
+  await d.context().close(); await b.close();
+  fs.writeFileSync(O+'/heights.json', JSON.stringify(out, null, 1)); log(JSON.stringify(out));
+} finally {
+  if (roId && MODE!=='inspect' && !process.env.KEEP) { const c = await api(admin.token,'PATCH',`/api/repair-orders/${roId}`,{workflowStatus:'closed'}); log('closed fixture RO', roId, c.status); }
+}

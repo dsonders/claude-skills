@@ -8,6 +8,7 @@ passing that URL as `url` from any session).
   Keys are the board card keys; ids are `<KEY>-<n>` and the store is keyed on them — keep them stable.
 - `cards.json` — title / sub / dims / figures per to-vote card, extracted from the desktop board's HTML
   (the extraction script is in the 2026-09-08 session; re-extract with the same regexes when cards change).
+- `real-capture.mjs` + `real/` — REAL screenshots of the app with variants applied live (Q, 9/9): `MODE=inspect node real-capture.mjs` seeds a TD1 fixture RO and dumps the card's markup/sizes (keeps the RO open, prints its id); `RO_ID=<id> node real-capture.mjs` captures every variant at phone + desktop width, writes `heights.json`, closes the RO. Reads `__tests__/workflow/.env.test` in-process; prints no secrets. Add variants to `VARIANTS` as CSS/DOM overrides against the real testids.
 - `triage_frames.py` — the ONE basic mockup per not-yet-groomed item (keyed in `build.py`'s `TRIAGE_MOCK`).
 - `lib.py`, `parts_card.py`, `admin_card.py` — the drawn app frames (RO line panel, customer page, parts card, admin
   Parts & Labor card). Add a `frames_for(key)` branch in `build.py` for each new Flip / walkthrough item.

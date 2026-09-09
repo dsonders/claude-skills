@@ -78,7 +78,11 @@ visuals only on what survived. Output = ⛔ rulings written verbatim into
     only after they landed. An item he already ruled never comes back as open.
 11. **Honesty rules that make a visual trustworthy.** Real components (read them first), real figures from real
     records, grey bars for anything the record does not give, and any measured number labelled as measured in the
-    drawing. A fake datum stops the vote.
+    drawing. A fake datum stops the vote. **Detailed UI work (density, spacing, a card's height) uses REAL SCREENS**
+    (⛔ Dave 9/9, card Q): seed a fixture RO on the test store, open the real page headless as the real role, apply
+    each variant as a live style/DOM override, screenshot the element and measure it — recipe + script in
+    `phone-board/real-capture.mjs` (reads `.env.test` in-process, closes the fixture RO). A drawing of the card
+    missed what the real page showed (an off-screen footer, a touch-device "hover for all").
 12. **Write for a product manager and designer, not an engineer.** Explanations and on-board communication are
     clear, concise, natural human language. No code names, no field names, no engineering nouns (the "Never on a card"
     list below).
