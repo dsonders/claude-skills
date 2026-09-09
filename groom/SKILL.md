@@ -139,6 +139,14 @@ each tap into the artifact's own store; nothing reads it until a session sweeps 
    questions and chips fold under Details. No helper sentences. On the dashboard it wears an amber "groom?" pill.
    `python3 build.py`, run the Playwright checks, republish with the phone board's URL as `url`.
    Keep the card keys stable — the store is keyed on them.
+6. **⛔ Dave 9/8 evening — every UX decision on the phone shows what EACH option looks like:** "when you're asking me
+   to make a decision about user experience — this way or that way — I need to see what those different directions
+   will look like when implemented." So on the PHONE board (unlike desktop rule 7) an option that is a UX direction
+   carries its own small frame (`OPT_VIS` in `build.py`, drawn in `option_frames.py` from a real component read), plus
+   a one-line implication (`why`); a decision that compares many shapes gets a gallery above the options
+   (`GALLERY`, e.g. Q's seven height variants with measured heights); a decision that is really a FACT question gets
+   answered from the code and said so (`CONTEXT`), never left as a ballot. Non-UX options get the implication line only.
+   Dashboard sections default to collapsed. Read the store's `notes/` before redrawing — a note is the brief.
 
 ### Pass 1 — Triage (cheap, whole backlog)
 1. Read `docs/overnight/BACKLOG.md` (from `origin/main` — the primary checkout lags) + any new

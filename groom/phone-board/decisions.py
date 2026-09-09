@@ -1,7 +1,7 @@
 # id suffix, question, options [(letter, text, rec)], text_only
 DEC = {
  "SA-20b": [
-  ("Plain “Pending” at pricing time, or hide the delivery cell until the line is approved?", [("A","Pending — the Yes stays shown as the answer it is",True),("B","Hide the delivery cell until the line is approved",False)]),
+  ("Stop recording a delivery state from the pricing-time answer? Nothing on any screen changes — the one thing that does is the advisor’s re-open warning below.", [("A","Yes — stop it; the re-open warning goes quiet",True),("B","Leave it as it is — the recorded state is invisible, and the warning still works",False),("C","Icebox",False)]),
  ],
  "Q": [
   ("Which variants go on the ballot — your three, plus which extras?", [("A","Your three only",False),("B","Your three + collapse the notes band",False),("C","Your three + all four extras — notes band, part on one row, one-line footer, per-user density",False)]),
@@ -30,7 +30,7 @@ DEC = {
   ("Same rule for the advisor / admin ledger, which has no stage lock today?", [("A","Yes",False),("B","No",False)]),
  ],
  "D3": [
-  ("Ship the squashed Pipeline / List switch as a plain fix — no design decision?", [("A","Yes",True),("B","No — show me the fix first",False)]),
+  ("Ship the fix as drawn — the switch keeps its full labels and the filter boxes give up the room instead?", [("A","Yes — ship it as drawn",True),("B","No — say what should give way instead, below",False)]),
  ],
  "SA-7b": [
   ("Store one new piece of information on each RO so the two families can be told apart — build it as part of this?", [("A","Yes",True),("B","No — go back to “Needs customer OK” and accept it is wrong when only the store is waiting",False)]),
@@ -42,12 +42,12 @@ DEC = {
   ("Count on Clear (“Clear 2”)?", [("A","Yes",False),("B","No",False)]),
  ],
  "X": [
-  ("Show “N price gaps” (blank or $0 part or hours — the RO band’s rule) or only blanks?", [("A","N price gaps — the RO band’s rule",False),("B","Only blanks",False)]),
-  ("Hover lists the lines?", [("A","Yes",False),("B","No",False)]),
+  ("Bring the count back as “price gaps” — the RO header’s rule (labor hours missing or 0, a part row blank or $0)? “Only blanks” can no longer count anything: since 8/27 every line carries a total.", [("A","Yes — “N price gaps”, the RO header’s rule",True),("B","No — drop the row; nothing is left for it to count",False)]),
+  ("Hover lists the lines with a gap, and what the gap is?", [("A","Yes",True),("B","No — the count only",False)]),
  ],
  "D1": [
   ("Label only — one change, no behavior?", [("A","Yes",True),("B","No",False)]),
-  ("If the customer page carries the word anywhere, change it there too?", [("A","Yes — change it there too",False),("B","No — customer page untouched",False)]),
+  ("If the customer page carries the word anywhere, change it there too? (Checked 9/8: it never does — the word is staff-only.)", [("A","Yes — change it there too",False),("B","No — customer page untouched",False)]),
  ],
  "U": [
   ("Inline under the line, or a banner at the top of the page?", [("A","Inline under the line",True),("B","A banner at the top",False)]),
@@ -78,8 +78,7 @@ DEC = {
 # (Advance to grooming / Keep in backlog / Send to Icebox); its questions are what grooming would settle and
 # may be ruled early. Anything not listed is "groomed" = ready to rule. STAGE_NOTE says why it is waiting.
 STAGE = {
- "Q": "triage",
- "SA-20b": "triage",
+ # Q and SA-20b were advanced by Dave from the phone on 2026-09-08 (rulings/Q-stage, rulings/SA-20b-stage) → groomed here.
 }
 STAGE_NOTE = {
  "Q": "Mockups on a real RO come next if this advances — the three shapes above are silhouettes, not the app.",
