@@ -54,8 +54,7 @@ def q_gallery():
       ('rail',    '③ “Parts Needed” rail sideways'),
       ('notes',   '④ Collapse the notes band'),
       ('onerow',  '⑤ Each part on one text row'),
-      ('footer',  '⑥ Parts Total on one line'),
-      ('compact', '⑦ “Compact” = ①+②+④+⑤+⑥'),
+      ('compact', '⑥ “Compact” = ①+②+④+⑤ together'),
     ]
     return [(label, real_img('qd-'+k, label), note(k)) for k,label in items]
 GALLERY['Q-1'] = q_gallery()
