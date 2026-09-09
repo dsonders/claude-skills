@@ -177,32 +177,6 @@ PAGE_CSS = """
 .m-empty{font-size:14.5px}
 .m-total{font-size:15.5px}
 .m-status{font-size:13px}
-/* ---------- desktop (≥900px): same anatomy, wider ---------- */
-.m-opts{display:flex;flex-direction:column;gap:8px}
-@media (min-width: 900px){
-  .m-wrap{max-width:1180px;padding:0 24px 60px}
-  .m-hero{padding-top:36px}
-  .m-deskcard{border-top:1px solid var(--line-2)}
-  .m-deskcard:first-child{border-top:0}
-  .m-deskcard.open{background:var(--surface)}
-  .m-deskhead{cursor:pointer;border-top:0}
-  .m-deskcard.open .m-deskhead .m-chev{transform:rotate(90deg)}
-  .m-deskbody{border-top:1px dashed var(--line);padding:0 8px 8px}
-  .m-legacy-status{padding:0 14px 10px 50px;font-size:13px;color:var(--teal)}
-  .m-both{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;padding:14px 16px 0;align-items:start}
-  .m-both .m-frame{margin:0}
-  .m-both .m-steps{padding:0}
-  .m-both-cap{margin:0 0 8px}
-  .m-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px;align-items:start}
-  .m-opts-stage{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .m-gallery.desk{grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px}
-  .m-gallery.desk .m-gal-frame{height:auto}
-  .m-gallery.desk .m-gal-inner{width:auto;transform:none;position:static}
-  .m-dec{padding-left:16px;padding-right:16px}
-  .m-trimock{max-width:420px}
-  .m-legacy .card{border:0;box-shadow:none;padding:16px 20px}
-  .m-blocks{max-width:none}
-}
 /* ---------- clarifiers ---------- */
 .m-ctx{font-size:15px;color:var(--ink-2);line-height:1.45}
 .m-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:4px 0 2px}
@@ -313,6 +287,33 @@ html,body{overflow-x:hidden}
 .m-sec.collapsed .m-sechead .m-chev{transform:rotate(-90deg)}
 .m-sec.collapsed .m-card{display:none}
 @media (prefers-reduced-motion: reduce){.m-sechead .m-chev{transition:none}}
+
+/* ---------- desktop (≥900px): same anatomy, wider ---------- */
+.m-opts{display:flex;flex-direction:column;gap:8px}
+@media (min-width: 900px){
+  .m-wrap{max-width:1180px;padding:0 24px 60px}
+  .m-hero{padding-top:36px}
+  .m-deskcard{border-top:1px solid var(--line-2)}
+  .m-deskcard:first-child{border-top:0}
+  .m-deskcard.open{background:var(--surface)}
+  .m-deskhead{cursor:pointer;border-top:0}
+  .m-deskcard.open .m-deskhead .m-chev{transform:rotate(90deg)}
+  .m-deskbody{border-top:1px dashed var(--line);padding:0 8px 8px}
+  .m-legacy-status{padding:0 14px 10px 50px;font-size:13px;color:var(--teal)}
+  .m-both{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;padding:14px 16px 0;align-items:start}
+  .m-both .m-frame{margin:0}
+  .m-both .m-steps{padding:0}
+  .m-both-cap{margin:0 0 8px}
+  .m-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px;align-items:start}
+  .m-opts-stage{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .m-gallery.desk{grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px}
+  .m-gallery.desk .m-gal-frame{height:auto}
+  .m-gallery.desk .m-gal-inner{width:auto;transform:none;position:static}
+  .m-dec{padding-left:16px;padding-right:16px}
+  .m-trimock{max-width:420px}
+  .m-legacy .card{border:0;box-shadow:none;padding:16px 20px}
+  .m-blocks{max-width:none}
+}
 """
 
 JS = open(os.path.join(O, "app.js")).read()

@@ -1,9 +1,9 @@
-# Phone board — build source (groom skill Step 0)
+# Grooming board (desktop + phone) — build source (groom skill Step 0)
 
 Published artifact: https://claude.ai/code/artifact/5089d5b5-577e-402b-95ec-8b0fd421576d (capability `db`; republish by
 passing that URL as `url` from any session).
 
-- `build.py` — writes `grooming-board-phone.html` next to itself. Run `python3 build.py` from anywhere (absolute paths).
+- `build.py` — writes `grooming-board-phone.html` (one responsive page: ≥900px = desktop layout) next to itself; the page script is `app.js`, per-option frames `option_frames.py`, the old desktop board's risk grid / icebox / archive carried in `legacy_blocks.json`. Run `python3 build.py` from anywhere (absolute paths).
 - `decisions.py` — the lettered options + rec for every to-vote card's questions. EDIT THIS when the backlog changes.
   Keys are the board card keys; ids are `<KEY>-<n>` and the store is keyed on them — keep them stable.
 - `cards.json` — title / sub / dims / figures per to-vote card, extracted from the desktop board's HTML

@@ -24,7 +24,9 @@ visuals only on what survived. Output = ⛔ rulings written verbatim into
 3. **One standing artifact, stable URL.** Republish the same board every cycle (its URL is
    kept in BACKLOG.md's header; from a new session, pass it as `url`). Never a new page per
    session. Everything to be triaged AND groomed lives on it — no terminal↔Chrome bouncing.
-   Its phone twin (Step 0) is the SECOND standing artifact: same items, same keys, republished in the same turn.
+   Since 2026-09-09 the ONE board serves desktop AND phone (the page lays itself out ≥900px: cards expand in
+   place, Today and Proposed side by side, options in a row; below: the phone flow) — one URL, one store. The 8/25
+   desktop board (6612d0d8) is retired to archive.
 4. **Priority order:** UX-impacting items first; among those, reliability/performance
    implications outrank pure polish. Behind-the-scenes (tech debt, security) after. Icebox last.
 5. **Votes come back by letter in chat** (or as artifact comments — those reach the session).
@@ -155,7 +157,7 @@ the bad outcome occurs.
 ## Workflow
 
 ### Step 0 — Sweep the phone board (EVERY groom or overnight-build session, before anything else)
-Dave rules from his phone with no session running (built 2026-09-08). The **phone board** —
+Dave rules from his phone or desktop with no session running (built 2026-09-08, one responsive page 9/9). The **board** —
 https://claude.ai/code/artifact/5089d5b5-577e-402b-95ec-8b0fd421576d (URL also in BACKLOG.md's header) — saves
 each tap into the artifact's own store; nothing reads it until a session sweeps it. The sweep:
 1. `Artifact action:"read_db" db_op:"list" collection:"rulings"` and the same for `collection:"notes"`.
@@ -172,7 +174,9 @@ each tap into the artifact's own store; nothing reads it until a session sweeps 
    ruled items briefly read as open again): once the PR is on `origin/main`, add each swept ruling to `BAKED` in
    `phone-board/decisions.py` (id → letter + "filed #PR"), rebuild + republish the phone board (baked decisions render
    ruled and untappable; a fully baked item reads "ruled · queued"), THEN delete the swept docs with
-   `write_db db_op:"delete"` (rulings and notes). A ruling is not swept until its ⛔ line is on main.
+   `write_db db_op:"delete"` (rulings and notes). A ruling is not swept until its ⛔ line is on main. (9/9 lesson: a
+   device that still held swept docs locally re-pushed them on reconnect — the page now pushes only docs written while
+   the store was unreachable, so deleted = gone.)
 5. Rebuild the phone board whenever the backlog changes (new to-vote cards, a card re-drawn): source in
    `phone-board/` next to this file (README there) — `decisions.py` turns every card's questions into lettered
    options with the rec marked (open-ended questions = text-only decisions) and `STAGE` marks which cards are still

@@ -20,8 +20,8 @@
   function allBaked(c){ return c.decisions.length > 0 && c.decisions.every(function(d){ return !!d.baked; }); }
   function openCount(c){ if (c.stage==='triage') return stageRuling(c) ? 0 : 1; return c.decisions.filter(function(d){ return !isRuled(d); }).length; }
   function waitingGroom(c){ return c.stage==='triage' && !stageRuling(c); }
-  function writeRuling(id, body){ if (!db) body.offline = true; rulings[id] = body; saveLocal(); if (db) { db.doc('rulings/'+id).set(body).catch(function(e){ console.warn('ruling save failed', e); setStatus('local'); }); } }
-  function clearRuling(id){ delete rulings[id]; saveLocal(); if (db) { db.doc('rulings/'+id).delete().catch(function(e){ console.warn(e); }); } }
+  function writeRuling(id, body){ if (!db) body.offline = true; rulings[id] = body; saveLocal(); setTimeout(updateDeskPills, 0); if (db) { db.doc('rulings/'+id).set(body).catch(function(e){ console.warn('ruling save failed', e); setStatus('local'); }); } }
+  function clearRuling(id){ delete rulings[id]; saveLocal(); setTimeout(updateDeskPills, 0); if (db) { db.doc('rulings/'+id).delete().catch(function(e){ console.warn(e); }); } }
   function writeNote(key, text){ var body = {text:text, at:now()}; if (!db) body.offline = true; notes[key] = body; saveLocal(); if (db) { db.doc('notes/'+key).set(body).catch(function(e){ console.warn('note save failed', e); setStatus('local'); }); } }
   function setStatus(m){ mode = m; document.querySelectorAll('.m-status').forEach(function(el){ el.className = 'm-status '+m; el.innerHTML = '<i></i>' + (m==='live' ? 'Rulings save to the board — the next session files them' : m==='wait' ? 'Connecting to the board…' : 'Saving on this device only — the board’s store is not reachable from here'); }); }
   function chev(){ return '<span class="m-chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></span>'; }
@@ -184,7 +184,14 @@
       c.decisions.forEach(function(d){ var a = JSON.stringify(prev[d.id]||null), b = JSON.stringify(rulings[d.id]||null); if (a === b) return; var el = document.getElementById('dec-'+d.id); var typing = el && document.activeElement && el.contains(document.activeElement); refreshDecision(c, d.id, !!typing); });
       if (notesToo) { var nf = document.querySelector('[data-note="'+CSS.escape(key)+'"]'); if (nf && document.activeElement !== nf) { var t = notes[key] && notes[key].text || ''; nf.value = t; nf.classList.toggle('filled', !!t.trim()); var hint = document.querySelector('[data-note-hint="'+CSS.escape(key)+'"]'); if (hint) hint.textContent = t.trim() ? 'Staged '+fmt(notes[key].at) : ''; } }
     });
-    if (isDesk()) { /* refresh the row pills without re-rendering the open bodies */ document.querySelectorAll('.m-deskhead').forEach(function(hd){ var k = hd.getAttribute('data-expand'); var c = BY[k]; var n = openCount(c); var pill = hd.querySelector('.m-open, .m-done, .m-groom'); if (!pill) return; if (c.stage==='triage') { var sr = stageRuling(c); pill.outerHTML = sr ? '<span class="m-done">'+esc(stageLabel(sr.choice))+'</span>' : '<span class="m-groom">groom?</span>'; } else if (!allBaked(c)) { pill.outerHTML = n ? '<span class="m-open">'+n+' open</span>' : '<span class="m-done">ruled · here</span>'; } }); }
+    updateDeskPills();
+  }
+  function updateDeskPills(){
+    if (!isDesk()) return;
+    var total = 0, items = 0, waiting = 0; CARDS.forEach(function(c){ var n = openCount(c); total += n; if (n) items++; if (waitingGroom(c)) waiting++; });
+    var tot = document.querySelector('.m-total'); if (tot) tot.innerHTML = total+' open decision'+(total===1?'':'s')+' on '+items+' item'+(items===1?'':'s')+(waiting?' · <span style="color:var(--amber)">'+waiting+' waiting on a groom call</span>':'');
+    document.querySelectorAll('.m-deskhead').forEach(function(hd){ var k = hd.getAttribute('data-expand'); var c = BY[k]; var n = openCount(c); var pill = hd.querySelector('.m-open, .m-done, .m-groom'); if (!pill) return; hd.classList.toggle('ruled', !n); if (c.stage==='triage') { var sr = stageRuling(c); pill.outerHTML = sr ? '<span class="m-done">'+esc(stageLabel(sr.choice))+'</span>' : '<span class="m-groom">groom?</span>'; } else if (!allBaked(c)) { pill.outerHTML = n ? '<span class="m-open">'+n+' open</span>' : '<span class="m-done">ruled · here</span>'; } });
+    document.querySelectorAll('.m-sec[data-sec]').forEach(function(sec){ var name = sec.getAttribute('data-sec'); var badge = sec.querySelector('.m-badge'); if (!badge) return; var secItems = DATA.ruled.filter(function(r){ return r.section===name; }).length, secRuled = secItems; CARDS.filter(function(c){ return c.section===name; }).forEach(function(c){ secItems++; if (!openCount(c)) secRuled++; }); badge.textContent = secRuled+'/'+secItems; badge.classList.toggle('done', secRuled===secItems); });
   }
 
   // ---------- store ----------
