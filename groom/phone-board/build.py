@@ -36,6 +36,7 @@ def frames_for(key):
 # CONTEXT[dec_id] = one situation paragraph. OPT_VIS[dec_id][letter] = {'frame': html, 'why': implication}. GALLERY[dec_id] = list of (label, html, note) shown above the options.
 CONTEXT, OPT_VIS, GALLERY = {}, {}, {}
 GALLERY_WIDE = {'Q-1'}
+GALLERY_FULL = {'Q-1'}  # one column at every width — the frames are full desktop screens
 
 import base64 as _b64
 REAL = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), 'real')
@@ -44,24 +45,25 @@ def real_img(name, alt):
     b = _b64.b64encode(open(f'{REAL}/{name}.jpg','rb').read()).decode()
     return f'<img src="data:image/jpeg;base64,{b}" alt="{alt}" style="display:block;width:100%;height:auto;">'
 def q_gallery():
-    ph, dk = RH['heights'], RH['desktopHeights']
-    def note(k): return f"{ph[k]} px on a phone" + (f" · saves {ph['today']-ph[k]}" if k!='today' else f" · {dk['today']} px on desktop")
+    dk = RH['desktopHeights']
+    def note(k): return f"{dk[k]} px" + (f" · saves {dk['today']-dk[k]}" if k!='today' and dk['today']-dk[k]>0 else (" · saves nothing on desktop — the three tiles share the tallest tile’s height" if k=='notes' else ""))
     items = [
-      ('today',   'Today'),
+      ('today',   'Today — the parts counter’s screen, 1440 wide'),
       ('pad',     '① Tighter padding'),
       ('cc',      '② Complaint / Cause one line each'),
       ('rail',    '③ “Parts Needed” rail sideways'),
       ('notes',   '④ Collapse the notes band'),
       ('onerow',  '⑤ Each part on one text row'),
-      ('compact', '⑦ “Compact” = ①+②+④+⑤ + the Parts Total on one line under the rows'),
+      ('footer',  '⑥ Parts Total on one line'),
+      ('compact', '⑦ “Compact” = ①+②+④+⑤+⑥'),
     ]
-    return [(label, real_img('q-'+k, label), note(k)) for k,label in items]
+    return [(label, real_img('qd-'+k, label), note(k)) for k,label in items]
 GALLERY['Q-1'] = q_gallery()
-CONTEXT['Q-1'] = 'Real screens: the parts page on the test store, one recall line with two parts, captured 9 Sep at phone width with each variant applied to the live page. This fixture measures 733 px on a phone and 477 px on desktop; your ≈830 came from a busier RO. Seen on the real page: “hover for all” sits on top of the clamped text, and a phone has no hover — a fix to carry with whichever variant wins. ⑥ (one-line footer) is inside ⑦: on the phone today the Parts Total sits off the right edge of the sideways scroller, invisible.'
+CONTEXT['Q-1'] = 'Real screens of the parts page on the test store, one recall line with two parts, 1440 wide — the parts counter works on desktop. Each variant is applied to the live page and measured there. Two things the screens show: the notes tile carries an empty band because the three tiles share the tallest tile’s height, and “hover for all” sits on top of the clamped 3C text.'
 CONTEXT['Q-2'] = 'Compare ② above with Today: one line each, the full text on hover (desktop) or tap (phone).'
 CONTEXT['Q-3'] = 'Compare ③ above: the heading row goes, the label turns sideways on the left edge.'
 OPT_VIS['Q-4'] = {'A': {'why': 'Only the parts counter’s card changes; the advisor’s and tech’s line cards keep today’s height, so the same line looks different per role.'}, 'B': {'why': 'One card shape for everyone; the advisor’s Parts & Labor card and the tech’s line card shrink the same way.'}}
-CONTEXT['Q-5'] = 'Measured on the real page: 733 px on a phone, 477 px on desktop, one line with two parts. A number here becomes the build’s target — leave it blank to take whatever the chosen variants give.'
+CONTEXT['Q-5'] = 'Measured on the real page at 1440 wide: 477 px today, one line with two parts. A number here becomes the build’s target — leave it blank to take whatever the chosen variants give.'
 OPT_VIS['SA-6b-2'] = {'A': {'why': 'Nothing moves on the dashboards or in the money bands — the line stays a declined line everywhere; only the banner’s words change.'}, 'B': {'why': 'A new bucket: dashboards and money bands would show “declined at close” apart from customer declines — new counts, new columns.'}}
 OPT_VIS['T-1'] = {'A': {'why': 'Each approved line remembers the labor rate it was agreed at. Hours and parts keep re-deriving; a later rate change leaves the line alone.'}, 'B': {'why': 'The line remembers rate, hours and parts as agreed, as one frozen snapshot. Any later edit is visibly a change from the agreed figures — more to store, simpler to reason about.'}}
 OPT_VIS['T-2'] = {'A': {'why': 'A one-time cleanup you run: every already-approved line gets a rate worked back from its stored total and hours. Lines with no hours can’t be worked back and stay on the total.'}, 'B': {'why': 'Old approved lines keep their stored total and the “never re-figure a frozen line” special case until they close; only lines approved after the build carry a rate.'}}
@@ -145,7 +147,7 @@ for c in cards:
         did=f"{c['key']}-{i}"
         ov=OPT_VIS.get(did,{})
         bk = BAKED.get(did)
-        decs.append(dict(id=did, n=i, q=q, options=[dict(l=l,t=t,rec=r, frame=ov.get(l,{}).get('frame'), why=ov.get(l,{}).get('why')) for l,t,r in opts], text=(len(opts)==0), context=CONTEXT.get(did), gallery=[dict(label=a,html=b,note=n) for a,b,n in GALLERY.get(did,[])], galleryWide=(did in GALLERY_WIDE), baked=(dict(choice=bk[0], note=bk[1]) if bk else None)))
+        decs.append(dict(id=did, n=i, q=q, options=[dict(l=l,t=t,rec=r, frame=ov.get(l,{}).get('frame'), why=ov.get(l,{}).get('why')) for l,t,r in opts], text=(len(opts)==0), context=CONTEXT.get(did), gallery=[dict(label=a,html=b,note=n) for a,b,n in GALLERY.get(did,[])], galleryWide=(did in GALLERY_WIDE), galleryFull=(did in GALLERY_FULL), baked=(dict(choice=bk[0], note=bk[1]) if bk else None)))
     fr=frames_for(c['key'])
     NO_BLOCKS = {'W','SA-7b','D3','X','D1','SA-20b','Q'}
     blocks=''.join(c['blocks']) if (fr['kind']=='none' and c['key'] not in NO_BLOCKS) else ''
@@ -198,6 +200,7 @@ PAGE_CSS = """
 .m-gallery.one{grid-template-columns:minmax(0,1fr)}
 .m-gallery.one .m-gal-frame{height:auto}
 .m-gallery.one .m-gal-inner{width:auto;transform:none;position:static}
+.m-gallery.full{grid-template-columns:minmax(0,1fr) !important}
 .m-btn{flex-direction:column;align-items:stretch;gap:8px}
 .m-btn .m-optrow{display:flex;align-items:center;gap:10px;width:100%}
 .m-btn .m-optframe{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff;max-width:100%}

@@ -1,14 +1,5 @@
 {
- "heights": {
-  "today": 733,
-  "pad": 663,
-  "cc": 692,
-  "rail": 709,
-  "notes": 673,
-  "onerow": 696,
-  "footer": 729,
-  "compact": 530
- },
+ "heights": {},
  "desktopHeights": {
   "today": 477,
   "pad": 429,

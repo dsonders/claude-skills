@@ -1,0 +1,10 @@
+import { chromium } from '/Users/davidsonders/ro-bot/app/node_modules/playwright/index.mjs';
+import fs from 'fs';
+const S='/Users/davidsonders/.claude/skills/groom/phone-board';
+fs.writeFileSync(S+'/local.html', '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0">' + fs.readFileSync(S+'/grooming-board-phone.html','utf8') + '</body></html>');
+const b = await chromium.launch(); const errors=[];
+const d = await (await b.newContext({viewport:{width:1440,height:900}})).newPage(); d.on('pageerror', e=>errors.push(String(e)));
+await d.goto('file://'+S+'/local.html#/item/Q'); await d.waitForTimeout(900);
+console.log('desk Q', await d.evaluate(()=>({imgs: document.querySelectorAll('.m-gallery img').length, cols: getComputedStyle(document.querySelector('.m-gallery')).gridTemplateColumns.split(' ').length, imgW: document.querySelector('.m-gallery img').getBoundingClientRect().width|0, w: document.documentElement.scrollWidth})));
+await d.evaluate(()=>document.querySelector('.m-gallery').scrollIntoView()); await d.screenshot({path:S+'/tq3.png', fullPage:false});
+console.log('ERRORS', JSON.stringify(errors)); await b.close();

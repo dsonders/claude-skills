@@ -137,7 +137,7 @@
     if (d.baked) { r = {choice: d.baked.choice, words: ''}; }
     var h = '<div class="m-dec'+(ruled?' ruled':'')+(d.baked?' baked':'')+'" id="dec-'+esc(d.id)+'"><div class="m-cap">Decision '+esc(c.key)+' · '+d.n+'</div><div class="m-q">'+esc(d.q)+'</div>';
     if (d.context) h += '<div class="m-ctx">'+esc(d.context)+'</div>';
-    if (d.gallery && d.gallery.length) { var wide = isDesk() || d.gallery.length <= 3 || d.galleryWide; h += '<div class="m-gallery'+(wide?' one':'')+(isDesk()?' desk':'')+'">'; d.gallery.forEach(function(g){ h += '<figure class="m-gal"><figcaption><b>'+esc(g.label)+'</b>'+(g.note?'<span>'+esc(g.note)+'</span>':'')+'</figcaption><div class="m-gal-frame"><div class="m-gal-inner">'+g.html+'</div></div></figure>'; }); h += '</div>'; }
+    if (d.gallery && d.gallery.length) { var wide = isDesk() || d.gallery.length <= 3 || d.galleryWide; h += '<div class="m-gallery'+(wide?' one':'')+(isDesk()?' desk':'')+(d.galleryFull?' full':'')+'">'; d.gallery.forEach(function(g){ h += '<figure class="m-gal"><figcaption><b>'+esc(g.label)+'</b>'+(g.note?'<span>'+esc(g.note)+'</span>':'')+'</figcaption><div class="m-gal-frame"><div class="m-gal-inner">'+g.html+'</div></div></figure>'; }); h += '</div>'; }
     h += '<div class="m-opts">';
     d.options.forEach(function(o){ h += '<div class="m-btn'+(o.rec?' is-rec':'')+(r.choice===o.l?' chosen':'')+((o.frame||o.why)?' has-vis':'')+'" role="button" tabindex="0" data-dec="'+esc(d.id)+'" data-choose="'+esc(o.l)+'"><div class="m-optrow"><span class="m-opt">'+esc(o.l)+'</span><span>'+esc(o.t)+'</span>'+(o.rec?'<span class="m-rec">rec</span>':'')+'</div>'+(o.frame?'<div class="m-optframe">'+o.frame+'</div>':'')+(o.why?'<div class="m-why">'+esc(o.why)+'</div>':'')+'</div>'; });
     h += '</div>';
