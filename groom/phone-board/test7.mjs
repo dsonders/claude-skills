@@ -1,0 +1,13 @@
+import { chromium } from '/Users/davidsonders/ro-bot/app/node_modules/playwright/index.mjs';
+import fs from 'fs';
+const S='/Users/davidsonders/.claude/skills/groom/phone-board';
+fs.writeFileSync(S+'/local.html', '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0">' + fs.readFileSync(S+'/grooming-board-phone.html','utf8') + '</body></html>');
+const b = await chromium.launch(); const p = await (await b.newContext({viewport:{width:390,height:844}})).newPage();
+const errors=[]; p.on('pageerror', e=>errors.push(String(e)));
+await p.goto('file://'+S+'/local.html#/'); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(400);
+console.log(await p.evaluate(()=>({hero: document.querySelector('.m-total').textContent, u: document.querySelector('a.m-row[href="#/item/U"]').textContent, d2: document.querySelector('a.m-row[href="#/item/D2"]').textContent, p: document.querySelector('a.m-row[href="#/item/P"]').textContent})));
+await p.goto('file://'+S+'/local.html#/item/U'); await p.waitForTimeout(300);
+console.log(await p.evaluate(()=>({stage: document.querySelector('.m-stage-lbl').textContent, baked: document.querySelectorAll('.m-dec.baked').length, lines: [...document.querySelectorAll('.m-dec.baked .m-ruled-line')].map(e=>e.textContent)})));
+await p.click('.m-dec.baked [data-choose="B"]'); await p.waitForTimeout(200);
+console.log('baked tap ignored', await p.evaluate(()=>localStorage.getItem('groomphone.v1')));
+console.log('ERRORS', JSON.stringify(errors)); await b.close();

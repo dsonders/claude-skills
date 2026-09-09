@@ -84,3 +84,16 @@ STAGE_NOTE = {
  "Q": "Mockups on a real RO come next if this advances — the three shapes above are silhouettes, not the app.",
  "SA-20b": "The table above describes stored state, not a screen — the parts pricing grid has no delivery pill. A real frame comes with grooming.",
 }
+
+# Rulings already SWEPT into BACKLOG.md (origin/main) — baked into the board so they read as ruled and filed.
+# Add here at every sweep, after the doc PR lands and BEFORE deleting the store docs.
+BAKED = {
+ "D2-1": ("A", "phone board, 8 Sep · filed #1934"),
+ "D2-2": ("A", "phone board, 8 Sep · filed #1934"),
+ "D2-3": ("B", "phone board, 8 Sep · filed #1934"),
+ "U-1":  ("A", "phone board, 8 Sep · filed #1934"),
+ "U-2":  ("A", "phone board, 8 Sep · filed #1934"),
+ "U-3":  ("B", "phone board, 8 Sep · filed #1934"),
+ "P-3":  ("C", "phone board, 8 Sep · filed #1934"),
+ "D1-2": ("A", "phone board, 8 Sep · filed #1934 — the customer page never says “booked”, so nothing changes"),
+}

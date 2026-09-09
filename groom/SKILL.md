@@ -127,9 +127,11 @@ each tap into the artifact's own store; nothing reads it until a session sweeps 
    An item whose every decision is ruled moves to **Queued** with files-to-read + sensitivity, exactly as a chat ruling.
 3. Every staged note is a question to answer IN THE FRAMES (rule 6): redraw / extend the item's card on the board
    and the phone board, never a chat reply or a ballot line. A note that is itself a ruling gets filed as one.
-4. Commit the doc (one branch per session, auto-merge), republish both boards, THEN delete the swept docs with
-   `write_db db_op:"delete"` (rulings and notes) so the phone's counts reset and nothing files twice. Delete
-   only what landed on `origin/main` — a ruling is not swept until its ⛔ line is on main.
+4. Commit the doc (one branch per session, auto-merge). ORDER MATTERS (9/8 lesson — the store was cleared first and the
+   ruled items briefly read as open again): once the PR is on `origin/main`, add each swept ruling to `BAKED` in
+   `phone-board/decisions.py` (id → letter + "filed #PR"), rebuild + republish the phone board (baked decisions render
+   ruled and untappable; a fully baked item reads "ruled · queued"), THEN delete the swept docs with
+   `write_db db_op:"delete"` (rulings and notes). A ruling is not swept until its ⛔ line is on main.
 5. Rebuild the phone board whenever the backlog changes (new to-vote cards, a card re-drawn): source in
    `phone-board/` next to this file (README there) — `decisions.py` turns every card's questions into lettered
    options with the rec marked (open-ended questions = text-only decisions) and `STAGE` marks which cards are still

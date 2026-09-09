@@ -3,7 +3,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lib import ro_panel, owner_page, step, sil
 from parts_card import parts_card
 exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'admin_card.py')).read())
-from decisions import DEC, STAGE, STAGE_NOTE
+from decisions import DEC, STAGE, STAGE_NOTE, BAKED
 from triage_frames import parts_card_tall, stock_answer_row, parts_line_variant, Q_VARIANTS
 import option_frames as OF
 import os as _os
@@ -128,7 +128,8 @@ for c in cards:
     for i,(q,opts) in enumerate(DEC[c['key']],1):
         did=f"{c['key']}-{i}"
         ov=OPT_VIS.get(did,{})
-        decs.append(dict(id=did, n=i, q=q, options=[dict(l=l,t=t,rec=r, frame=ov.get(l,{}).get('frame'), why=ov.get(l,{}).get('why')) for l,t,r in opts], text=(len(opts)==0), context=CONTEXT.get(did), gallery=[dict(label=a,html=b,note=n) for a,b,n in GALLERY.get(did,[])]))
+        bk = BAKED.get(did)
+        decs.append(dict(id=did, n=i, q=q, options=[dict(l=l,t=t,rec=r, frame=ov.get(l,{}).get('frame'), why=ov.get(l,{}).get('why')) for l,t,r in opts], text=(len(opts)==0), context=CONTEXT.get(did), gallery=[dict(label=a,html=b,note=n) for a,b,n in GALLERY.get(did,[])], baked=(dict(choice=bk[0], note=bk[1]) if bk else None)))
     fr=frames_for(c['key'])
     NO_BLOCKS = {'W','SA-7b','D3','X','D1','SA-20b','Q'}
     blocks=''.join(c['blocks']) if (fr['kind']=='none' and c['key'] not in NO_BLOCKS) else ''
@@ -185,6 +186,8 @@ PAGE_CSS = """
 .m-btn .m-optframe{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff;max-width:100%}
 .m-btn .m-why{font-size:14px;line-height:1.45;color:var(--ink-2);font-weight:400}
 .m-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.m-dec.baked .m-btn{cursor:default}
+.m-dec.baked .m-ruled-line span{color:var(--teal)}
 /* ---------- stage ---------- */
 .m-stage{margin:12px 16px 0;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);padding:9px 14px;display:flex;flex-direction:column;gap:8px}
 .m-stage.triage.ruled{border-color:var(--teal);background:var(--teal-soft)}
@@ -292,7 +295,8 @@ JS = r"""
   function saveLocal(){ try { localStorage.setItem(LS, JSON.stringify({rulings:rulings, notes:notes})); } catch(e){} }
   function now(){ return new Date().toISOString(); }
   function fmt(iso){ try { var d=new Date(iso); return d.toLocaleDateString(undefined,{day:'numeric',month:'short'})+' '+d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}); } catch(e){ return ''; } }
-  function isRuled(d){ var r = rulings[d.id]; if (!r) return false; return d.text ? !!(r.words && r.words.trim()) : !!r.choice; }
+  function isRuled(d){ if (d.baked) return true; var r = rulings[d.id]; if (!r) return false; return d.text ? !!(r.words && r.words.trim()) : !!r.choice; }
+  function allBaked(c){ return c.decisions.length > 0 && c.decisions.every(function(d){ return !!d.baked; }); }
   var STAGE_OPTS = [['advance','Advance to grooming'],['keep','Keep in backlog'],['icebox','Send to Icebox']];
   function stageId(c){ return c.key+'-stage'; }
   function stageRuling(c){ return rulings[stageId(c)] || null; }
@@ -323,6 +327,7 @@ JS = r"""
         var n = openCount(c), hasNote = !!(notes[c.key] && notes[c.key].text && notes[c.key].text.trim());
         var pill, keycls;
         if (c.stage==='triage') { var sr = stageRuling(c); pill = sr ? '<span class="m-done">'+esc(stageLabel(sr.choice))+'</span>' : '<span class="m-groom">groom?</span>'; keycls = sr ? ' soft' : ' amber'; }
+        else if (allBaked(c)) { pill = '<span class="m-done">ruled · queued</span>'; keycls = ' soft'; }
         else { pill = n ? '<span class="m-open">'+n+' open</span>' : '<span class="m-done">ruled · phone</span>'; keycls = n ? '' : ' soft'; }
         rows += '<a class="m-row'+(n?'':' ruled')+'" href="#/item/'+encodeURIComponent(c.key)+'"><span class="key'+keycls+'">'+esc(c.key)+'</span><span class="t">'+esc(c.title)+'</span>'+(hasNote?'<span class="m-note-dot" title="You staged a note"></span>':'')+pill+chev()+'</a>';
       });
@@ -359,7 +364,7 @@ JS = r"""
       var qlist = c.decisions.map(function(d){ return '<li>'+esc(d.q)+'</li>'; }).join('');
       h += '<div class="m-foot"><details class="m-details"><summary><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg><span>Details — what grooming would settle</span></summary><div>'+esc(c.dims.join(' · '))+(c.pop?'<br><b>Who hits it</b> '+esc(c.pop):'')+(qlist?'<ul style="margin:8px 0 0;padding-left:18px">'+qlist+'</ul>':'')+'</div></details>'+(next?'<a class="m-next" href="#/item/'+encodeURIComponent(next.key)+'">Next: '+esc(next.key)+' '+chev()+'</a>':'<a class="m-next" href="#/">Back to the board '+chev()+'</a>')+'</div>';
     } else {
-      h += '<div class="m-stage"><div class="m-stage-lbl"><i></i>Groomed — ready to rule</div></div>';
+      h += '<div class="m-stage"><div class="m-stage-lbl"><i></i>'+(allBaked(c)?'Ruled and filed — queued for the next build':'Groomed — ready to rule')+'</div></div>';
     if (c.ruled && c.ruled.length) { h += '<div style="padding:10px 16px 0"><div class="m-empty" style="border-style:solid;border-color:var(--teal);color:var(--ink-2)"><span class="m-cap" style="color:var(--teal)">Already ruled</span><br>'+c.ruled.map(esc).join('<br>')+'</div></div>'; }
     if (c.frames.kind !== 'none') {
       var st = flipState[key] || 'proposed';
@@ -380,7 +385,7 @@ JS = r"""
     requestAnimationFrame(function(){ app.querySelectorAll('.m-gallery:not(.one) .m-gal-frame').forEach(function(f){ var inner = f.querySelector('.m-gal-inner'); var w = f.getBoundingClientRect().width; var sc = w / 390; inner.style.transform = 'scale('+sc+')'; f.style.height = Math.ceil(inner.scrollHeight * sc) + 'px'; }); });
     // wire
     app.querySelectorAll('[data-flip]').forEach(function(b){ b.addEventListener('click', function(){ flipState[key] = b.getAttribute('data-flip'); renderItem(key); }); });
-    app.querySelectorAll('[data-choose]').forEach(function(b){ b.addEventListener('click', function(){ var id = b.getAttribute('data-dec'), l = b.getAttribute('data-choose'); var prev = rulings[id] || {}; writeRuling(id, {choice:l, words:prev.words||'', at:now()}); refreshDecision(c, id); }); });
+    app.querySelectorAll('.m-dec:not(.baked) [data-choose]').forEach(function(b){ b.addEventListener('click', function(){ var id = b.getAttribute('data-dec'), l = b.getAttribute('data-choose'); var prev = rulings[id] || {}; writeRuling(id, {choice:l, words:prev.words||'', at:now()}); refreshDecision(c, id); }); });
     app.querySelectorAll('[data-clear]').forEach(function(b){ b.addEventListener('click', function(){ var id = b.getAttribute('data-clear'); clearRuling(id); refreshDecision(c, id); }); });
     app.querySelectorAll('[data-words]').forEach(function(t){ var timer; t.addEventListener('input', function(){ clearTimeout(timer); var id = t.getAttribute('data-words'); timer = setTimeout(function(){ var prev = rulings[id] || {}; var d = c.decisions.filter(function(x){ return x.id===id; })[0]; var words = t.value; if (!words.trim() && !prev.choice) { if (rulings[id]) clearRuling(id); } else { writeRuling(id, {choice:prev.choice||'', words:words, at:now()}); } refreshDecision(c, id, true); }, 600); }); });
     var nf = document.getElementById('note-field'); var nt;
@@ -392,10 +397,12 @@ JS = r"""
   }
   function decisionHTML(c, d){
     var r = rulings[d.id] || {}, ruled = isRuled(d);
-    var h = '<div class="m-dec'+(ruled?' ruled':'')+'" id="dec-'+esc(d.id)+'"><div class="m-cap">Decision '+esc(c.key)+' · '+d.n+'</div><div class="m-q">'+esc(d.q)+'</div>';
+    if (d.baked) { r = {choice: d.baked.choice, words: ''}; }
+    var h = '<div class="m-dec'+(ruled?' ruled':'')+(d.baked?' baked':'')+'" id="dec-'+esc(d.id)+'"><div class="m-cap">Decision '+esc(c.key)+' · '+d.n+'</div><div class="m-q">'+esc(d.q)+'</div>';
     if (d.context) h += '<div class="m-ctx">'+esc(d.context)+'</div>';
     if (d.gallery && d.gallery.length) { var wide = d.gallery.length <= 3; h += '<div class="m-gallery'+(wide?' one':'')+'">'; d.gallery.forEach(function(g){ h += '<figure class="m-gal"><figcaption><b>'+esc(g.label)+'</b>'+(g.note?'<span>'+esc(g.note)+'</span>':'')+'</figcaption><div class="m-gal-frame"><div class="m-gal-inner">'+g.html+'</div></div></figure>'; }); h += '</div>'; }
     d.options.forEach(function(o){ h += '<div class="m-btn'+(o.rec?' is-rec':'')+(r.choice===o.l?' chosen':'')+((o.frame||o.why)?' has-vis':'')+'" role="button" tabindex="0" data-dec="'+esc(d.id)+'" data-choose="'+esc(o.l)+'"><div class="m-optrow"><span class="m-opt">'+esc(o.l)+'</span><span>'+esc(o.t)+'</span>'+(o.rec?'<span class="m-rec">rec</span>':'')+'</div>'+(o.frame?'<div class="m-optframe">'+o.frame+'</div>':'')+(o.why?'<div class="m-why">'+esc(o.why)+'</div>':'')+'</div>'; });
+    if (d.baked) { h += '<div class="m-ruled-line"><span>Ruled · '+esc(d.baked.choice)+' · '+esc(d.baked.note)+'</span></div></div>'; return h; }
     h += '<textarea class="m-field'+(r.words&&r.words.trim()?' filled':'')+'" rows="2" data-words="'+esc(d.id)+'" placeholder="'+(d.text?'Your answer — filed verbatim':'In your words — optional, filed verbatim')+'">'+esc(r.words||'')+'</textarea>';
     h += '<div class="m-ruled-line" id="rl-'+esc(d.id)+'">'+(ruled?'<span>Ruled'+(r.choice?' · '+esc(r.choice):'')+' · '+fmt(r.at)+'</span><button data-clear="'+esc(d.id)+'">clear</button>':'')+'</div></div>';
     return h;
