@@ -37,7 +37,7 @@ visuals only on what survived. Output = ⛔ rulings written verbatim into
    in the DECISIONS / VOTING area"):** a question about a frame ("what happens if he taps Link?") → draw the
    frame and its result; never a chat answer, a table, or a new ballot line in its place. Each decision strip
    sits full-width right under the frame it decides; the bottom ballot exists only once everything is ruled.
-7. **Default (Dave, 2026-08-30): draw ONLY the recommended direction, as one short walkthrough per actor** —
+7. **Walkthrough shape (Dave, 2026-08-30): one short walkthrough per actor** — (the "draw ONLY the recommended direction" half was SUPERSEDED 2026-09-08 by guiding principle 1: each UX option gets its own frame; the walkthrough is the shape of a complex item's frames) —
    "Case 1 — the tech…: what they see → what the approver sees", ≤ ~6 frames per card; alternatives are one
    text row each in a small table, never drawn. A full directions × screens matrix is built ONLY when Dave
    explicitly asks to see each option ("I need to see each of these mocked up") — rejected 8/30 as "too many
@@ -48,6 +48,47 @@ visuals only on what survived. Output = ⛔ rulings written verbatim into
 8. **When redrawing a ruled direction, keep every existing control the ruling didn't remove** (the V1
    checklist lost its drag handles; Dave: "we're not losing the drag and drop handles, right?"). A ruling
    that strips chrome lists what goes; everything else stays.
+
+## Guiding principles (⛔ Dave, 2026-09-08 → 09 — both boards; cards share ONE anatomy, each optimized for its screen)
+
+1. **Every UX decision shows each option as a screen.** "This way or that way — I need to see what those directions will
+   look like when implemented." An option that is a UX direction carries its own drawn frame; a non-UX option carries
+   one implication line. A decision between many shapes gets a gallery. Never a ballot with no picture on a UX item.
+2. **A question that is really a fact gets answered, not asked.** Check the code first; state the fact on the card
+   and reframe or drop the decision (9/8: "booked" never on the customer page; delivery state shown nowhere; a count
+   that is structurally zero).
+3. **Stage first, then the one decision that moves the item forward.** Every card opens with its stage. A not-yet-
+   groomed item asks exactly one thing: Advance to grooming / Keep in backlog / Send to Icebox.
+4. **The groom-or-not call is a one-screen read.** Title, one line, ONE basic mockup for anything with UX
+   implications, the three buttons, the feedback field. Everything else folds under Details.
+5. **Flip for simple, walkthrough inside a Flip for complex.** Single user, single screen, 1–3 UIs → the Today |
+   Proposed switch over one frame. Crossing users or screens → the per-actor walkthrough under the same switch.
+6. **State shows as state, never as a sentence.** No "Not ruled yet", no helper lines under controls, no placeholder
+   text, no explaining what the screen already shows (the app's own design rule, applied to the board).
+7. **Orientation comes from counts and collapse, not from reading.** Sections start closed; each carries ruled/total;
+   each item carries its open-decision count. He opens what he needs.
+8. **Nothing moves under his thumb.** A tap saves in place; the page never jumps, re-renders from the top, or loses
+   scroll position.
+9. **Flag things in plain language, with a recommendation.** A double-check says what I saw, what it means for him,
+   and whether he must act — in that order.
+10. **His notes are the brief.** The staged feedback field is where he queues what must be worked through before he
+    can rule. The next session reads those FIRST, answers them in the frames, files rulings verbatim, and clears them
+    only after they landed. An item he already ruled never comes back as open.
+11. **Honesty rules that make a visual trustworthy.** Real components (read them first), real figures from real
+    records, grey bars for anything the record does not give, and any measured number labelled as measured in the
+    drawing. A fake datum stops the vote.
+12. **Write for a product manager and designer, not an engineer.** Explanations and on-board communication are
+    clear, concise, natural human language. No code names, no field names, no engineering nouns (the "Never on a card"
+    list below).
+13. **Never mingle my words with the UI.** Text on a mockup is text OUR USERS will see — nothing else goes on a frame.
+    Captions, implications and answers sit outside the frame, in the board's own type.
+14. **Extra text is not free.** Use restraint: only what adds real value to the decision. No extra notes or labels
+    when the information is already present or obvious from the screen. Every sentence costs him a read.
+15. **When several options need a decision, weigh in: the rec and its rationale**, marked on the option, one sentence
+    about the person it affects.
+
+The desktop board adopts this anatomy (card for it in BACKLOG.md → Needs grooming); until then, new desktop cards
+follow these principles and the older "Card anatomy" below only where it does not conflict.
 
 ## Card anatomy (the approved example — copy it, don't reinvent it)
 
@@ -141,14 +182,6 @@ each tap into the artifact's own store; nothing reads it until a session sweeps 
    questions and chips fold under Details. No helper sentences. On the dashboard it wears an amber "groom?" pill.
    `python3 build.py`, run the Playwright checks, republish with the phone board's URL as `url`.
    Keep the card keys stable — the store is keyed on them.
-6. **⛔ Dave 9/8 evening — every UX decision on the phone shows what EACH option looks like:** "when you're asking me
-   to make a decision about user experience — this way or that way — I need to see what those different directions
-   will look like when implemented." So on the PHONE board (unlike desktop rule 7) an option that is a UX direction
-   carries its own small frame (`OPT_VIS` in `build.py`, drawn in `option_frames.py` from a real component read), plus
-   a one-line implication (`why`); a decision that compares many shapes gets a gallery above the options
-   (`GALLERY`, e.g. Q's seven height variants with measured heights); a decision that is really a FACT question gets
-   answered from the code and said so (`CONTEXT`), never left as a ballot. Non-UX options get the implication line only.
-   Dashboard sections default to collapsed. Read the store's `notes/` before redrawing — a note is the brief.
 
 ### Pass 1 — Triage (cheap, whole backlog)
 1. Read `docs/overnight/BACKLOG.md` (from `origin/main` — the primary checkout lags) + any new
