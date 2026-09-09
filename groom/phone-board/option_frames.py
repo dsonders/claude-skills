@@ -117,3 +117,21 @@ def money_row(label):
 def reopen_dialog(with_warning):
     desc = 'The customer’s approval is withdrawn and the line goes back to pricing.' + (' <b style="color:#0f172a;">2 parts are already on order.</b>' if with_warning else '')
     return dialog('Re-open this line?', desc, 'Re-open line', 'Cancel', icon=TRI)
+
+
+# ---------- SA-20b: where "re-open" lives (repair-order.tsx:8378-8394) ----------
+def frozen_line_banner():
+    return app('<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; border-radius: 8px; border: 1px solid #fde68a; background: #fffbeb; padding: 8px 12px;"><span style="font-size: 12.5px; line-height: 1.35; color: #78350f;">The customer approved this line at its agreed price — parts and labor are frozen.</span><span style="flex: none; min-height: 44px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 6px; font-size: 12px; font-weight: 600; color: #b45309;">Re-open line</span></div>', bg="#f8fafc")
+
+# ---------- P-5: the counter's note, visible to the admin ----------
+NOTE_I = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9z"/><path d="M15 3v6h6"/></svg>'
+def note_row(mode):
+    hdr = '<div style="display: grid; grid-template-columns: 120px 150px 130px; gap: 8px; padding-bottom: 4px; font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: #9ca3af;"><span>Part #</span><span>Part Name</span><span>In Stock?</span></div>'
+    name = 'Fuel pump module' + ('<span style="margin-left: 6px; color: #0369a1; display: inline-flex; align-items: center; vertical-align: middle;">' + NOTE_I + '</span>' if mode=='icon' else '')
+    row = f'<div style="display: grid; grid-template-columns: 120px 150px 130px; gap: 8px; align-items: center; padding: 2px;"><div style="position: relative; height: 36px; border: 1px solid #f1f5f9; border-radius: 6px; background: #f8fafc; display: flex; align-items: center; padding-left: 10px; font-size: 14px; color: #0f172a;">RC-FP-002</div><div style="height: 36px; border: 1px solid #f1f5f9; border-radius: 6px; background: #f8fafc; display: flex; align-items: center; padding-left: 10px; font-size: 14px; color: #0f172a; white-space: nowrap; overflow: hidden;">{name}</div><div style="display: inline-flex; height: 36px; border: 1px solid #e5e7eb; border-radius: 6px; overflow: hidden; background: #fff; opacity: .6;"><span style="flex: 1; display: grid; place-items: center; font-size: 13px; color: #4b5563; border-right: 1px solid #e5e7eb;">Yes</span><span style="flex: 1; display: grid; place-items: center; font-size: 13px; color: #4b5563; border-right: 1px solid #e5e7eb;">No</span><span style="flex: 1; display: grid; place-items: center; font-size: 13px; font-weight: 600; color: #fff; background: #64748b;">?</span></div></div>'
+    extra = ''
+    if mode=='icon':
+        extra = f'<div style="position: absolute; left: 140px; top: 68px; width: 200px; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.15); padding: 8px 10px; font-size: 12.5px; line-height: 1.4; color: #334155; z-index: 2;">{sil(160, 9, "#94a3b8")}<br>{sil(120, 9, "#94a3b8")}</div>'
+    else:
+        extra = f'<div style="display: flex; align-items: flex-start; gap: 6px; padding: 4px 2px 0 6px; font-size: 12px; color: #4b5563;"><span style="color: #9ca3af; margin-top: 1px;">{NOTE_I}</span><span>{sil(160, 9, "#94a3b8")} {sil(90, 9, "#94a3b8")}</span></div>'
+    return app(f'<div style="border-radius: 6px; border: 1px solid #e5e7eb; background: #fff; padding: 12px; position: relative;"><div style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 6px;">Parts <span style="font-size: 12px; font-weight: 400; color: #9ca3af;">1</span></div><div style="overflow: hidden; width: 100%;"><div style="width: 760px;">{hdr}{row}</div></div>{extra}<div style="height: {"56px" if mode=="icon" else "0"};"></div></div>', bg="#d1d5db")

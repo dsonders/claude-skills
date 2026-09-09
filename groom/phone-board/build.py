@@ -35,6 +35,7 @@ def frames_for(key):
 # Per-decision clarifiers (Dave 9/8: 'when you ask me this way or that way, I need to see what each looks like').
 # CONTEXT[dec_id] = one situation paragraph. OPT_VIS[dec_id][letter] = {'frame': html, 'why': implication}. GALLERY[dec_id] = list of (label, html, note) shown above the options.
 CONTEXT, OPT_VIS, GALLERY = {}, {}, {}
+GALLERY_WIDE = {'Q-1'}
 
 def q_gallery():
     out=[]
@@ -82,6 +83,11 @@ OPT_VIS['P-4'] = {
 }
 CONTEXT['P-4'] = 'The hold is per RO, not per line, and belongs to parts users. Today an admin who edits parts under a live hold is refused after the fact: the red toast below.'
 GALLERY['P-4'] = [('Today — refused after the fact', OF.refused_toast(), '')]
+OPT_VIS['P-5'] = {
+ 'A': {'frame': OF.note_row('icon'), 'why': 'A note mark sits by the part name, on screen without scrolling. Hover (desktop) or tap (phone) shows the note; no mark when there is none.'},
+ 'B': {'frame': OF.note_row('line'), 'why': 'The note prints as a second line under the part, always visible. Longer rows when notes are long; nothing to hover or tap.'},
+}
+CONTEXT['P-5'] = 'Your note: the admin needs to see the counter’s note on each part. With the parts page’s row (P-1), the Note cell is there but off the phone’s right edge until you scroll.'
 # ----- W -----
 GALLERY['W-1'] = [('Today — the same dialog on a recon-only RO', OF.send_gate_today(), ''),]
 OPT_VIS['W-1'] = {
@@ -114,8 +120,8 @@ OPT_VIS['X-2'] = {'A': {'frame': OF.booked_hover(True), 'why': 'The existing Boo
 OPT_VIS['D1-1'] = {'A': {'frame': OF.money_row('Total'), 'why': 'Every money row reads “Total”. Same number, same color, nothing else moves.'}, 'B': {'frame': OF.money_row('Total Booked'), 'why': 'Keep “Total Booked”.'}}
 CONTEXT['D1-2'] = 'Checked in the code on 9/8: the customer’s page never uses “booked” anywhere — the word is staff-only. So this ruling changes nothing either way.'
 # ----- SA-20b -----
-CONTEXT['SA-20b-1'] = 'Checked in the code on 9/8: the recorded delivery state is not shown on any screen — every “In stock” / “Not in stock” chip is drawn from the Yes/No/? answer itself, and the parts queue only asks “pulled or not”. The single reader is the advisor’s re-open / start-over warning.'
-GALLERY['SA-20b-1'] = [('The counter answers Yes while pricing', stock_answer_row(), ''), ('Today — the advisor re-opens the line later', OF.reopen_dialog(True), '')]
+CONTEXT['SA-20b-1'] = 'Re-open = after the customer has answered a line, the advisor can take it back: the customer’s decision is withdrawn, the line returns to pricing, and the customer is asked again once it is re-sent. The button lives on the advisor’s RO page, on a decided line (first frame). Checked in the code on 9/8: the recorded delivery state is not shown on any screen — every “In stock” / “Not in stock” chip is drawn from the Yes/No/? answer itself, and the parts queue only asks “pulled or not”. The single reader is the advisor’s re-open / start-over warning.'
+GALLERY['SA-20b-1'] = [('Where re-open lives — the advisor’s RO page, on a decided line', OF.frozen_line_banner(), ''), ('The counter answers Yes while pricing', stock_answer_row(), ''), ('Today — the advisor re-opens the line later', OF.reopen_dialog(True), '')]
 OPT_VIS['SA-20b-1'] = {'A': {'frame': OF.reopen_dialog(False), 'why': 'The answer is just an answer. The re-open dialog no longer says “already on order”, because nothing records an order any more.'}, 'B': {'frame': OF.reopen_dialog(True), 'why': 'Nothing changes; the “No” answer keeps standing in for “on order” in that one warning.'}, 'C': {'why': 'Revisit when an actual order step exists for the counter to take.'}}
 
 TRIAGE_MOCK = {
@@ -129,7 +135,7 @@ for c in cards:
         did=f"{c['key']}-{i}"
         ov=OPT_VIS.get(did,{})
         bk = BAKED.get(did)
-        decs.append(dict(id=did, n=i, q=q, options=[dict(l=l,t=t,rec=r, frame=ov.get(l,{}).get('frame'), why=ov.get(l,{}).get('why')) for l,t,r in opts], text=(len(opts)==0), context=CONTEXT.get(did), gallery=[dict(label=a,html=b,note=n) for a,b,n in GALLERY.get(did,[])], baked=(dict(choice=bk[0], note=bk[1]) if bk else None)))
+        decs.append(dict(id=did, n=i, q=q, options=[dict(l=l,t=t,rec=r, frame=ov.get(l,{}).get('frame'), why=ov.get(l,{}).get('why')) for l,t,r in opts], text=(len(opts)==0), context=CONTEXT.get(did), gallery=[dict(label=a,html=b,note=n) for a,b,n in GALLERY.get(did,[])], galleryWide=(did in GALLERY_WIDE), baked=(dict(choice=bk[0], note=bk[1]) if bk else None)))
     fr=frames_for(c['key'])
     NO_BLOCKS = {'W','SA-7b','D3','X','D1','SA-20b','Q'}
     blocks=''.join(c['blocks']) if (fr['kind']=='none' and c['key'] not in NO_BLOCKS) else ''
@@ -149,7 +155,8 @@ ruled_items=[
  ("Store settings — labor rates & money","SA-19","Saving a new labor rate re-prices every open RO in the store — with no question asked","ruled 30 Aug"),
 ]
 
-DATA=dict(sections=SECTION_ORDER, cards=data_cards, ruled=[dict(section=s,key=k,title=t,status=st) for s,k,t,st in ruled_items], icebox="Waiting on something specific", archive="Archive — 56 items shipped since the 29 Aug board", built="8 Sep 2026")
+LEGACY=json.load(open(O+'/legacy_blocks.json')) if os.path.exists(O+'/legacy_blocks.json') else {}
+DATA=dict(legacy={k: dict(title={'risk':'Risk grid','icebox':'Icebox','archive':'Archive'}[k], html=v) for k,v in LEGACY.items()}, sections=SECTION_ORDER, cards=data_cards, ruled=[dict(section=s,key=k,title=t,status=st) for s,k,t,st in ruled_items], icebox="Waiting on something specific", archive="Archive — 56 items shipped since the 29 Aug board", built="8 Sep 2026")
 
 PAGE_CSS = """
 /* ---------- phone board: type scale (Dave 9/8: bigger) ---------- */
@@ -170,6 +177,32 @@ PAGE_CSS = """
 .m-empty{font-size:14.5px}
 .m-total{font-size:15.5px}
 .m-status{font-size:13px}
+/* ---------- desktop (≥900px): same anatomy, wider ---------- */
+.m-opts{display:flex;flex-direction:column;gap:8px}
+@media (min-width: 900px){
+  .m-wrap{max-width:1180px;padding:0 24px 60px}
+  .m-hero{padding-top:36px}
+  .m-deskcard{border-top:1px solid var(--line-2)}
+  .m-deskcard:first-child{border-top:0}
+  .m-deskcard.open{background:var(--surface)}
+  .m-deskhead{cursor:pointer;border-top:0}
+  .m-deskcard.open .m-deskhead .m-chev{transform:rotate(90deg)}
+  .m-deskbody{border-top:1px dashed var(--line);padding:0 8px 8px}
+  .m-legacy-status{padding:0 14px 10px 50px;font-size:13px;color:var(--teal)}
+  .m-both{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;padding:14px 16px 0;align-items:start}
+  .m-both .m-frame{margin:0}
+  .m-both .m-steps{padding:0}
+  .m-both-cap{margin:0 0 8px}
+  .m-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px;align-items:start}
+  .m-opts-stage{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .m-gallery.desk{grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px}
+  .m-gallery.desk .m-gal-frame{height:auto}
+  .m-gallery.desk .m-gal-inner{width:auto;transform:none;position:static}
+  .m-dec{padding-left:16px;padding-right:16px}
+  .m-trimock{max-width:420px}
+  .m-legacy .card{border:0;box-shadow:none;padding:16px 20px}
+  .m-blocks{max-width:none}
+}
 /* ---------- clarifiers ---------- */
 .m-ctx{font-size:15px;color:var(--ink-2);line-height:1.45}
 .m-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:4px 0 2px}
@@ -282,190 +315,8 @@ html,body{overflow-x:hidden}
 @media (prefers-reduced-motion: reduce){.m-sechead .m-chev{transition:none}}
 """
 
-JS = r"""
-(function(){
-  var DATA = JSON.parse(document.getElementById('board-data').textContent);
-  var CARDS = DATA.cards, BY = {}; CARDS.forEach(function(c){ BY[c.key]=c; });
-  var rulings = {}, notes = {}, db = null, mode = 'local', unsubs = [];
-  var LS = 'groomphone.v1', LSC = 'groomphone.collapsed.v1', collapsed = {};
-  try { collapsed = JSON.parse(localStorage.getItem(LSC)||'{}')||{}; } catch(e){ collapsed = {}; }
-  function saveCollapsed(){ try { localStorage.setItem(LSC, JSON.stringify(collapsed)); } catch(e){} }
-  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(ch){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]; }); }
-  function loadLocal(){ try { var o = JSON.parse(localStorage.getItem(LS)||'{}'); rulings = o.rulings||{}; notes = o.notes||{}; } catch(e){ rulings={}; notes={}; } }
-  function saveLocal(){ try { localStorage.setItem(LS, JSON.stringify({rulings:rulings, notes:notes})); } catch(e){} }
-  function now(){ return new Date().toISOString(); }
-  function fmt(iso){ try { var d=new Date(iso); return d.toLocaleDateString(undefined,{day:'numeric',month:'short'})+' '+d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}); } catch(e){ return ''; } }
-  function isRuled(d){ if (d.baked) return true; var r = rulings[d.id]; if (!r) return false; return d.text ? !!(r.words && r.words.trim()) : !!r.choice; }
-  function allBaked(c){ return c.decisions.length > 0 && c.decisions.every(function(d){ return !!d.baked; }); }
-  var STAGE_OPTS = [['advance','Advance to grooming'],['keep','Keep in backlog'],['icebox','Send to Icebox']];
-  function stageId(c){ return c.key+'-stage'; }
-  function stageRuling(c){ return rulings[stageId(c)] || null; }
-  function stageLabel(v){ var o = STAGE_OPTS.filter(function(x){ return x[0]===v; })[0]; return o ? o[1] : v; }
-  function openCount(c){ if (c.stage==='triage') return stageRuling(c) ? 0 : 1; return c.decisions.filter(function(d){ return !isRuled(d); }).length; }
-  function waitingGroom(c){ return c.stage==='triage' && !stageRuling(c); }
-  function writeRuling(id, body){ rulings[id] = body; saveLocal(); if (db) { db.doc('rulings/'+id).set(body).catch(function(e){ console.warn('ruling save failed', e); setStatus('local'); }); } }
-  function clearRuling(id){ delete rulings[id]; saveLocal(); if (db) { db.doc('rulings/'+id).delete().catch(function(e){ console.warn(e); }); } }
-  function writeNote(key, text){ var body = {text:text, at:now()}; notes[key] = body; saveLocal(); if (db) { db.doc('notes/'+key).set(body).catch(function(e){ console.warn('note save failed', e); setStatus('local'); }); } }
-  function setStatus(m){ mode = m; var el = document.querySelector('.m-status'); if (!el) return; el.className = 'm-status '+m; el.innerHTML = '<i></i>' + (m==='live' ? 'Rulings save to the board — the next session files them' : m==='wait' ? 'Connecting to the board…' : 'Saving on this phone only — the board’s store is not reachable from here'); }
+JS = open(os.path.join(O, "app.js")).read()
 
-  // ---------- routing ----------
-  function route(){ var h = location.hash || '#/'; var m = h.match(/^#\/item\/(.+)$/); if (m) renderItem(decodeURIComponent(m[1])); else renderDash(); window.scrollTo(0,0); }
-  window.addEventListener('hashchange', route);
-
-  // ---------- dashboard ----------
-  function renderDash(){
-    var total = 0, items = 0, waiting = 0;
-    CARDS.forEach(function(c){ var n = openCount(c); total += n; if (n) items++; if (waitingGroom(c)) waiting++; });
-    var h = '<div class="m-hero"><div class="m-cap">Grooming board · '+esc(DATA.built)+'</div><h1>Backlog</h1><div class="m-total">'+total+' open decision'+(total===1?'':'s')+' on '+items+' item'+(items===1?'':'s')+(waiting?' · <span style="color:var(--amber)">'+waiting+' waiting on a groom call</span>':'')+'</div></div>';
-    h += '<div class="m-status '+mode+'"><i></i></div>';
-    DATA.sections.forEach(function(sec){
-      var rows = '';
-      DATA.ruled.filter(function(r){ return r.section===sec; }).forEach(function(r){
-        rows += '<div class="m-row ruled"><span class="key soft">'+esc(r.key)+'</span><span class="t">'+esc(r.title)+'</span><span class="m-done">ruled</span></div>';
-      });
-      CARDS.filter(function(c){ return c.section===sec; }).forEach(function(c){
-        var n = openCount(c), hasNote = !!(notes[c.key] && notes[c.key].text && notes[c.key].text.trim());
-        var pill, keycls;
-        if (c.stage==='triage') { var sr = stageRuling(c); pill = sr ? '<span class="m-done">'+esc(stageLabel(sr.choice))+'</span>' : '<span class="m-groom">groom?</span>'; keycls = sr ? ' soft' : ' amber'; }
-        else if (allBaked(c)) { pill = '<span class="m-done">ruled · queued</span>'; keycls = ' soft'; }
-        else { pill = n ? '<span class="m-open">'+n+' open</span>' : '<span class="m-done">ruled · phone</span>'; keycls = n ? '' : ' soft'; }
-        rows += '<a class="m-row'+(n?'':' ruled')+'" href="#/item/'+encodeURIComponent(c.key)+'"><span class="key'+keycls+'">'+esc(c.key)+'</span><span class="t">'+esc(c.title)+'</span>'+(hasNote?'<span class="m-note-dot" title="You staged a note"></span>':'')+pill+chev()+'</a>';
-      });
-      if (!rows) return;
-      var secItems = DATA.ruled.filter(function(r){ return r.section===sec; }).length, secRuled = secItems;
-      CARDS.filter(function(c){ return c.section===sec; }).forEach(function(c){ secItems++; if (!openCount(c)) secRuled++; });
-      var col = (sec in collapsed) ? !!collapsed[sec] : true, allDone = secRuled===secItems;
-      h += '<div class="m-sec'+(col?' collapsed':'')+'" data-sec="'+esc(sec)+'"><button class="m-sechead" aria-expanded="'+(!col)+'"><span class="m-h2">'+esc(sec)+'</span><span class="m-badge'+(allDone?' done':'')+'" title="items ruled / items in this section">'+secRuled+'/'+secItems+'</span><span class="m-chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button><div class="m-card">'+rows+'</div></div>';
-    });
-    h += '<div class="m-sec"><div class="m-h2">Icebox</div><div class="m-card"><div class="m-row ruled"><span class="t">'+esc(DATA.icebox)+'</span></div></div></div>';
-    h += '<div class="m-sec"><div class="m-empty">'+esc(DATA.archive)+'</div></div>';
-    document.getElementById('app').innerHTML = h; setStatus(mode);
-    document.querySelectorAll('.m-sechead').forEach(function(b){ b.addEventListener('click', function(){ var sec = b.parentNode.getAttribute('data-sec'); var cur = (sec in collapsed) ? !!collapsed[sec] : true; collapsed[sec] = !cur; saveCollapsed(); var y = window.scrollY; renderDash(); window.scrollTo(0, y); }); });
-  }
-  function chev(){ return '<span class="m-chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></span>'; }
-
-  // ---------- item ----------
-  var flipState = {};
-  function renderItem(key){
-    var c = BY[key]; if (!c) { location.hash = '#/'; return; }
-    var idx = CARDS.indexOf(c), next = CARDS[idx+1];
-    var h = '<div class="m-top"><div style="display:flex;align-items:center;justify-content:space-between"><a class="m-back" href="#/">'+'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg><span>Board</span></a><span class="m-cap">'+(idx+1)+' of '+CARDS.length+'</span></div>';
-    h += '<div class="m-title"><span class="key">'+esc(c.key)+'</span><div>'+esc(c.title)+'</div></div><div class="m-sub">'+esc(c.sub)+'</div></div>';
-    var note0 = notes[key] && notes[key].text || '';
-    var FEEDBACK_LBL = 'Questions / feedback for the next session';
-    if (c.stage==='triage') {
-      var sr = stageRuling(c);
-      h += '<div class="m-stage triage'+(sr?' ruled':'')+'" id="stage-block"><div class="m-stage-lbl"><i></i>Not yet groomed</div></div>';
-      if (c.triageMock) h += '<div class="m-frame">'+c.triageMock.html+'</div><div class="m-frame-cap">'+esc(c.triageMock.caption)+'</div>';
-      h += '<div class="m-dec" id="stage-dec"><div class="m-q">What happens to this item?</div>';
-      STAGE_OPTS.forEach(function(o){ h += '<button class="m-btn'+(sr&&sr.choice===o[0]?' chosen':'')+'" data-stage="'+o[0]+'">'+esc(o[1])+'</button>'; });
-      h += '<div class="m-ruled-line" id="rl-stage">'+(sr?'<span>'+esc(stageLabel(sr.choice))+' · '+fmt(sr.at)+'</span><button data-stage-clear="1">clear</button>':'')+'</div></div>';
-      h += '<div class="m-dec"><div class="m-q">'+FEEDBACK_LBL+'</div><textarea class="m-field'+(note0.trim()?' filled':'')+'" id="note-field" rows="4">'+esc(note0)+'</textarea><div class="m-hint" id="note-hint">'+(note0.trim()?'Staged '+fmt(notes[key].at):'')+'</div></div>';
-      var qlist = c.decisions.map(function(d){ return '<li>'+esc(d.q)+'</li>'; }).join('');
-      h += '<div class="m-foot"><details class="m-details"><summary><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg><span>Details — what grooming would settle</span></summary><div>'+esc(c.dims.join(' · '))+(c.pop?'<br><b>Who hits it</b> '+esc(c.pop):'')+(qlist?'<ul style="margin:8px 0 0;padding-left:18px">'+qlist+'</ul>':'')+'</div></details>'+(next?'<a class="m-next" href="#/item/'+encodeURIComponent(next.key)+'">Next: '+esc(next.key)+' '+chev()+'</a>':'<a class="m-next" href="#/">Back to the board '+chev()+'</a>')+'</div>';
-    } else {
-      h += '<div class="m-stage"><div class="m-stage-lbl"><i></i>'+(allBaked(c)?'Ruled and filed — queued for the next build':'Groomed — ready to rule')+'</div></div>';
-    if (c.ruled && c.ruled.length) { h += '<div style="padding:10px 16px 0"><div class="m-empty" style="border-style:solid;border-color:var(--teal);color:var(--ink-2)"><span class="m-cap" style="color:var(--teal)">Already ruled</span><br>'+c.ruled.map(esc).join('<br>')+'</div></div>'; }
-    if (c.frames.kind !== 'none') {
-      var st = flipState[key] || 'proposed';
-      h += '<div class="m-seg" role="tablist"><button data-flip="today" class="'+(st==='today'?'on':'')+'">Today</button><button data-flip="proposed" class="'+(st==='proposed'?'on':'')+'">Proposed</button></div>';
-      if (c.frames.kind === 'walk') { h += '<div class="m-frame-cap" style="margin-top:12px"><span class="m-cap">'+(st==='today'?'What happens today':'Proposed')+' — '+esc(c.frames.caption)+'</span></div><div id="flip-body">'+c.frames[st]+'</div>'; }
-      else { h += '<div id="flip-body"><div class="m-frame">'+c.frames[st]+'</div><div class="m-frame-cap">'+esc(c.frames.caption)+'</div></div>'; }
-    } else if (c.blocks) {
-      h += '<div class="m-blocks">'+c.blocks+'</div>';
-    } else if (!c.visual) {
-      h += '<div style="padding:14px 16px 0"><div class="m-empty">No screen changes — nothing to draw.</div></div>';
-    }
-    c.decisions.forEach(function(d){ h += decisionHTML(c, d); });
-    var note = note0;
-    h += '<div class="m-dec"><div class="m-q">'+FEEDBACK_LBL+'</div><textarea class="m-field'+(note.trim()?' filled':'')+'" id="note-field" rows="4">'+esc(note)+'</textarea><div class="m-hint" id="note-hint">'+(note.trim()?'Staged '+fmt(notes[key].at):'')+'</div></div>';
-    h += '<div class="m-foot"><details class="m-details"><summary><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg><span>Details</span></summary><div>'+esc(c.dims.join(' · '))+(c.pop?'<br><b>Who hits it</b> '+esc(c.pop):'')+'</div></details>'+(next?'<a class="m-next" href="#/item/'+encodeURIComponent(next.key)+'">Next: '+esc(next.key)+' '+chev()+'</a>':'<a class="m-next" href="#/">Back to the board '+chev()+'</a>')+'</div>';
-    }
-    var app = document.getElementById('app'); app.innerHTML = h;
-    requestAnimationFrame(function(){ app.querySelectorAll('.m-gallery:not(.one) .m-gal-frame').forEach(function(f){ var inner = f.querySelector('.m-gal-inner'); var w = f.getBoundingClientRect().width; var sc = w / 390; inner.style.transform = 'scale('+sc+')'; f.style.height = Math.ceil(inner.scrollHeight * sc) + 'px'; }); });
-    // wire
-    app.querySelectorAll('[data-flip]').forEach(function(b){ b.addEventListener('click', function(){ flipState[key] = b.getAttribute('data-flip'); renderItem(key); }); });
-    app.querySelectorAll('.m-dec:not(.baked) [data-choose]').forEach(function(b){ b.addEventListener('click', function(){ var id = b.getAttribute('data-dec'), l = b.getAttribute('data-choose'); var prev = rulings[id] || {}; writeRuling(id, {choice:l, words:prev.words||'', at:now()}); refreshDecision(c, id); }); });
-    app.querySelectorAll('[data-clear]').forEach(function(b){ b.addEventListener('click', function(){ var id = b.getAttribute('data-clear'); clearRuling(id); refreshDecision(c, id); }); });
-    app.querySelectorAll('[data-words]').forEach(function(t){ var timer; t.addEventListener('input', function(){ clearTimeout(timer); var id = t.getAttribute('data-words'); timer = setTimeout(function(){ var prev = rulings[id] || {}; var d = c.decisions.filter(function(x){ return x.id===id; })[0]; var words = t.value; if (!words.trim() && !prev.choice) { if (rulings[id]) clearRuling(id); } else { writeRuling(id, {choice:prev.choice||'', words:words, at:now()}); } refreshDecision(c, id, true); }, 600); }); });
-    var nf = document.getElementById('note-field'); var nt;
-    nf.addEventListener('input', function(){ clearTimeout(nt); nt = setTimeout(function(){ writeNote(key, nf.value); var filled = !!nf.value.trim(); nf.classList.toggle('filled', filled); document.getElementById('note-hint').textContent = filled ? 'Staged '+fmt(notes[key].at) : ''; }, 600); });
-    function wireStage(){ var blk = document.getElementById('stage-dec'); if (!blk) return;
-      blk.querySelectorAll('[data-stage]').forEach(function(b){ b.addEventListener('click', function(){ writeRuling(stageId(c), {choice:b.getAttribute('data-stage'), words:'', at:now()}); refreshStage(c); }); });
-      var cl = blk.querySelector('[data-stage-clear]'); if (cl) cl.addEventListener('click', function(){ clearRuling(stageId(c)); refreshStage(c); }); }
-    wireStage();
-  }
-  function decisionHTML(c, d){
-    var r = rulings[d.id] || {}, ruled = isRuled(d);
-    if (d.baked) { r = {choice: d.baked.choice, words: ''}; }
-    var h = '<div class="m-dec'+(ruled?' ruled':'')+(d.baked?' baked':'')+'" id="dec-'+esc(d.id)+'"><div class="m-cap">Decision '+esc(c.key)+' · '+d.n+'</div><div class="m-q">'+esc(d.q)+'</div>';
-    if (d.context) h += '<div class="m-ctx">'+esc(d.context)+'</div>';
-    if (d.gallery && d.gallery.length) { var wide = d.gallery.length <= 3; h += '<div class="m-gallery'+(wide?' one':'')+'">'; d.gallery.forEach(function(g){ h += '<figure class="m-gal"><figcaption><b>'+esc(g.label)+'</b>'+(g.note?'<span>'+esc(g.note)+'</span>':'')+'</figcaption><div class="m-gal-frame"><div class="m-gal-inner">'+g.html+'</div></div></figure>'; }); h += '</div>'; }
-    d.options.forEach(function(o){ h += '<div class="m-btn'+(o.rec?' is-rec':'')+(r.choice===o.l?' chosen':'')+((o.frame||o.why)?' has-vis':'')+'" role="button" tabindex="0" data-dec="'+esc(d.id)+'" data-choose="'+esc(o.l)+'"><div class="m-optrow"><span class="m-opt">'+esc(o.l)+'</span><span>'+esc(o.t)+'</span>'+(o.rec?'<span class="m-rec">rec</span>':'')+'</div>'+(o.frame?'<div class="m-optframe">'+o.frame+'</div>':'')+(o.why?'<div class="m-why">'+esc(o.why)+'</div>':'')+'</div>'; });
-    if (d.baked) { h += '<div class="m-ruled-line"><span>Ruled · '+esc(d.baked.choice)+' · '+esc(d.baked.note)+'</span></div></div>'; return h; }
-    h += '<textarea class="m-field'+(r.words&&r.words.trim()?' filled':'')+'" rows="2" data-words="'+esc(d.id)+'" placeholder="'+(d.text?'Your answer — filed verbatim':'In your words — optional, filed verbatim')+'">'+esc(r.words||'')+'</textarea>';
-    h += '<div class="m-ruled-line" id="rl-'+esc(d.id)+'">'+(ruled?'<span>Ruled'+(r.choice?' · '+esc(r.choice):'')+' · '+fmt(r.at)+'</span><button data-clear="'+esc(d.id)+'">clear</button>':'')+'</div></div>';
-    return h;
-  }
-  function refreshStage(c){ var blk = document.getElementById('stage-dec'); if (!blk) return; var sr = stageRuling(c);
-    blk.querySelectorAll('[data-stage]').forEach(function(b){ b.classList.toggle('chosen', !!(sr && sr.choice===b.getAttribute('data-stage'))); });
-    blk.classList.toggle('ruled', !!sr); var sb = document.getElementById('stage-block'); if (sb) sb.classList.toggle('ruled', !!sr);
-    document.getElementById('rl-stage').innerHTML = sr ? '<span>'+esc(stageLabel(sr.choice))+' · '+fmt(sr.at)+'</span><button data-stage-clear="1">clear</button>' : '';
-    var cl = blk.querySelector('[data-stage-clear]'); if (cl) cl.addEventListener('click', function(){ clearRuling(stageId(c)); refreshStage(c); }); }
-  function refreshDecision(c, id, keepFocus){
-    var d = c.decisions.filter(function(x){ return x.id===id; })[0]; var old = document.getElementById('dec-'+id); if (!old) return;
-    if (keepFocus) { // only update the ruled line + classes, keep the textarea
-      var r = rulings[id] || {}, ruled = isRuled(d); old.classList.toggle('ruled', ruled);
-      document.getElementById('rl-'+id).innerHTML = ruled ? '<span>Ruled'+(r.choice?' · '+esc(r.choice):'')+' · '+fmt(r.at)+'</span><button data-clear="'+esc(id)+'">clear</button>' : '';
-      var cb = old.querySelector('[data-clear]'); if (cb) cb.addEventListener('click', function(){ clearRuling(id); refreshDecision(c, id); });
-      old.querySelector('[data-words]').classList.toggle('filled', !!(r.words&&r.words.trim()));
-      return;
-    }
-    var tmp = document.createElement('div'); tmp.innerHTML = decisionHTML(c, d); var nw = tmp.firstChild; old.replaceWith(nw);
-    nw.querySelectorAll('[data-choose]').forEach(function(b){ b.addEventListener('click', function(){ var l = b.getAttribute('data-choose'); var prev = rulings[id] || {}; writeRuling(id, {choice:l, words:prev.words||'', at:now()}); refreshDecision(c, id); }); });
-    var cb = nw.querySelector('[data-clear]'); if (cb) cb.addEventListener('click', function(){ clearRuling(id); refreshDecision(c, id); });
-    var t = nw.querySelector('[data-words]'); var timer; t.addEventListener('input', function(){ clearTimeout(timer); timer = setTimeout(function(){ var prev = rulings[id] || {}; var words = t.value; if (!words.trim() && !prev.choice) { if (rulings[id]) clearRuling(id); } else { writeRuling(id, {choice:prev.choice||'', words:words, at:now()}); } refreshDecision(c, id, true); }, 600); });
-  }
-
-
-  function currentItemKey(){ var m = (location.hash||'').match(/^#\/item\/(.+)$/); return m ? decodeURIComponent(m[1]) : null; }
-  function syncView(prev, notesToo){
-    var key = currentItemKey();
-    if (!key) { var y = window.scrollY; renderDash(); window.scrollTo(0, y); return; }
-    var c = BY[key]; if (!c) return;
-    if (JSON.stringify(prev[stageId(c)]||null) !== JSON.stringify(rulings[stageId(c)]||null)) refreshStage(c);
-    c.decisions.forEach(function(d){
-      var a = JSON.stringify(prev[d.id]||null), b = JSON.stringify(rulings[d.id]||null);
-      if (a === b) return;
-      var el = document.getElementById('dec-'+d.id);
-      var typing = el && document.activeElement && el.contains(document.activeElement);
-      refreshDecision(c, d.id, !!typing);
-    });
-    if (notesToo) { var nf = document.getElementById('note-field'); if (nf && document.activeElement !== nf) { var t = notes[key] && notes[key].text || ''; nf.value = t; nf.classList.toggle('filled', !!t.trim()); var hint = document.getElementById('note-hint'); if (hint) hint.textContent = t.trim() ? 'Staged '+fmt(notes[key].at) : ''; } }
-  }
-
-  // ---------- store ----------
-  loadLocal(); route(); setStatus('wait');
-  var useP = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('db') : Promise.resolve(null);
-  useP.then(function(ns){
-    if (!ns) { setStatus('local'); return; }
-    db = ns;
-    Promise.all([db.collection('rulings').get(), db.collection('notes').get()]).then(function(res){
-      var r = {}, n = {};
-      res[0].docs.forEach(function(s){ if (s.exists) r[s.id] = s.data(); });
-      res[1].docs.forEach(function(s){ if (s.exists) n[s.id] = s.data(); });
-      // the store wins; anything only on this phone is pushed up once
-      var pushes = [];
-      Object.keys(rulings).forEach(function(id){ if (!r[id]) { r[id] = rulings[id]; pushes.push(db.doc('rulings/'+id).set(rulings[id])); } });
-      Object.keys(notes).forEach(function(k){ if (!n[k]) { n[k] = notes[k]; pushes.push(db.doc('notes/'+k).set(notes[k])); } });
-      var prevR = rulings; rulings = r; notes = n; saveLocal(); setStatus('live'); syncView(prevR, true);
-      Promise.all(pushes).catch(function(e){ console.warn(e); });
-      unsubs.push(db.collection('rulings').onSnapshot(function(snap){ var m = {}; snap.docs.forEach(function(s){ if (s.exists) m[s.id] = s.data(); }); var prev = rulings; rulings = m; saveLocal(); syncView(prev); }, function(e){ console.warn(e); setStatus('local'); }));
-      unsubs.push(db.collection('notes').onSnapshot(function(snap){ var m = {}; snap.docs.forEach(function(s){ if (s.exists) m[s.id] = s.data(); }); notes = m; saveLocal(); }, function(e){ console.warn(e); }));
-    }).catch(function(e){ console.warn('store read failed', e); setStatus('local'); });
-  }).catch(function(){ setStatus('local'); });
-})();
-"""
 
 DATA_JSON = json.dumps(DATA).replace("</", "<\\/")
 page = f"""<title>Grooming Board</title>
