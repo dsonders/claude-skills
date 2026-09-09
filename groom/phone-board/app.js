@@ -31,7 +31,7 @@
   function currentItemKey(){ var m = (location.hash||'').match(/^#\/item\/(.+)$/); return m ? decodeURIComponent(m[1]) : null; }
   function route(){
     var key = currentItemKey();
-    if (isDesk()) { if (key && BY[key]) expandedDesk[key] = true; renderDash(); if (key) { var el = document.querySelector('[data-card="'+CSS.escape(key)+'"]'); if (el) el.scrollIntoView({block:'start'}); } else window.scrollTo(0,0); return; }
+    if (isDesk()) { if (key && BY[key]) { expandedDesk[key] = true; collapsed[BY[key].section] = false; saveCollapsed(); } renderDash(); if (key) { var el = document.querySelector('[data-card="'+CSS.escape(key)+'"]'); if (el) el.scrollIntoView({block:'start'}); } else window.scrollTo(0,0); return; }
     if (key) renderItem(key); else renderDash();
     window.scrollTo(0,0);
   }

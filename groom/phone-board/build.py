@@ -166,7 +166,7 @@ ruled_items=[
 ]
 
 LEGACY=json.load(open(O+'/legacy_blocks.json')) if os.path.exists(O+'/legacy_blocks.json') else {}
-DATA=dict(legacy={k: dict(title={'risk':'Risk grid','icebox':'Icebox','archive':'Archive'}[k], html=v) for k,v in LEGACY.items()}, sections=SECTION_ORDER, cards=data_cards, ruled=[dict(section=s,key=k,title=t,status=st) for s,k,t,st in ruled_items], icebox="Waiting on something specific", archive="Archive — 56 items shipped since the 29 Aug board", built="8 Sep 2026")
+DATA=dict(legacy={k: dict(title={'risk':'Risk grid','icebox':'Icebox','archive':'Archive'}[k], html=v) for k,v in LEGACY.items()}, sections=SECTION_ORDER, cards=data_cards, ruled=[dict(section=s,key=k,title=t,status=st) for s,k,t,st in ruled_items], icebox="Waiting on something specific", archive="Archive — 56 items shipped since the 29 Aug board", built=__import__("datetime").date.today().strftime("%-d %b %Y"))
 
 PAGE_CSS = """
 /* ---------- phone board: type scale (Dave 9/8: bigger) ---------- */
