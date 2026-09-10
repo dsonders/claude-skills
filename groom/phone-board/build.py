@@ -188,36 +188,6 @@ PAGE_CSS = """
 .m-steps > div > div:first-of-type + div,.m-steps span{font-size:15px}
 .m-blocks .viz{font-size:15px}
 .m-blocks table,.m-blocks .story li,.m-blocks .viz-foot,.m-blocks .scap{font-size:14.5px}
-/* ---------- phone only: Dave 9/10 "On mobile, the card text is too small. Go bigger." (+2 px across the scale) ---------- */
-@media (max-width: 899px){
-.m-wrap{font-size:18px}
-.m-row .t{font-size:17.5px}
-.m-title{font-size:22px}
-.m-sub{font-size:17.5px}
-.m-q{font-size:18.5px}
-.m-btn{font-size:18px;min-height:56px}
-.m-opt,.m-btn .m-opt{font-size:14px}
-.m-field{font-size:18px}
-.m-hint,.m-details,.m-frame-cap,.m-ruled-line,.m-ruled-line button{font-size:16px}
-.m-cap{font-size:12.5px}
-.m-bakedans,.m-bakedline{font-size:16.5px}
-.m-why{font-size:16.5px}
-.m-ctx{font-size:17px}
-.m-stage-lbl{font-size:15.5px}
-.m-open,.m-groom{font-size:14px}
-.m-done,.m-rec{font-size:11.5px}
-.m-status{font-size:14.5px}
-.m-empty{font-size:16px}
-.m-total{font-size:17px}
-.m-h2{font-size:15.5px}
-.m-seg{font-size:15px}
-.m-next{font-size:16px}
-.m-legacy-status{font-size:15px}
-.m-gal figcaption{font-size:14.5px}
-.m-gal figcaption span{font-size:12px}
-.m-steps > div > div:first-of-type + div,.m-steps span{font-size:17px}
-.m-blocks .viz{font-size:17px}
-.m-blocks table,.m-blocks .story li,.m-blocks .viz-foot,.m-blocks .scap{font-size:16.5px}
 }
 .m-empty{font-size:14.5px}
 .m-total{font-size:15.5px}
@@ -384,6 +354,36 @@ html,body{overflow-x:hidden}
   .m-legacy .card{border:0;box-shadow:none;padding:16px 20px}
   .m-blocks{max-width:none}
 }
+/* ---------- phone only: Dave 9/10 "On mobile, the card text is too small. Go bigger." (+2 px across the scale; LAST in PAGE_CSS — the base rules below the 9/8 block override anything placed above them) ---------- */
+@media (max-width: 899px){
+.m-wrap{font-size:18px}
+.m-row .t{font-size:17.5px}
+.m-title{font-size:22px}
+.m-sub{font-size:17.5px}
+.m-q{font-size:18.5px}
+.m-btn{font-size:18px;min-height:56px}
+.m-opt,.m-btn .m-opt{font-size:14px}
+.m-field{font-size:18px}
+.m-hint,.m-details,.m-frame-cap,.m-ruled-line,.m-ruled-line button{font-size:16px}
+.m-cap{font-size:12.5px}
+.m-bakedans,.m-bakedline{font-size:16.5px}
+.m-why{font-size:16.5px}
+.m-ctx{font-size:17px}
+.m-stage-lbl{font-size:15.5px}
+.m-open,.m-groom{font-size:14px}
+.m-done,.m-rec{font-size:11.5px}
+.m-status{font-size:14.5px}
+.m-empty{font-size:16px}
+.m-total{font-size:17px}
+.m-h2{font-size:15.5px}
+.m-seg{font-size:15px}
+.m-next{font-size:16px}
+.m-legacy-status{font-size:15px}
+.m-gal figcaption{font-size:14.5px}
+.m-gal figcaption span{font-size:12px}
+.m-steps > div > div:first-of-type + div,.m-steps span{font-size:17px}
+.m-blocks .viz{font-size:17px}
+.m-blocks table,.m-blocks .story li,.m-blocks .viz-foot,.m-blocks .scap{font-size:16.5px}
 """
 
 JS = open(os.path.join(O, "app.js")).read()
