@@ -92,6 +92,12 @@ file — its README is the how-to (files, store layout, build lessons); this fil
     width on the board. Phone-primary roles (tech, customer) get the same treatment at 390 wide. A drawing is still
     fine for a flow, a label or a new element that does not exist yet — never for how an existing desktop screen
     should be laid out.
+17. **Dave's own words on a card wear their own colour** (⛔ Dave, 2026-09-10: "we need to use a different visual
+    treatment (for example a different color) for text that comes from me directly on a card") — the amber of the
+    "ruled · discuss" pill, so he can tell his words from UI text and from mine. Every verbatim quote of his in the
+    board data is wrapped `⟦…⟧` (`decisions.py` notes and `HOLD` lines, `CONTEXT`, option implications, gallery
+    labels); the page renders it amber, and the words he types on the board are amber too. Paraphrase is not his
+    words — only what he actually said gets the marker.
 
 **Never on a card:** file names, function/field names, predicates, `code` chips, provenance strips, "sensitivity"
 banners in engineering terms, counts like "4 to vote", status IDs (use the label the app shows: "Waiting for Parts",

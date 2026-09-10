@@ -26,6 +26,7 @@ Store layout: `rulings/<KEY>-<n>` = `{choice, words, at}` · `rulings/<KEY>-stag
 frames (`frames_for()` in `build.py` for Flip / walkthrough; `OPT_VIS[id][letter] = {frame, why}`; `CONTEXT[id]` one
 situation paragraph; `GALLERY[id]` many-shape decisions, `GALLERY_FULL` / `OPTS_FULL` one per row at true size;
 `TRIAGE_MOCK` one basic frame per triage item) → `build.py` → `grooming-board-phone.html` → `test9.mjs` → publish.
+Dave's verbatim words in any of those strings are wrapped `⟦…⟧` — `app.js` renders them amber (principle 17).
 
 ### Building the board — what actually works (2026-08-27 → 09-10)
 - **One Opus builder per card (or per pass), never one giant rewrite** — a builder asked to regenerate the whole board

@@ -113,13 +113,13 @@ BAKED = {
  "Q-4": ("A", "board, 10 Sep · filed 10 Sep"),
  "Q-5": ("NA", "board, 10 Sep · filed 10 Sep — “NA”: no numeric target, the combination as measured is the target"),
  "SA-20b-1": ("A", "board, 9 Sep · filed 10 Sep"),
- "S-1": ("A", "board, 9 Sep · filed 10 Sep — NOT queued: “Let’s talk about this one” — discussed before any overnight run"),
- "S-2": ("A", "board, 9 Sep · filed 10 Sep — your words: “Advisor should be able tie change the price, even after the estimate has gone out. Let’s talk about this one. We need to get aligned on when the advisor CANT change the price. We also need way to record price changes on the RO, and who made them.” (Price changes and who made them have been recorded since June — nothing in the app shows that history yet.)"),
+ "S-1": ("A", "board, 9 Sep · filed 10 Sep — NOT queued: ⟦“Let’s talk about this one”⟧ — discussed before any overnight run"),
+ "S-2": ("A", "board, 9 Sep · filed 10 Sep — your words: ⟦“Advisor should be able tie change the price, even after the estimate has gone out. Let’s talk about this one. We need to get aligned on when the advisor CANT change the price. We also need way to record price changes on the RO, and who made them.”⟧ (Price changes and who made them have been recorded since June — nothing in the app shows that history yet.)"),
  "S-3": ("B", "board, 9 Sep · filed 10 Sep"),
 }
 
 # Items whose every decision is BAKED but which are NOT queued — Dave held them for a conversation.
 # The board shows the pill "ruled · discuss" and this line as the stage label instead of "queued for the next build".
 HOLD = {
- "S": "Ruled and filed — held for a conversation before any overnight run: “Let’s talk about this one.”",
+ "S": "Ruled and filed — held for a conversation before any overnight run: ⟦“Let’s talk about this one.”⟧",
 }

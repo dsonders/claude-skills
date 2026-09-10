@@ -125,7 +125,7 @@ CONTEXT['S-1'] = 'What the tech’s Labor hours field allows, stage by stage. Th
 OPT_VIS['S-1'] = {'A': {'why': 'Simple to explain: once the estimate has gone to the customer, a tech never edits hours again on that line — whatever stage the RO visits.'}, 'B': {'why': 'Keeps today’s stage-based rule and closes the hole at the un-park step only; a future stage or status could open a new hole.'}}
 OPT_VIS['S-2'] = {'A': {'frame': OF.app(OF.hours_field(True, 'Hours lock once the estimate has gone to the customer'), bg="#f8fafc"), 'why': 'A real re-diagnosis goes through the advisor, who edits hours on the ledger and re-sends.'}, 'B': {'frame': OF.app(OF.hours_field(False, ''), bg="#f8fafc"), 'why': 'Un-parking re-opens the tech’s hours; the advisor is told to re-send the estimate (the re-ask notice under the field).'}}
 # ----- SA-7b -----
-CONTEXT['SA-7b-1'] = 'Your question: “a part waiting on the store” is a part the counter adds to an INTERNAL (store-pay) line after the advisor already authorized that line. The add withdraws the store’s OK, and the advisor approves or declines the part on the RO page, where it reads “Needs store OK” (below). The dashboard badge lumps those with parts waiting on a customer, so it can only say “Needs approval”.'
+CONTEXT['SA-7b-1'] = 'Your question: ⟦“a part waiting on the store”⟧ is a part the counter adds to an INTERNAL (store-pay) line after the advisor already authorized that line. The add withdraws the store’s OK, and the advisor approves or declines the part on the RO page, where it reads “Needs store OK” (below). The dashboard badge lumps those with parts waiting on a customer, so it can only say “Needs approval”.'
 GALLERY['SA-7b-1'] = [('The situation — the advisor’s ledger on an internal line', OF.ledger_store_ok(), ''), ('Today — the dashboard badge', OF.dash_badge(['Needs approval']), '')]
 OPT_VIS['SA-7b-1'] = {
  'A': {'frame': OF.dash_badge(['Needs customer OK','Needs store OK']), 'why': 'Each RO stores the two counts separately, so the badge can name the family — one badge per family when both apply.'},
@@ -364,6 +364,9 @@ html,body{overflow-x:hidden}
   .m-legacy .card{border:0;box-shadow:none;padding:16px 20px}
   .m-blocks{max-width:none}
 }
+/* Dave's own words on a card — amber, the colour of the 'ruled · discuss' pill (⛔ Dave 10 Sep): ⟦…⟧ in the data → .m-dave; words he types on the board are his too */
+.m-dave{color:var(--amber);font-weight:500}
+.m-field.filled{color:var(--amber)}
 /* ---------- phone only: Dave 9/10 "On mobile, the card text is too small. Go bigger." (+2 px across the scale; LAST in PAGE_CSS — the base rules below the 9/8 block override anything placed above them) ---------- */
 @media (max-width: 899px){
 .m-wrap{font-size:18px}

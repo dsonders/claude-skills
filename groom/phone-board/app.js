@@ -7,6 +7,7 @@
   function saveCollapsed(){ try { localStorage.setItem(LSC, JSON.stringify(collapsed)); } catch(e){} }
   var mq = window.matchMedia('(min-width: 900px)');
   function isDesk(){ return mq.matches; }
+  function dave(s){ return esc(s).replace(/⟦([\s\S]*?)⟧/g, '<span class="m-dave">$1</span>'); }
   function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(ch){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]; }); }
   function loadLocal(){ try { var o = JSON.parse(localStorage.getItem(LS)||'{}'); rulings = o.rulings||{}; notes = o.notes||{}; } catch(e){ rulings={}; notes={}; } }
   function saveLocal(){ try { localStorage.setItem(LS, JSON.stringify({rulings:rulings, notes:notes})); } catch(e){} }
@@ -111,7 +112,7 @@
       var qlist = c.decisions.map(function(d){ return '<li>'+esc(d.q)+'</li>'; }).join('');
       h += foot('Details — what grooming would settle', qlist?'<ul style="margin:8px 0 0;padding-left:18px">'+qlist+'</ul>':'');
     } else {
-      h += '<div class="m-stage"><div class="m-stage-lbl"><i></i>'+(allBaked(c)?(c.hold||'Ruled and filed — queued for the next build'):'Groomed — ready to rule')+'</div></div>';
+      h += '<div class="m-stage"><div class="m-stage-lbl"><i></i>'+(allBaked(c)?(c.hold?dave(c.hold):'Ruled and filed — queued for the next build'):'Groomed — ready to rule')+'</div></div>';
       if (c.ruled && c.ruled.length) { h += '<div style="padding:10px 16px 0"><div class="m-empty" style="border-style:solid;border-color:var(--teal);color:var(--ink-2)"><span class="m-cap" style="color:var(--teal)">Already ruled</span><br>'+c.ruled.map(esc).join('<br>')+'</div></div>'; }
       if (c.frames.kind !== 'none') {
         if (desk) {
@@ -137,14 +138,14 @@
   }
   function decisionHTML(c, d){
     var r = rulings[d.id] || {}, ruled = isRuled(d);
-    if (d.baked) { var opt = d.options.filter(function(o){ return o.l===d.baked.choice; })[0]; return '<div class="m-dec baked compact" id="dec-'+esc(d.id)+'"><div class="m-cap">Decision '+esc(c.key)+' · '+d.n+' · ruled</div><div class="m-bakedline"><span class="m-opt">'+esc(d.baked.choice)+'</span><span class="m-bakedq">'+esc(d.q)+'</span></div><div class="m-bakedans">'+esc(opt?opt.t:'')+'<span class="m-bakednote">'+(opt?' · ':'')+esc(d.baked.note)+'</span></div></div>'; }
+    if (d.baked) { var opt = d.options.filter(function(o){ return o.l===d.baked.choice; })[0]; return '<div class="m-dec baked compact" id="dec-'+esc(d.id)+'"><div class="m-cap">Decision '+esc(c.key)+' · '+d.n+' · ruled</div><div class="m-bakedline"><span class="m-opt">'+esc(d.baked.choice)+'</span><span class="m-bakedq">'+esc(d.q)+'</span></div><div class="m-bakedans">'+esc(opt?opt.t:'')+'<span class="m-bakednote">'+(opt?' · ':'')+dave(d.baked.note)+'</span></div></div>'; }
     var h = '<div class="m-dec'+(ruled?' ruled':'')+'" id="dec-'+esc(d.id)+'"><div class="m-cap">Decision '+esc(c.key)+' · '+d.n+'</div><div class="m-q">'+esc(d.q)+'</div>';
-    if (d.context) h += '<div class="m-ctx">'+esc(d.context)+'</div>';
-    if (d.gallery && d.gallery.length) { var wide = isDesk() || d.gallery.length <= 3 || d.galleryWide; h += '<div class="m-gallery'+(wide?' one':'')+(isDesk()?' desk':'')+(d.galleryFull?' full':'')+'">'; d.gallery.forEach(function(g){ h += '<figure class="m-gal"><figcaption><b>'+esc(g.label)+'</b>'+(g.note?'<span>'+esc(g.note)+'</span>':'')+'</figcaption><div class="m-gal-frame"><div class="m-gal-inner">'+g.html+'</div></div></figure>'; }); h += '</div>'; }
+    if (d.context) h += '<div class="m-ctx">'+dave(d.context)+'</div>';
+    if (d.gallery && d.gallery.length) { var wide = isDesk() || d.gallery.length <= 3 || d.galleryWide; h += '<div class="m-gallery'+(wide?' one':'')+(isDesk()?' desk':'')+(d.galleryFull?' full':'')+'">'; d.gallery.forEach(function(g){ h += '<figure class="m-gal"><figcaption><b>'+dave(g.label)+'</b>'+(g.note?'<span>'+esc(g.note)+'</span>':'')+'</figcaption><div class="m-gal-frame"><div class="m-gal-inner">'+g.html+'</div></div></figure>'; }); h += '</div>'; }
     h += '<div class="m-opts'+(d.optsFull?' full':'')+'">';
-    d.options.forEach(function(o){ h += '<div class="m-btn'+(o.rec?' is-rec':'')+(r.choice===o.l?' chosen':'')+((o.frame||o.why)?' has-vis':'')+'" role="button" tabindex="0" data-dec="'+esc(d.id)+'" data-choose="'+esc(o.l)+'"><div class="m-optrow"><span class="m-opt">'+esc(o.l)+'</span><span>'+esc(o.t)+'</span>'+(o.rec?'<span class="m-rec">rec</span>':'')+'</div>'+(o.frame?'<div class="m-optframe">'+o.frame+'</div>':'')+(o.why?'<div class="m-why">'+esc(o.why)+'</div>':'')+'</div>'; });
+    d.options.forEach(function(o){ h += '<div class="m-btn'+(o.rec?' is-rec':'')+(r.choice===o.l?' chosen':'')+((o.frame||o.why)?' has-vis':'')+'" role="button" tabindex="0" data-dec="'+esc(d.id)+'" data-choose="'+esc(o.l)+'"><div class="m-optrow"><span class="m-opt">'+esc(o.l)+'</span><span>'+esc(o.t)+'</span>'+(o.rec?'<span class="m-rec">rec</span>':'')+'</div>'+(o.frame?'<div class="m-optframe">'+o.frame+'</div>':'')+(o.why?'<div class="m-why">'+dave(o.why)+'</div>':'')+'</div>'; });
     h += '</div>';
-    if (d.baked) { h += '<div class="m-ruled-line"><span>Ruled · '+esc(d.baked.choice)+' · '+esc(d.baked.note)+'</span></div></div>'; return h; }
+    if (d.baked) { h += '<div class="m-ruled-line"><span>Ruled · '+esc(d.baked.choice)+' · '+dave(d.baked.note)+'</span></div></div>'; return h; }
     h += '<textarea class="m-field'+(r.words&&r.words.trim()?' filled':'')+'" rows="2" data-words="'+esc(d.id)+'" placeholder="'+(d.text?'Your answer — filed verbatim':'In your words — optional, filed verbatim')+'">'+esc(r.words||'')+'</textarea>';
     h += '<div class="m-ruled-line" id="rl-'+esc(d.id)+'">'+(ruled?'<span>Ruled'+(r.choice?' · '+esc(r.choice):'')+' · '+fmt(r.at)+'</span><button data-clear="'+esc(d.id)+'">clear</button>':'')+'</div></div>';
     return h;
