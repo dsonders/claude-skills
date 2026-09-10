@@ -22,14 +22,6 @@ def frames_for(key):
     if key=="U":
         return dict(kind="flip", caption="The customer, back on their own page after the drop — inline, the amount only.",
             today=owner_page(), proposed=owner_page(note=True))
-    if key=="P":
-        today = (step(1,"The parts counter,","on the parts page, adds the recall part to the line — number, name, stock still “?”, no price yet.", parts_card())
-              + step(2,"The admin,","opening the same RO two minutes later, sees the line’s money card locked — and empty.", ADMIN_CARD("today_locked"))
-              + step(3,"The admin","taps the edit control to price the line. Only now does the counter’s part appear.", ADMIN_CARD("today_edit"), last=True))
-        prop = (step(1,"The parts counter,","on the parts page, adds the recall part to the line — number, name, stock still “?”, no price yet.", parts_card())
-              + step(2,"The admin,","opening the same RO two minutes later, sees the counter’s part on the locked card — every field the counter sees, read-only; the row scrolls sideways for stock, note, qty and price, as on the parts page.", ADMIN_CARD("proposed_locked"))
-              + step(3,"The admin","taps the edit control only to change pricing — nothing new appears, nothing was hidden.", ADMIN_CARD("proposed_edit"), last=True))
-        return dict(kind="walk", caption="Same line, two minutes apart", today=f'<div class="m-steps">{today}</div>', proposed=f'<div class="m-steps">{prop}</div>')
     return dict(kind="none")
 
 # Per-decision clarifiers (Dave 9/8: 'when you ask me this way or that way, I need to see what each looks like').
@@ -81,26 +73,18 @@ OPT_VIS['S-3'] = {'A': {'why': 'The advisor’s and admin’s hours field follow
 # ----- P -----
 def ledger_row_with_stock_note():
     return OF.app(f'<div style="border-radius: 6px; border: 1px solid #e5e7eb; background: #fff; padding: 12px;"><div style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 8px;">Parts <span style="font-size: 12px; font-weight: 400; color: #9ca3af;">1</span></div><div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;"><span style="font-size: 14px; font-weight: 600; color: #0f172a;">Fuel pump module</span><span style="font-size: 12px; font-family: ui-monospace, Menlo, monospace; color: #9ca3af;"># RC-FP-002</span><span style="display: inline-flex; align-items: center; border-radius: 999px; background: #f1f5f9; color: #64748b; font-size: 10.5px; font-weight: 600; padding: 2px 8px;">Stock ?</span><span style="display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: #64748b;">📝 no note</span><span style="margin-left: auto; display: inline-flex; gap: 8px; align-items: center;"><span style="font-size: 12px; color: #6b7280;">×1</span><span style="font-family: ui-monospace, Menlo, monospace; font-size: 13px; color: #d1d5db;">—</span></span></div></div>', bg="#d1d5db")
-OPT_VIS['P-1'] = {
- 'A': {'frame': ADMIN_CARD("proposed_locked").replace(' class="ring"',''), 'why': 'The admin reads the same six columns the counter sees — Part # · Name · In stock? · Note · Qty · Unit price — as a locked copy of the parts page row. It scrolls sideways on a phone, as the parts page does.'},
- 'B': {'frame': ledger_row_with_stock_note(), 'why': 'The ledger keeps its one-line money row and gains two chips: the stock answer and the note. Fits a phone without scrolling; parts fields are summarized, not shown.'},
-}
-CONTEXT['P-1'] = 'Locked = before the admin taps Edit pricing. Both frames show the same part the counter added.'
-OPT_VIS['P-2'] = {
- 'A': {'frame': ADMIN_CARD("proposed_edit").replace(' class="ring"',''), 'why': 'Edit mode matches the parts page 1:1 — the Note cell and the Parts Total footer with its Sum / Manual switch. A typed Parts Total goes through the same rules as on the parts page.'},
- 'B': {'frame': ADMIN_CARD("today_edit"), 'why': 'Edit mode stays pricing-only, as today: name, part #, qty, stock, unit price. Notes and the Parts Total stay the counter’s.'},
-}
-OPT_VIS['P-4'] = {
- 'A': {'frame': OF.takeover_dialog(), 'why': 'The admin gets the parts users’ own take-over dialog. The counter then sees the red “took over this RO” notice and may lose unsaved edits.'},
- 'B': {'frame': OF.parts_hold_banner(button=False, hint='Try again when they are done.'), 'why': 'The admin sees who holds the RO and waits. Nothing of the counter’s is lost; the admin cannot price until the hold clears (12 minutes idle, or the counter leaves).'},
-}
-CONTEXT['P-4'] = 'The hold is per RO, not per line, and belongs to parts users. Today an admin who edits parts under a live hold is refused after the fact: the red toast below.'
-GALLERY['P-4'] = [('Today — refused after the fact', OF.refused_toast(), '')]
+GALLERY['P-5'] = [
+ ('Today — the admin’s RO page at 1440. The Parts & Labor card sits in the left column, 492 px wide', real_img('pd-page','The admin RO page'), ''),
+ ('Today — the card up close: both parts, the stock answer, qty, price, and the counter’s note under the part', real_img('pd-today','The card today'), '492 × 420 px'),
+ ('As ruled in P-1 — the parts page’s six-column row inside the 492 px card: it scrolls sideways; note, qty and price sit off the right edge', real_img('pd-ruled','The six-column row in the card'), '492 × 489 px'),
+]
+GALLERY_FULL.add('P-5')
+CONTEXT['P-5'] = 'Two facts from the real page. The admin’s card is 492 px wide, so the parts page’s row you ruled in P-1 scrolls sideways even on desktop. And today’s row already prints the counter’s note under the part. On this fixture both parts show; the 8/27 case where the part vanished is the one with no recorded requester, which the build fixes either way.'
 OPT_VIS['P-5'] = {
- 'A': {'frame': OF.note_row('icon'), 'why': 'A note mark sits by the part name, on screen without scrolling. Hover (desktop) or tap (phone) shows the note; no mark when there is none.'},
- 'B': {'frame': OF.note_row('line'), 'why': 'The note prints as a second line under the part, always visible. Longer rows when notes are long; nothing to hover or tap.'},
+ 'A': {'frame': real_img('pd-today','Keep today’s row'), 'why': 'Everything the counter entered is on screen with no scrolling: name, part #, stock, qty, price, the note under the part. Revisits P-1: the ledger row stays, edit mode still gains the Note cell and the Parts Total footer as ruled in P-2.'},
+ 'B': {'frame': real_img('pd-mark','Note mark with a hover'), 'why': 'The six-column row as ruled, with a mark by the part name that shows the note on hover. Qty and price still need a sideways scroll.'},
+ 'C': {'frame': real_img('pd-line','Note as a line under the part'), 'why': 'The six-column row as ruled, with the note printed under it, as today’s row already does. Qty and price still need a sideways scroll.'},
 }
-CONTEXT['P-5'] = 'Your note: the admin needs to see the counter’s note on each part. With the parts page’s row (P-1), the Note cell is there but off the phone’s right edge until you scroll.'
 # ----- W -----
 GALLERY['W-1'] = [('Today — the same dialog on a recon-only RO', OF.send_gate_today(), ''),]
 OPT_VIS['W-1'] = {
@@ -150,7 +134,7 @@ for c in cards:
         bk = BAKED.get(did)
         decs.append(dict(id=did, n=i, q=q, options=[dict(l=l,t=t,rec=r, frame=ov.get(l,{}).get('frame'), why=ov.get(l,{}).get('why')) for l,t,r in opts], text=(len(opts)==0), context=CONTEXT.get(did), gallery=[dict(label=a,html=b,note=n) for a,b,n in GALLERY.get(did,[])], galleryWide=(did in GALLERY_WIDE), galleryFull=(did in GALLERY_FULL), baked=(dict(choice=bk[0], note=bk[1]) if bk else None)))
     fr=frames_for(c['key'])
-    NO_BLOCKS = {'W','SA-7b','D3','X','D1','SA-20b','Q'}
+    NO_BLOCKS = {'W','SA-7b','D3','X','D1','SA-20b','Q','P'}
     blocks=''.join(c['blocks']) if (fr['kind']=='none' and c['key'] not in NO_BLOCKS) else ''
     visual = any(d['gallery'] or any(o.get('frame') for o in d['options']) for d in decs)
     data_cards.append(dict(key=c['key'], section=c['section'], title=c['title'], sub=c['sub'], dims=c['dims'], pop=c['pop'], ruled=c['ruled'], blocks=blocks, frames=fr, decisions=decs, stage=STAGE.get(c['key'],'groomed'), triageMock=TRIAGE_MOCK.get(c['key']), visual=visual))
@@ -190,6 +174,12 @@ PAGE_CSS = """
 .m-empty{font-size:14.5px}
 .m-total{font-size:15.5px}
 .m-status{font-size:13px}
+/* ---------- filed decisions: one line ---------- */
+.m-dec.compact{gap:4px;padding-top:12px}
+.m-bakedline{display:flex;gap:8px;align-items:flex-start;font-size:14px;color:var(--ink-2);line-height:1.4}
+.m-bakedline .m-opt{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;font-weight:600;color:#fff;background:var(--ink);border:1px solid var(--ink);border-radius:3px;padding:1px 6px;flex:none;margin-top:2px}
+.m-bakedans{font-size:14px;color:var(--teal);padding-left:34px;line-height:1.4}
+.m-bakednote{color:var(--muted)}
 /* ---------- clarifiers ---------- */
 .m-ctx{font-size:15px;color:var(--ink-2);line-height:1.45}
 .m-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:4px 0 2px}

@@ -91,8 +91,12 @@ visuals only on what survived. Output = ⛔ rulings written verbatim into
     list below).
 13. **Never mingle my words with the UI.** Text on a mockup is text OUR USERS will see — nothing else goes on a frame.
     Captions, implications and answers sit outside the frame, in the board's own type.
-14. **Extra text is not free.** Use restraint: only what adds real value to the decision. No extra notes or labels
-    when the information is already present or obvious from the screen. Every sentence costs him a read.
+14. **Extra text is not free — and neither are extra frames.** Use restraint: only what adds real value to the
+    decision. No extra notes or labels when the information is already present or obvious from the screen. Every
+    sentence costs him a read. **A ruled decision collapses to ONE line** (letter, question, the chosen option, where
+    it was filed) — no options, no frames; frames belong only to what is still open (⛔ Dave 9/9, card P: "far too
+    many UIs here… far too much to digest" — 15 drawn frames on a card with one open question became 6 real screens).
+    Desktop screens go on the board at their real size, one per row, never scaled thumbnails.
 15. **When several options need a decision, weigh in: the rec and its rationale**, marked on the option, one sentence
     about the person it affects.
 16. **Desktop surface + detailed UI design work = REAL DESKTOP SCREENSHOTS, not drawings** (⛔ Dave, 2026-09-09, card Q:

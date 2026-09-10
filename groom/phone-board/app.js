@@ -137,8 +137,8 @@
   }
   function decisionHTML(c, d){
     var r = rulings[d.id] || {}, ruled = isRuled(d);
-    if (d.baked) { r = {choice: d.baked.choice, words: ''}; }
-    var h = '<div class="m-dec'+(ruled?' ruled':'')+(d.baked?' baked':'')+'" id="dec-'+esc(d.id)+'"><div class="m-cap">Decision '+esc(c.key)+' · '+d.n+'</div><div class="m-q">'+esc(d.q)+'</div>';
+    if (d.baked) { var opt = d.options.filter(function(o){ return o.l===d.baked.choice; })[0]; return '<div class="m-dec baked compact" id="dec-'+esc(d.id)+'"><div class="m-cap">Decision '+esc(c.key)+' · '+d.n+' · ruled</div><div class="m-bakedline"><span class="m-opt">'+esc(d.baked.choice)+'</span><span class="m-bakedq">'+esc(d.q)+'</span></div><div class="m-bakedans">'+esc(opt?opt.t:'')+'<span class="m-bakednote"> · '+esc(d.baked.note)+'</span></div></div>'; }
+    var h = '<div class="m-dec'+(ruled?' ruled':'')+'" id="dec-'+esc(d.id)+'"><div class="m-cap">Decision '+esc(c.key)+' · '+d.n+'</div><div class="m-q">'+esc(d.q)+'</div>';
     if (d.context) h += '<div class="m-ctx">'+esc(d.context)+'</div>';
     if (d.gallery && d.gallery.length) { var wide = isDesk() || d.gallery.length <= 3 || d.galleryWide; h += '<div class="m-gallery'+(wide?' one':'')+(isDesk()?' desk':'')+(d.galleryFull?' full':'')+'">'; d.gallery.forEach(function(g){ h += '<figure class="m-gal"><figcaption><b>'+esc(g.label)+'</b>'+(g.note?'<span>'+esc(g.note)+'</span>':'')+'</figcaption><div class="m-gal-frame"><div class="m-gal-inner">'+g.html+'</div></div></figure>'; }); h += '</div>'; }
     h += '<div class="m-opts">';

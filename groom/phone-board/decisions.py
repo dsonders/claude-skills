@@ -15,7 +15,7 @@ DEC = {
   ("Edit mode gets the Note cell and the Sum / Manual parts total too?", [("A","Yes",True),("B","No — pricing fields only",False)]),
   ("Admin gets the ⚠ unpriced flag and × delete per row?", [("A","Both",True),("B","The flag only",False),("C","Neither",False)]),
   ("If a parts user is mid-edit on the line — take over with the warning, or refuse?", [("A","Take over, with the warning",False),("B","Refuse until they finish",False)]),
-  ("The counter’s note on each part, visible to the admin without scrolling — a mark you hover or tap, or a line under the part?", [("A","A note mark by the part name — hover or tap to read",True),("B","The note as a line under the part, always shown",False)]),
+  ("The card is 492 px wide. Keep today’s row, which already shows the note under the part with nothing off screen — or the parts page’s six-column row as ruled, which scrolls sideways?", [("A","Keep today’s row — revisits P-1",True),("B","Six-column row, with a note mark you hover",False),("C","Six-column row, with the note as a line under the part",False)]),
  ],
  "SA-6b": [
   ("Label it “Declined at close”, read from the RO’s own closed-without-a-response mark?", [("A","Yes — “Declined at close”",True),("B","No — keep “Declined by the customer”",False)]),
@@ -97,7 +97,7 @@ BAKED = {
  "U-3":  ("B", "phone board, 8 Sep · filed #1934"),
  "P-3":  ("C", "phone board, 8 Sep · filed #1934"),
  "D1-2": ("A", "phone board, 8 Sep · filed #1934 — the customer page never says “booked”, so nothing changes"),
- "P-1":  ("A", "phone board, 8 Sep · filed 9 Sep"),
+ "P-1":  ("A", "phone board, 8 Sep · filed 9 Sep — see P-5: the card is 492 px wide"),
  "P-2":  ("A", "phone board, 8 Sep · filed 9 Sep"),
  "P-4":  ("A", "phone board, 8 Sep · filed 9 Sep"),
  "SA-6b-1": ("A", "phone board, 8 Sep · filed 9 Sep"),
