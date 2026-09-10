@@ -58,7 +58,7 @@
         var inner = '<span class="key'+keycls+'">'+esc(c.key)+'</span><span class="t">'+esc(c.title)+'</span>'+(hasNote?'<span class="m-note-dot" title="You staged a note"></span>':'')+pill+chev();
         if (isDesk()) {
           var open = !!expandedDesk[c.key];
-          rows += '<div class="m-deskcard'+(open?' open':'')+'" data-card="'+esc(c.key)+'"><div class="m-row m-deskhead'+(n?'':' ruled')+'" role="button" tabindex="0" data-expand="'+esc(c.key)+'">'+inner+'</div>'+(open?'<div class="m-deskbody" data-item="'+esc(c.key)+'"></div>':'')+'</div>';
+          rows += '<div class="m-deskcard'+(open?' open':'')+'" data-card="'+esc(c.key)+'"><div class="m-row m-deskhead'+(n?'':' ruled')+'" role="button" tabindex="0" aria-expanded="'+open+'" data-expand="'+esc(c.key)+'">'+inner+'</div><div class="m-deskbody"><div class="m-deskclip"><div class="m-deskinner" data-item="'+esc(c.key)+'"></div></div></div></div>';
         } else {
           rows += '<a class="m-row'+(n?'':' ruled')+'" href="#/item/'+encodeURIComponent(c.key)+'">'+inner+'</a>';
         }
@@ -67,19 +67,21 @@
       var secItems = DATA.ruled.filter(function(r){ return r.section===sec; }).length, secRuled = secItems;
       CARDS.filter(function(c){ return c.section===sec; }).forEach(function(c){ secItems++; if (!openCount(c)) secRuled++; });
       var col = (sec in collapsed) ? !!collapsed[sec] : true, allDone = secRuled===secItems;
-      h += '<div class="m-sec'+(col?' collapsed':'')+'" data-sec="'+esc(sec)+'"><button class="m-sechead" aria-expanded="'+(!col)+'"><span class="m-h2">'+esc(sec)+'</span><span class="m-badge'+(allDone?' done':'')+'" title="items ruled / items in this section">'+secRuled+'/'+secItems+'</span><span class="m-chev">'+DOWN+'</span></button><div class="m-card">'+rows+'</div></div>';
+      h += '<div class="m-sec'+(col?' collapsed':'')+'" data-sec="'+esc(sec)+'"><button class="m-sechead" aria-expanded="'+(!col)+'"><span class="m-h2">'+esc(sec)+'</span><span class="m-badge'+(allDone?' done':'')+'" title="items ruled / items in this section">'+secRuled+'/'+secItems+'</span><span class="m-chev">'+DOWN+'</span></button><div class="m-secbody"><div class="m-secclip"><div class="m-card">'+rows+'</div></div></div></div>';
     });
     if (isDesk() && DATA.legacy) {
-      ['risk','icebox','archive'].forEach(function(k){ var L = DATA.legacy[k]; if (!L) return; var col = (k in collapsed) ? !!collapsed[k] : true; h += '<div class="m-sec'+(col?' collapsed':'')+'" data-sec="'+k+'"><button class="m-sechead" aria-expanded="'+(!col)+'"><span class="m-h2">'+esc(L.title)+'</span><span class="m-chev">'+DOWN+'</span></button><div class="m-card m-legacy"><article class="card">'+L.html+'</article></div></div>'; });
+      ['risk','icebox','archive'].forEach(function(k){ var L = DATA.legacy[k]; if (!L) return; var col = (k in collapsed) ? !!collapsed[k] : true; h += '<div class="m-sec'+(col?' collapsed':'')+'" data-sec="'+k+'"><button class="m-sechead" aria-expanded="'+(!col)+'"><span class="m-h2">'+esc(L.title)+'</span><span class="m-chev">'+DOWN+'</span></button><div class="m-secbody"><div class="m-secclip"><div class="m-card m-legacy"><article class="card">'+L.html+'</article></div></div></div></div>'; });
     } else {
       h += '<div class="m-sec"><div class="m-h2">Icebox</div><div class="m-card"><div class="m-row ruled"><span class="t">'+esc(DATA.icebox)+'</span></div></div></div>';
       h += '<div class="m-sec"><div class="m-empty">'+esc(DATA.archive)+'</div></div>';
     }
     var app = document.getElementById('app'); app.innerHTML = h; setStatus(mode);
-    app.querySelectorAll('.m-sechead').forEach(function(b){ b.addEventListener('click', function(){ var sec = b.parentNode.getAttribute('data-sec'); var cur = (sec in collapsed) ? !!collapsed[sec] : true; collapsed[sec] = !cur; saveCollapsed(); var y = window.scrollY; renderDash(); window.scrollTo(0, y); }); });
-    app.querySelectorAll('[data-expand]').forEach(function(b){ b.addEventListener('click', function(){ var k = b.getAttribute('data-expand'); expandedDesk[k] = !expandedDesk[k]; var y = window.scrollY; renderDash(); window.scrollTo(0, y); }); b.addEventListener('keydown', function(ev){ if (ev.key==='Enter'||ev.key===' ') { ev.preventDefault(); b.click(); } }); });
-    app.querySelectorAll('.m-deskbody').forEach(function(body){ var k = body.getAttribute('data-item'); body.innerHTML = itemHTML(k, true); wireItem(body, k); sizeGalleries(body); });
+    app.querySelectorAll('.m-sechead').forEach(function(b){ b.addEventListener('click', function(){ var sec = b.parentNode.getAttribute('data-sec'); var nowCollapsed = !b.parentNode.classList.contains('collapsed'); b.parentNode.classList.toggle('collapsed', nowCollapsed); b.setAttribute('aria-expanded', String(!nowCollapsed)); collapsed[sec] = nowCollapsed; saveCollapsed(); }); });
+    app.querySelectorAll('[data-expand]').forEach(function(b){ b.addEventListener('click', function(){ setCardOpen(b.getAttribute('data-expand'), !expandedDesk[b.getAttribute('data-expand')]); }); b.addEventListener('keydown', function(ev){ if (ev.key==='Enter'||ev.key===' ') { ev.preventDefault(); b.click(); } }); });
+    Object.keys(expandedDesk).forEach(function(k){ if (expandedDesk[k]) fillCard(k); });
   }
+  function fillCard(key){ var inner = document.querySelector('.m-deskinner[data-item="'+CSS.escape(key)+'"]'); if (!inner || inner.childElementCount) return; inner.innerHTML = itemHTML(key, true); wireItem(inner, key); sizeGalleries(inner); }
+  function setCardOpen(key, open){ var card = document.querySelector('.m-deskcard[data-card="'+CSS.escape(key)+'"]'); if (!card) return; expandedDesk[key] = open; if (open) fillCard(key); var head = card.querySelector('.m-deskhead'); head.setAttribute('aria-expanded', String(open)); if (open) requestAnimationFrame(function(){ card.classList.add('open'); }); else { card.classList.remove('open'); requestAnimationFrame(function(){ var r = head.getBoundingClientRect(); if (r.top < 0) head.scrollIntoView({block:'start', behavior:'smooth'}); }); } }
 
   // ---------- item ----------
   var flipState = {};
@@ -130,6 +132,7 @@
       h += feedback();
       h += foot('Details', '');
     }
+    if (embedded) h += '<div class="m-cardfoot"><button class="m-collapse" data-collapse="'+esc(key)+'">'+DOWN+'<span>Collapse '+esc(key)+'</span></button></div>';
     return h + '</div>';
   }
   function decisionHTML(c, d){
@@ -153,6 +156,7 @@
     root.querySelectorAll('[data-clear]').forEach(function(b){ b.addEventListener('click', function(){ var id = b.getAttribute('data-clear'); clearRuling(id); refreshDecision(c, id); }); });
     root.querySelectorAll('[data-words]').forEach(function(t){ var timer; t.addEventListener('input', function(){ clearTimeout(timer); var id = t.getAttribute('data-words'); timer = setTimeout(function(){ var prev = rulings[id] || {}; var words = t.value; if (!words.trim() && !prev.choice) { if (rulings[id]) clearRuling(id); } else { writeRuling(id, {choice:prev.choice||'', words:words, at:now()}); } refreshDecision(c, id, true); }, 600); }); });
     var nf = root.querySelector('[data-note="'+CSS.escape(key)+'"]'); if (nf) { var nt; nf.addEventListener('input', function(){ clearTimeout(nt); nt = setTimeout(function(){ writeNote(key, nf.value); var filled = !!nf.value.trim(); nf.classList.toggle('filled', filled); var hint = root.querySelector('[data-note-hint="'+CSS.escape(key)+'"]'); if (hint) hint.textContent = filled ? 'Staged '+fmt(notes[key].at) : ''; }, 600); }); }
+    var cb = root.querySelector('[data-collapse="'+CSS.escape(key)+'"]'); if (cb) cb.addEventListener('click', function(){ setCardOpen(key, false); });
     var blk = root.querySelector('[data-stage-dec="'+CSS.escape(key)+'"]'); if (blk) {
       blk.querySelectorAll('[data-stage]').forEach(function(b){ b.addEventListener('click', function(){ writeRuling(stageId(c), {choice:b.getAttribute('data-stage'), words:'', at:now()}); refreshStage(c); }); });
       var cl = blk.querySelector('[data-stage-clear]'); if (cl) cl.addEventListener('click', function(){ clearRuling(stageId(c)); refreshStage(c); });
@@ -178,7 +182,7 @@
   // live updates: change only what changed, never re-route (route() scrolls)
   function syncView(prev, notesToo){
     var keys = isDesk() ? Object.keys(expandedDesk).filter(function(k){ return expandedDesk[k]; }) : (currentItemKey() ? [currentItemKey()] : []);
-    if (!keys.length) { var y = window.scrollY; renderDash(); window.scrollTo(0, y); return; }
+    if (!keys.length) { if (isDesk()) { updateDeskPills(); } else { var y = window.scrollY; renderDash(); window.scrollTo(0, y); } return; }
     keys.forEach(function(key){ var c = BY[key]; if (!c) return;
       if (JSON.stringify(prev[stageId(c)]||null) !== JSON.stringify(rulings[stageId(c)]||null)) refreshStage(c);
       c.decisions.forEach(function(d){ var a = JSON.stringify(prev[d.id]||null), b = JSON.stringify(rulings[d.id]||null); if (a === b) return; var el = document.getElementById('dec-'+d.id); var typing = el && document.activeElement && el.contains(document.activeElement); refreshDecision(c, d.id, !!typing); });

@@ -299,7 +299,20 @@ html,body{overflow-x:hidden}
 .m-sechead .m-h2{flex:1 1 auto}
 .m-sechead .m-chev{transition:transform .15s ease}
 .m-sec.collapsed .m-sechead .m-chev{transform:rotate(-90deg)}
-.m-sec.collapsed .m-card{display:none}
+.m-secbody{display:grid;grid-template-rows:1fr;transition:grid-template-rows .28s ease}
+.m-sec.collapsed .m-secbody{grid-template-rows:0fr}
+.m-secclip{overflow:hidden;min-height:0}
+.m-sec.collapsed .m-secclip{visibility:hidden;transition:visibility 0s .28s}
+.m-secclip{visibility:visible}
+.m-deskbody{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
+.m-deskcard.open .m-deskbody{grid-template-rows:1fr}
+.m-deskclip{overflow:hidden;min-height:0}
+.m-deskhead .m-chev{transition:transform .2s ease}
+.m-cardfoot{display:flex;justify-content:flex-end;padding:6px 16px 14px}
+.m-collapse{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface-2);font:inherit;font-size:13px;color:var(--ink-2);cursor:pointer}
+.m-collapse svg{transform:rotate(180deg)}
+.m-collapse:hover{border-color:var(--accent);color:var(--ink)}
+@media (prefers-reduced-motion: reduce){.m-secbody,.m-deskbody,.m-deskhead .m-chev{transition:none}}
 @media (prefers-reduced-motion: reduce){.m-sechead .m-chev{transition:none}}
 
 /* ---------- desktop (≥900px): same anatomy, wider ---------- */
@@ -312,7 +325,8 @@ html,body{overflow-x:hidden}
   .m-deskcard.open{background:var(--surface)}
   .m-deskhead{cursor:pointer;border-top:0}
   .m-deskcard.open .m-deskhead .m-chev{transform:rotate(90deg)}
-  .m-deskbody{border-top:1px dashed var(--line);padding:0 8px 8px}
+  .m-deskcard.open .m-deskclip{border-top:1px dashed var(--line)}
+.m-deskinner{padding:0 8px 8px}
   .m-legacy-status{padding:0 14px 10px 50px;font-size:13px;color:var(--teal)}
   .m-both{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;padding:14px 16px 0;align-items:start}
   .m-both .m-frame{margin:0}
