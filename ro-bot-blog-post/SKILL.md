@@ -1,13 +1,13 @@
 ---
 name: ro-bot-blog-post
-description: End-to-end workflow for producing a new blog post on the RO.bot marketing site at /ro-bot/website/. Covers ideation, drafting, hero image, infographic, SEO/AEO optimization, two-way internal linking, distribution drafts, build verification, and deploy. Use ONLY when working in /ro-bot/website/ — the blog frontmatter schema, Astro content collection, and deploy pipeline described here are website-specific.
+description: End-to-end workflow for producing a new blog post on the TenthGear marketing site at /ro-bot/website/. Covers ideation, drafting, hero image, infographic, SEO/AEO optimization, two-way internal linking, distribution drafts, build verification, and deploy. Use ONLY when working in /ro-bot/website/ — the blog frontmatter schema, Astro content collection, and deploy pipeline described here are website-specific.
 ---
 
-# RO.bot Blog Post Workflow
+# TenthGear Blog Post Workflow
 
-**Scope:** This skill is specific to the RO.bot marketing website at `/ro-bot/website/`. The Astro content collection in `src/content/blog/`, the frontmatter schema in `src/content/config.ts`, the Netlify deploy step, and the build-verification commands all assume that subproject's structure. Do not invoke from `app/` or `GTM/`.
+**Scope:** This skill is specific to the TenthGear marketing website at `/ro-bot/website/`. The Astro content collection in `src/content/blog/`, the frontmatter schema in `src/content/config.ts`, the Netlify deploy step, and the build-verification commands all assume that subproject's structure. Do not invoke from `app/` or `GTM/`.
 
-End-to-end workflow to produce and ship a blog post on the RO.bot marketing site (`ro-bot.io`). The goal is to publish something high-quality in one session with the user only in the loop at 5 clear checkpoints.
+End-to-end workflow to produce and ship a blog post on the TenthGear marketing site (`tenthgear.ai`). The goal is to publish something high-quality in one session with the user only in the loop at 6 clear checkpoints.
 
 **Before drafting, read `/ro-bot/shared/product-facts.md` and `/ro-bot/shared/brand.md`** to ensure the post doesn't propagate stale facts or use banned words.
 
@@ -282,15 +282,19 @@ Create `docs/distribution/{slug}.md` with:
 - Match Dave's voice: direct, no emojis, no "Excited to share..."
 
 ### Email announcement draft
-- Subject line (under 50 chars)
-- Preview text (under 90 chars)
-- 3-4 paragraph body
-- Clear CTA link to the post
-- Unsubscribe footer placeholder
+`scripts/newsletter.mjs` parses this section verbatim (Phase 6), so keep the exact shape:
+- `**Subject:**` line (under 50 chars) and `**Preview text:**` line (under 90 chars)
+- `**Body:**` then the body in ONE fenced code block: 3-4 short paragraphs, the CTA link as `https://tenthgear.ai/blog/{slug}/` (trailing slash), sign off on its own line as `Dave` (no dash), an optional P.S.
+- The last two lines of the block are exactly:
+  ```
+  ---
+  Unsubscribe: [unsubscribe-link]
+  ```
+- No em or en dashes and no `shared/brand.md` banned words; the script warns on both. No `{{first_name}}` or other merge tags: the list holds only email addresses.
 
 ### Pull quote card concept
 - Identify the single most screenshot-worthy stat or sentence
-- Describe a simple design treatment (big number in navy, short context line, RO.bot logo)
+- Describe a simple design treatment (big number in navy, short context line, TenthGear mark)
 - Mention it can be made in Canva or similar
 
 No checkpoint here — these are generated as output files for the user to pick up later.
@@ -329,11 +333,32 @@ No checkpoint here — these are generated as output files for the user to pick 
    ```
    Report the PR URL.
 4. **If the session also produced an unrelated fix** (a layout bug, a stale link), that is its own branch and its own PR, per "PR per logical change." Push the fix PR too and tell Dave which to merge first. If the content branch has the fix as an ancestor, say so, since merging the fix first collapses the content diff to content only.
-5. **Remind the user** that Netlify auto-deploys from the GitHub webhook about 2 minutes **after he merges**, not on push. The post goes live at `https://ro-bot.io/blog/{slug}`.
+5. **Remind the user** that Netlify auto-deploys from the GitHub webhook about 2 minutes **after he merges**, not on push. The post goes live at `https://tenthgear.ai/blog/{slug}/`.
 
 ---
 
-## Quick Reference: The 5 Checkpoints
+## Phase 6: Announce to subscribers
+
+Runs only after the post is live on tenthgear.ai (Netlify deploy finished after Dave's merge). The subscriber list is the Resend segment "Blog subscribers", fed from the Netlify newsletter form; `docs/newsletter-runbook.md` has the details.
+
+1. Dry run. Fix anything the pre-flight flags in `docs/distribution/{slug}.md`, then re-run until it is clean:
+   ```bash
+   npm run newsletter:announce -- --slug {slug}
+   ```
+2. Test email to Dave:
+   ```bash
+   npm run newsletter:announce -- --slug {slug} --test dave@tenthgear.ai
+   ```
+3. **Checkpoint 6:** Dave reads the test and says "send".
+4. Send. The command syncs the form into the segment first, asks for the slug as confirmation, then creates and sends the Resend Broadcast:
+   ```bash
+   npm run newsletter:announce -- --slug {slug} --send
+   ```
+   Report the recipient count and the Resend broadcast link. A post is not finished until this has run.
+
+---
+
+## Quick Reference: The 6 Checkpoints
 
 | # | Phase | What the user does |
 |---|---|---|
@@ -342,6 +367,7 @@ No checkpoint here — these are generated as output files for the user to pick 
 | 3 | Assets | Runs Nano Banana externally, iterates until image is good |
 | 4 | Integrate | Reviews on localhost, requests tweaks |
 | 5 | Deploy | Says "deploy" |
+| 6 | Announce | Reads the test email, says "send" |
 
 Everything else is automated.
 
