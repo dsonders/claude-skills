@@ -53,7 +53,7 @@
         var n = openCount(c), hasNote = !!(notes[c.key] && notes[c.key].text && notes[c.key].text.trim());
         var pill, keycls;
         if (c.stage==='triage') { var sr = stageRuling(c); pill = sr ? '<span class="m-done">'+esc(stageLabel(sr.choice))+'</span>' : '<span class="m-groom">groom?</span>'; keycls = sr ? ' soft' : ' amber'; }
-        else if (allBaked(c)) { pill = '<span class="m-done">ruled · queued</span>'; keycls = ' soft'; }
+        else if (allBaked(c)) { pill = c.hold ? '<span class="m-groom">ruled · discuss</span>' : '<span class="m-done">ruled · queued</span>'; keycls = ' soft'; }
         else { pill = n ? '<span class="m-open">'+n+' open</span>' : '<span class="m-done">ruled · here</span>'; keycls = n ? '' : ' soft'; }
         var inner = '<span class="key'+keycls+'">'+esc(c.key)+'</span><span class="t">'+esc(c.title)+'</span>'+(hasNote?'<span class="m-note-dot" title="You staged a note"></span>':'')+pill+chev();
         if (isDesk()) {
@@ -111,7 +111,7 @@
       var qlist = c.decisions.map(function(d){ return '<li>'+esc(d.q)+'</li>'; }).join('');
       h += foot('Details — what grooming would settle', qlist?'<ul style="margin:8px 0 0;padding-left:18px">'+qlist+'</ul>':'');
     } else {
-      h += '<div class="m-stage"><div class="m-stage-lbl"><i></i>'+(allBaked(c)?'Ruled and filed — queued for the next build':'Groomed — ready to rule')+'</div></div>';
+      h += '<div class="m-stage"><div class="m-stage-lbl"><i></i>'+(allBaked(c)?(c.hold||'Ruled and filed — queued for the next build'):'Groomed — ready to rule')+'</div></div>';
       if (c.ruled && c.ruled.length) { h += '<div style="padding:10px 16px 0"><div class="m-empty" style="border-style:solid;border-color:var(--teal);color:var(--ink-2)"><span class="m-cap" style="color:var(--teal)">Already ruled</span><br>'+c.ruled.map(esc).join('<br>')+'</div></div>'; }
       if (c.frames.kind !== 'none') {
         if (desk) {
@@ -137,7 +137,7 @@
   }
   function decisionHTML(c, d){
     var r = rulings[d.id] || {}, ruled = isRuled(d);
-    if (d.baked) { var opt = d.options.filter(function(o){ return o.l===d.baked.choice; })[0]; return '<div class="m-dec baked compact" id="dec-'+esc(d.id)+'"><div class="m-cap">Decision '+esc(c.key)+' · '+d.n+' · ruled</div><div class="m-bakedline"><span class="m-opt">'+esc(d.baked.choice)+'</span><span class="m-bakedq">'+esc(d.q)+'</span></div><div class="m-bakedans">'+esc(opt?opt.t:'')+'<span class="m-bakednote"> · '+esc(d.baked.note)+'</span></div></div>'; }
+    if (d.baked) { var opt = d.options.filter(function(o){ return o.l===d.baked.choice; })[0]; return '<div class="m-dec baked compact" id="dec-'+esc(d.id)+'"><div class="m-cap">Decision '+esc(c.key)+' · '+d.n+' · ruled</div><div class="m-bakedline"><span class="m-opt">'+esc(d.baked.choice)+'</span><span class="m-bakedq">'+esc(d.q)+'</span></div><div class="m-bakedans">'+esc(opt?opt.t:'')+'<span class="m-bakednote">'+(opt?' · ':'')+esc(d.baked.note)+'</span></div></div>'; }
     var h = '<div class="m-dec'+(ruled?' ruled':'')+'" id="dec-'+esc(d.id)+'"><div class="m-cap">Decision '+esc(c.key)+' · '+d.n+'</div><div class="m-q">'+esc(d.q)+'</div>';
     if (d.context) h += '<div class="m-ctx">'+esc(d.context)+'</div>';
     if (d.gallery && d.gallery.length) { var wide = isDesk() || d.gallery.length <= 3 || d.galleryWide; h += '<div class="m-gallery'+(wide?' one':'')+(isDesk()?' desk':'')+(d.galleryFull?' full':'')+'">'; d.gallery.forEach(function(g){ h += '<figure class="m-gal"><figcaption><b>'+esc(g.label)+'</b>'+(g.note?'<span>'+esc(g.note)+'</span>':'')+'</figcaption><div class="m-gal-frame"><div class="m-gal-inner">'+g.html+'</div></div></figure>'; }); h += '</div>'; }

@@ -3,7 +3,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lib import ro_panel, owner_page, step, sil
 from parts_card import parts_card
 exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'admin_card.py')).read())
-from decisions import DEC, STAGE, STAGE_NOTE, BAKED
+from decisions import DEC, STAGE, STAGE_NOTE, BAKED, HOLD
 from triage_frames import parts_card_tall, stock_answer_row, parts_line_variant, Q_VARIANTS
 import option_frames as OF
 import os as _os
@@ -154,7 +154,7 @@ for c in cards:
     NO_BLOCKS = {'W','SA-7b','D3','X','D1','SA-20b','Q','P'}
     blocks=''.join(c['blocks']) if (fr['kind']=='none' and c['key'] not in NO_BLOCKS) else ''
     visual = any(d['gallery'] or any(o.get('frame') for o in d['options']) for d in decs)
-    data_cards.append(dict(key=c['key'], section=c['section'], title=c['title'], sub=c['sub'], dims=c['dims'], pop=c['pop'], ruled=c['ruled'], blocks=blocks, frames=fr, decisions=decs, stage=STAGE.get(c['key'],'groomed'), triageMock=TRIAGE_MOCK.get(c['key']), visual=visual))
+    data_cards.append(dict(key=c['key'], section=c['section'], title=c['title'], sub=c['sub'], dims=c['dims'], pop=c['pop'], ruled=c['ruled'], blocks=blocks, frames=fr, decisions=decs, stage=STAGE.get(c['key'],'groomed'), hold=HOLD.get(c['key']), triageMock=TRIAGE_MOCK.get(c['key']), visual=visual))
 
 # ruled / queued items for the dashboard (from the live board)
 ruled_items=[
