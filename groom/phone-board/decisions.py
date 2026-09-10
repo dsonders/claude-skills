@@ -34,6 +34,7 @@ DEC = {
   ("When can’t the advisor or admin change a line’s price? Today: a customer-pay line’s part prices lock while the estimate is out and unanswered, and an approved line’s money is frozen until the advisor re-opens it.", [("A","Only an approved customer-pay line, and re-open stays the door — drop the “estimate is out, not yet answered” lock for the advisor and admin, keep it for the parts counter",True),("B","Keep today’s two locks as they are",False),("C","Never — the advisor and admin can change any price at any time, and re-open is no longer required",False)]),
   ("Which lines lock the tech’s hours once the estimate has gone out? There is one “sent” stamp on the RO; a line added mid-job after it was never quoted.", [("A","Only the lines that were in the estimate, worked out from when each line was created against the send stamp — a line added later stays editable until someone decides it; nothing new stored",True),("B","Every line on the RO, added later or not",False)]),
   ("Price changes are already recorded with who made them (since June); nothing shows that history. Where does the screen go?", [("A","Its own card — a “Changes” list on the line’s Parts & Labor card for advisors and admins, drawn there",True),("B","Fold it into this build",False),("C","Not now",False)]),
+  ("The customer’s link is live, so a line whose price changes while they are still deciding shows the new figure on reload. The words on that line’s card:", [("A","“Your price for this went up $200 since we sent this.” — the mirror of the “came down $200” note you ruled on card U",True),("B","“Your price for this changed to $850 since we sent this.”",False),("C","No mark — the new figure shows, nothing says it changed",False)]),
  ],
  "D3": [
   ("Ship the fix as drawn — the switch keeps its full labels and the filter boxes give up the room instead?", [("A","Yes — ship it as drawn",True),("B","No — say what should give way instead, below",False)]),
@@ -119,6 +120,7 @@ BAKED = {
  "S-1": ("A", "board, 9 Sep · filed 10 Sep — NOT queued: ⟦“Let’s talk about this one”⟧ — discussed before any overnight run"),
  "S-2": ("A", "board, 9 Sep · filed 10 Sep — your words: ⟦“Advisor should be able tie change the price, even after the estimate has gone out. Let’s talk about this one. We need to get aligned on when the advisor CANT change the price. We also need way to record price changes on the RO, and who made them.”⟧ (Price changes and who made them have been recorded since June — nothing in the app shows that history yet.)"),
  "S-3": ("B", "board, 9 Sep · filed 10 Sep"),
+ "S-4": ("A", "chat, 10 Sep — ⟦“go with rec”⟧ · filed 10 Sep — the advisor and admin change any price except an approved customer-pay line, where re-open stays the door"),
  "S-5": ("A", "chat, 10 Sep — ⟦“agree with your rec”⟧ · filed 10 Sep"),
  "S-6": ("A", "chat, 10 Sep — ⟦“agree with your rec”⟧ · filed 10 Sep — the history screen gets its own card"),
 }
@@ -126,5 +128,5 @@ BAKED = {
 # Items whose every decision is BAKED but which are NOT queued — Dave held them for a conversation.
 # The board shows the pill "ruled · discuss" and this line as the stage label instead of "queued for the next build".
 HOLD = {
- "S": "Held — ⟦“Let’s talk about this one.”⟧ Your S-2 words raised three questions; S-5 and S-6 are ruled, S-4 is open below. Ruled there, S is queued.",
+
 }
