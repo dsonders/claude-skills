@@ -1,0 +1,56 @@
+{
+ "width": 1920,
+ "roId": 6522,
+ "shots": {
+  "today-locked": {
+   "w": 748,
+   "h": 442,
+   "sidewaysScroll": 0
+  },
+  "locked": {
+   "w": 748,
+   "h": 361,
+   "sidewaysScroll": 0
+  },
+  "locked-hover-note": {
+   "w": 748,
+   "h": 361,
+   "sidewaysScroll": 0
+  },
+  "locked-hover-name": {
+   "w": 748,
+   "h": 361,
+   "sidewaysScroll": 0
+  },
+  "locked-hover-num": {
+   "w": 748,
+   "h": 361,
+   "sidewaysScroll": 0
+  },
+  "locked-nocount": {
+   "w": 748,
+   "h": 361,
+   "sidewaysScroll": 0
+  },
+  "today-edit": {
+   "w": 748,
+   "h": 479,
+   "sidewaysScroll": 0
+  },
+  "edit": {
+   "w": 748,
+   "h": 485,
+   "sidewaysScroll": 0
+  },
+  "edit-adding": {
+   "w": 748,
+   "h": 518,
+   "sidewaysScroll": 0
+  },
+  "edit-nocount": {
+   "w": 748,
+   "h": 485,
+   "sidewaysScroll": 0
+  }
+ }
+}

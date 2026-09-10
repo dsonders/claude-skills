@@ -16,6 +16,8 @@ DEC = {
   ("Admin gets the ⚠ unpriced flag and × delete per row?", [("A","Both",True),("B","The flag only",False),("C","Neither",False)]),
   ("If a parts user is mid-edit on the line — take over with the warning, or refuse?", [("A","Take over, with the warning",False),("B","Refuse until they finish",False)]),
   ("The card is 492 px wide. Keep today’s row, which already shows the note under the part with nothing off screen — or the parts page’s six-column row as ruled, which scrolls sideways?", [("A","Keep today’s row — revisits P-1",True),("B","Six-column row, with a note mark you hover",False),("C","Six-column row, with the note as a line under the part",False)]),
+  ("Your brief, applied to the real card — ship the two views as drawn?", [("A","Yes — build it as drawn",True),("B","No — say what changes below",False)]),
+  ("The bubble’s number: a part carries ONE note today, so a count can only ever read 1.", [("A","Show the count — it reads 1 whenever there is a note",False),("B","No number — a filled bubble means there is a note; empty means none",True)]),
  ],
  "SA-6b": [
   ("Label it “Declined at close”, read from the RO’s own closed-without-a-response mark?", [("A","Yes — “Declined at close”",True),("B","No — keep “Declined by the customer”",False)]),
@@ -100,6 +102,7 @@ BAKED = {
  "P-1":  ("A", "phone board, 8 Sep · filed 9 Sep — see P-5: the card is 492 px wide"),
  "P-2":  ("A", "phone board, 8 Sep · filed 9 Sep"),
  "P-4":  ("A", "phone board, 8 Sep · filed 9 Sep"),
+ "P-5":  ("brief", "your brief, 10 Sep — same elements in both views, one row per part, no sideways scroll, notes behind a bubble · filed 10 Sep"),
  "SA-6b-1": ("A", "phone board, 8 Sep · filed 9 Sep"),
  "SA-6b-2": ("A", "phone board, 8 Sep · filed 9 Sep"),
  "W-1":  ("B", "phone board, 8 Sep · filed 9 Sep — with your dialog copy"),

@@ -90,18 +90,28 @@ OPT_VIS['S-3'] = {'A': {'why': 'The advisor’s and admin’s hours field follow
 # ----- P -----
 def ledger_row_with_stock_note():
     return OF.app(f'<div style="border-radius: 6px; border: 1px solid #e5e7eb; background: #fff; padding: 12px;"><div style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 8px;">Parts <span style="font-size: 12px; font-weight: 400; color: #9ca3af;">1</span></div><div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;"><span style="font-size: 14px; font-weight: 600; color: #0f172a;">Fuel pump module</span><span style="font-size: 12px; font-family: ui-monospace, Menlo, monospace; color: #9ca3af;"># RC-FP-002</span><span style="display: inline-flex; align-items: center; border-radius: 999px; background: #f1f5f9; color: #64748b; font-size: 10.5px; font-weight: 600; padding: 2px 8px;">Stock ?</span><span style="display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: #64748b;">📝 no note</span><span style="margin-left: auto; display: inline-flex; gap: 8px; align-items: center;"><span style="font-size: 12px; color: #6b7280;">×1</span><span style="font-family: ui-monospace, Menlo, monospace; font-size: 13px; color: #d1d5db;">—</span></span></div></div>', bg="#d1d5db")
-GALLERY['P-5'] = [
- ('Today — the admin’s RO page at 1440. The Parts & Labor card sits in the left column, 492 px wide', real_img('pd-page','The admin RO page'), ''),
- ('Today — the card up close: both parts, the stock answer, qty, price, and the counter’s note under the part', real_img('pd-today','The card today'), '492 × 420 px'),
- ('As ruled in P-1 — the parts page’s six-column row inside the 492 px card: it scrolls sideways; note, qty and price sit off the right edge', real_img('pd-ruled','The six-column row in the card'), '492 × 489 px'),
+GALLERY['P-6'] = [
+ ('Today, locked — your screen (1920 wide: the card is 748 px)', real_img('pbw-today-locked','Today, locked'), '748 × 442 px'),
+ ('Locked, as briefed — “Edit”, one row per part: name · part # · stock · bubble · qty · price. The note line and the add row are gone', real_img('pbw-locked','Locked, proposed'), '748 × 361 px · saves 81'),
+ ('Hover on the bubble — the note', real_img('pbw-locked-hover-note','Hover on the bubble'), ''),
+ ('Hover on a cut-off name — the full name (the same for a cut-off part #; a name that fits opens nothing)', real_img('pbw-locked-hover-name','Hover on a cut-off name'), ''),
+ ('Today, Edit', real_img('pbw-today-edit','Today, edit'), '748 × 479 px'),
+ ('Edit, as briefed — the bubble sits between In stock? and Unit price; the entry row is replaced by “+ Add part”, the parts page’s button', real_img('pbw-edit','Edit, proposed'), '748 × 485 px'),
+ ('Edit, after “+ Add part” — the entry row opens under the parts, with Cancel', real_img('pbw-edit-adding','Edit, adding a part'), '748 × 518 px'),
+ ('The same locked row on a 1440 monitor, where the card is 492 px — the name and the part # share about 140 px, so both cut off and the hover does the work', real_img('pb-locked','Locked at 1440'), '492 × 361 px'),
+ ('Edit on a 1440 monitor — this is today’s grid plus the bubble; the Part name box is 86 px, as it is today. Nothing scrolls sideways', real_img('pb-edit','Edit at 1440'), '492 × 485 px'),
 ]
-GALLERY_FULL.add('P-5')
-CONTEXT['P-5'] = 'Two facts from the real page. The admin’s card is 492 px wide, so the parts page’s row you ruled in P-1 scrolls sideways even on desktop. And today’s row already prints the counter’s note under the part. On this fixture both parts show; the 8/27 case where the part vanished is the one with no recorded requester, which the build fixes either way.'
-OPT_VIS['P-5'] = {
- 'A': {'frame': real_img('pd-today','Keep today’s row'), 'why': 'Everything the counter entered is on screen with no scrolling: name, part #, stock, qty, price, the note under the part. Revisits P-1: the ledger row stays, edit mode still gains the Note cell and the Parts Total footer as ruled in P-2.'},
- 'B': {'frame': real_img('pd-mark','Note mark with a hover'), 'why': 'The six-column row as ruled, with a mark by the part name that shows the note on hover. Qty and price still need a sideways scroll.'},
- 'C': {'frame': real_img('pd-line','Note as a line under the part'), 'why': 'The six-column row as ruled, with the note printed under it, as today’s row already does. Qty and price still need a sideways scroll.'},
+GALLERY_FULL.add('P-6')
+CONTEXT['P-6'] = 'Your brief applied live to the real card on the test store (admin, fixture RO, one recall line with two parts, one note). Measured: no sideways scroll in any state at 1920 or 1440. Two things to know. A part carries one note today, so the bubble’s number can only ever read 1 — that is P-7. And the Part # box in Edit keeps today’s fixed width in these frames, so a long number is cut even on your screen and the hover shows the rest; the build can let that box take the spare room on wide screens.'
+OPT_VIS['P-6'] = {
+ 'A': {'why': 'Both views show the same six things per part, one row each, no sideways scroll; Edit is the only view with an add affordance, and it is the parts page’s button.'},
+ 'B': {'why': 'Say what should differ in the field below; the frames get redone.'},
 }
+OPT_VIS['P-7'] = {
+ 'A': {'frame': real_img('pbw-locked','Bubble with the count'), 'why': 'The badge says “1” on every part with a note — a number that never changes until part notes become a thread.'},
+ 'B': {'frame': real_img('pbw-locked-nocount','Bubble, no number'), 'why': 'A blue bubble means there is a note, a grey one means none; hover reads it. Nothing to count until there is more than one.'},
+}
+OPTS_FULL.add('P-7')
 # ----- W -----
 GALLERY['W-1'] = [('Today — the same dialog on a recon-only RO', OF.send_gate_today(), ''),]
 OPT_VIS['W-1'] = {

@@ -30,8 +30,8 @@ await d.screenshot({path:S+'/d9-P.png', fullPage:false});
 await d.evaluate(()=>window.scrollBy(0,900)); await d.screenshot({path:S+'/d9-P2.png', fullPage:false});
 // desktop ruling via store-less path + note
 const y1 = await d.evaluate(()=>window.scrollY);
-await d.click('[data-dec="P-5"][data-choose="A"]'); await d.waitForTimeout(200);
-console.log('desk tap', await d.evaluate(()=>({rl: document.getElementById('rl-P-5').textContent, y: window.scrollY, pill: document.querySelector('[data-expand="P"] .m-open, [data-expand="P"] .m-done')?.textContent})), 'y1', y1);
+await d.click('[data-dec="P-6"][data-choose="A"]'); await d.waitForTimeout(200);
+console.log('desk tap', await d.evaluate(()=>({rl: document.getElementById('rl-P-6').textContent, y: window.scrollY, pill: document.querySelector('[data-expand="P"] .m-open, [data-expand="P"] .m-done')?.textContent})), 'y1', y1);
 // hash deep link expands on desktop
 await d.goto('file://'+S+'/local.html#/item/Q'); await d.waitForTimeout(600);
 console.log('desk Q link', await d.evaluate(()=>({open: !!document.querySelector('.m-deskbody[data-item="Q"]'), gal: document.querySelectorAll('.m-deskbody[data-item="Q"] .m-gallery.desk .m-gal').length, w: document.documentElement.scrollWidth})));
