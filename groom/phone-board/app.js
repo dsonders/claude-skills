@@ -112,7 +112,7 @@
       var qlist = c.decisions.map(function(d){ return '<li>'+esc(d.q)+'</li>'; }).join('');
       h += foot('Details — what grooming would settle', qlist?'<ul style="margin:8px 0 0;padding-left:18px">'+qlist+'</ul>':'');
     } else {
-      h += '<div class="m-stage"><div class="m-stage-lbl"><i></i>'+(allBaked(c)?(c.hold?dave(c.hold):'Ruled and filed — queued for the next build'):'Groomed — ready to rule')+'</div></div>';
+      h += '<div class="m-stage"><div class="m-stage-lbl"><i></i><span>'+(allBaked(c)?(c.hold?dave(c.hold):'Ruled and filed — queued for the next build'):'Groomed — ready to rule')+'</span></div></div>';
       if (c.ruled && c.ruled.length) { h += '<div style="padding:10px 16px 0"><div class="m-empty" style="border-style:solid;border-color:var(--teal);color:var(--ink-2)"><span class="m-cap" style="color:var(--teal)">Already ruled</span><br>'+c.ruled.map(esc).join('<br>')+'</div></div>'; }
       if (c.frames.kind !== 'none') {
         if (desk) {
