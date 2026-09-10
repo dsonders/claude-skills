@@ -5,7 +5,7 @@ description: End-to-end workflow for producing a new blog post on the TenthGear 
 
 # TenthGear Blog Post Workflow
 
-**Scope:** This skill is specific to the TenthGear marketing website at `/ro-bot/website/`. The Astro content collection in `src/content/blog/`, the frontmatter schema in `src/content/config.ts`, the Netlify deploy step, and the build-verification commands all assume that subproject's structure. Do not invoke from `app/` or `GTM/`.
+**Scope:** This skill is specific to the TenthGear marketing website at `/ro-bot/website/`. The Astro content collection in `src/content/blog/`, the frontmatter schema in `src/content.config.ts`, the Netlify deploy step, and the build-verification commands all assume that subproject's structure. Do not invoke from `app/` or `GTM/`.
 
 End-to-end workflow to produce and ship a blog post on the TenthGear marketing site (`tenthgear.ai`). The goal is to publish something high-quality in one session with the user only in the loop at 6 clear checkpoints.
 
@@ -36,7 +36,7 @@ Do not use this skill for:
 
 Read these files before Phase 1:
 - `AGENTS.md` (the website's shared rulebook — `CLAUDE.md` is a stub that imports it; brand + banned words live in `../shared/brand.md`)
-- `src/content/config.ts` (current frontmatter schema)
+- `src/content.config.ts` (current frontmatter schema)
 - `src/layouts/BlogPost.astro` (how frontmatter renders)
 
 ---
@@ -411,7 +411,7 @@ Think Wall Street Journal feature photography, not stock photo. No hands in fram
 |---|---|
 | Blog post markdown | `src/content/blog/{slug}.md` |
 | Blog assets | `public/blog-assets/{N}-{slug}/` |
-| Content schema | `src/content/config.ts` |
+| Content schema | `src/content.config.ts` |
 | Blog layout | `src/layouts/BlogPost.astro` |
 | Tailwind brand colors | `tailwind.config.mjs` |
 | SEO keyword tracker | `docs/seo/keyword-tracker.md` |

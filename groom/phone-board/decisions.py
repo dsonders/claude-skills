@@ -106,6 +106,8 @@ BAKED = {
  "P-1":  ("A", "phone board, 8 Sep · filed 9 Sep — see P-5: the card is 492 px wide"),
  "P-2":  ("A", "phone board, 8 Sep · filed 9 Sep"),
  "P-4":  ("A", "phone board, 8 Sep · filed 9 Sep"),
+ "P-6":  ("A", "board, 10 Sep · filed 10 Sep — build it as drawn"),
+ "P-7":  ("B", "board, 10 Sep · filed 10 Sep — no number on the bubble"),
  "P-5":  ("brief", "your brief, 10 Sep — same elements in both views, one row per part, no sideways scroll, notes behind a bubble · filed 10 Sep"),
  "SA-6b-1": ("A", "phone board, 8 Sep · filed 9 Sep"),
  "SA-6b-2": ("A", "phone board, 8 Sep · filed 9 Sep"),
