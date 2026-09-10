@@ -29,13 +29,30 @@ def frames_for(key):
 CONTEXT, OPT_VIS, GALLERY = {}, {}, {}
 GALLERY_WIDE = {'Q-1'}
 GALLERY_FULL = {'Q-1'}  # one column at every width — the frames are full desktop screens
+OPTS_FULL = {'P-5','Q-1'}     # options one per row — real desktop screens at their true size
 
 import base64 as _b64
 REAL = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), 'real')
 RH = json.load(open(REAL+'/heights.json'))
+import struct as _struct
+def _jpeg_size(path):
+    with open(path,'rb') as f:
+        data = f.read()
+    i = 2
+    while i < len(data):
+        if data[i] != 0xFF: i += 1; continue
+        marker = data[i+1]
+        if marker in (0xC0, 0xC1, 0xC2):
+            h, w = _struct.unpack('>HH', data[i+5:i+9]); return w, h
+        seg = _struct.unpack('>H', data[i+2:i+4])[0]; i += 2 + seg
+    return None, None
 def real_img(name, alt):
-    b = _b64.b64encode(open(f'{REAL}/{name}.jpg','rb').read()).decode()
-    return f'<img src="data:image/jpeg;base64,{b}" alt="{alt}" style="display:block;width:100%;height:auto;">'
+    path = f'{REAL}/{name}.jpg'
+    b = _b64.b64encode(open(path,'rb').read()).decode()
+    w, h = _jpeg_size(path)
+    # captures are 2× device pixels — show them at their real CSS size, never stretched to the column
+    css_w = f'width:{w//2}px;' if w else 'width:100%;'
+    return f'<img src="data:image/jpeg;base64,{b}" alt="{alt}" style="display:block;{css_w}max-width:100%;height:auto;">'
 def q_gallery():
     dk = RH['desktopHeights']
     def note(k): return f"{dk[k]} px" + (f" · saves {dk['today']-dk[k]}" if k!='today' and dk['today']-dk[k]>0 else (" · saves nothing on desktop — the three tiles share the tallest tile’s height" if k=='notes' else "")) + (" · the Complaint and Cause tiles now set the row’s height" if k=='dave' else "")
@@ -132,7 +149,7 @@ for c in cards:
         did=f"{c['key']}-{i}"
         ov=OPT_VIS.get(did,{})
         bk = BAKED.get(did)
-        decs.append(dict(id=did, n=i, q=q, options=[dict(l=l,t=t,rec=r, frame=ov.get(l,{}).get('frame'), why=ov.get(l,{}).get('why')) for l,t,r in opts], text=(len(opts)==0), context=CONTEXT.get(did), gallery=[dict(label=a,html=b,note=n) for a,b,n in GALLERY.get(did,[])], galleryWide=(did in GALLERY_WIDE), galleryFull=(did in GALLERY_FULL), baked=(dict(choice=bk[0], note=bk[1]) if bk else None)))
+        decs.append(dict(id=did, n=i, q=q, options=[dict(l=l,t=t,rec=r, frame=ov.get(l,{}).get('frame'), why=ov.get(l,{}).get('why')) for l,t,r in opts], text=(len(opts)==0), context=CONTEXT.get(did), gallery=[dict(label=a,html=b,note=n) for a,b,n in GALLERY.get(did,[])], galleryWide=(did in GALLERY_WIDE), galleryFull=(did in GALLERY_FULL), optsFull=(did in OPTS_FULL), baked=(dict(choice=bk[0], note=bk[1]) if bk else None)))
     fr=frames_for(c['key'])
     NO_BLOCKS = {'W','SA-7b','D3','X','D1','SA-20b','Q','P'}
     blocks=''.join(c['blocks']) if (fr['kind']=='none' and c['key'] not in NO_BLOCKS) else ''
@@ -192,6 +209,10 @@ PAGE_CSS = """
 .m-gallery.one .m-gal-frame{height:auto}
 .m-gallery.one .m-gal-inner{width:auto;transform:none;position:static}
 .m-gallery.full{grid-template-columns:minmax(0,1fr) !important}
+.m-gallery.full .m-gal-frame{width:fit-content;max-width:100%}
+.m-opts.full{grid-template-columns:minmax(0,1fr) !important}
+.m-opts.full .m-btn .m-optframe{width:fit-content;max-width:100%;align-self:flex-start}
+.m-btn .m-optframe{width:fit-content;max-width:100%;align-self:flex-start}
 .m-btn{flex-direction:column;align-items:stretch;gap:8px}
 .m-btn .m-optrow{display:flex;align-items:center;gap:10px;width:100%}
 .m-btn .m-optframe{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff;max-width:100%}
