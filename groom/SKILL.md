@@ -95,6 +95,16 @@ visuals only on what survived. Output = ⛔ rulings written verbatim into
     when the information is already present or obvious from the screen. Every sentence costs him a read.
 15. **When several options need a decision, weigh in: the rec and its rationale**, marked on the option, one sentence
     about the person it affects.
+16. **Desktop surface + detailed UI design work = REAL DESKTOP SCREENSHOTS, not drawings** (⛔ Dave, 2026-09-09, card Q:
+    "When a user's primary product surface is desktop, and the issue or decision at hand is detailed UI design work,
+    you need to create real desktop screenshots to help me visualize the options."). Detailed UI work = anything he
+    judges by looking at density, spacing, alignment, sizes, a component's height or shape. Desktop-primary roles:
+    parts counter, admin, advisor. Recipe: seed a fixture RO on the test store, open the REAL page headless as the
+    REAL role at 1440 wide, apply each option as a live style/DOM override, screenshot the element and measure it —
+    `phone-board/real-capture.mjs`. One screenshot per option, the real height in its caption, one column at full
+    width on the board. Phone-primary roles (tech, customer) get the same treatment at 390 wide. A drawing is still
+    fine for a flow, a label or a new element that does not exist yet — never for how an existing desktop screen
+    should be laid out.
 
 The desktop board adopts this anatomy (card for it in BACKLOG.md → Needs grooming); until then, new desktop cards
 follow these principles and the older "Card anatomy" below only where it does not conflict.
