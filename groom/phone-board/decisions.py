@@ -123,6 +123,7 @@ BAKED = {
  "S-2": ("A", "board, 9 Sep · filed 10 Sep — your words: ⟦“Advisor should be able tie change the price, even after the estimate has gone out. Let’s talk about this one. We need to get aligned on when the advisor CANT change the price. We also need way to record price changes on the RO, and who made them.”⟧ (Price changes and who made them have been recorded since June — nothing in the app shows that history yet.)"),
  "S-3": ("B", "board, 9 Sep · filed 10 Sep"),
  "S-4": ("A", "chat, 10 Sep — ⟦“go with rec”⟧ · filed 10 Sep — the advisor and admin change any price except an approved customer-pay line, where re-open stays the door"),
+ "S-7": ("C", "board, 10 Sep · filed 10 Sep — no mark on the customer’s page"),
  "S-5": ("A", "chat, 10 Sep — ⟦“agree with your rec”⟧ · filed 10 Sep"),
  "S-6": ("A", "chat, 10 Sep — ⟦“agree with your rec”⟧ · filed 10 Sep — the history screen gets its own card"),
 }

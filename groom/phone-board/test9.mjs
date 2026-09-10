@@ -32,8 +32,8 @@ await d.evaluate(()=>window.scrollBy(0,900)); await d.screenshot({path:S+'/d9-P2
 const y1 = await d.evaluate(()=>window.scrollY);
 // tap the first OPEN decision on any expanded desktop card (never a hardcoded id — baked ids vanish)
 const firstOpen = await d.evaluate(()=>{ const b=document.querySelector('.m-deskbody .m-dec:not(.baked) [data-choose="A"]'); return b ? b.getAttribute('data-dec') : null; });
-if (!firstOpen) { await d.goto('file://'+S+'/local.html#/item/S'); await d.waitForTimeout(600); }
-const openId = firstOpen || await d.evaluate(()=>document.querySelector('.m-deskbody .m-dec:not(.baked) [data-choose="A"]')?.getAttribute('data-dec'));
+let openId = firstOpen;
+for (const k of ['S','SA-7b','X','D3','T','Y','Z','EX5']) { if (openId) break; await d.goto('file://'+S+'/local.html#/item/'+k); await d.waitForTimeout(600); openId = await d.evaluate(()=>document.querySelector('.m-deskbody .m-dec:not(.baked) [data-choose="A"]')?.getAttribute('data-dec')); }
 await d.click('[data-dec="'+openId+'"][data-choose="A"]'); await d.waitForTimeout(200);
 console.log('desk tap', openId, await d.evaluate((id)=>({rl: document.getElementById('rl-'+id).textContent, y: window.scrollY}), openId), 'y1', y1);
 // hash deep link expands on desktop
