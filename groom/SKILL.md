@@ -210,8 +210,12 @@ next session's sweep. File names are for you; none of them reach a card.
   the pre-push mirror and the ledger emphasis — NEVER a merge hold: green = merge, Dave's standing rule), **Files to read
   first** (THIS is where `file:line` anchors from the Explore sweep land), **Sentinels**.
 - **Held** ("let's talk", "discuss before the overnight run") → the partial rulings and his note go in verbatim, the
-  item STAYS in Needs grooming with the code facts the conversation needs, and `HOLD[key]` in `decisions.py` makes the
-  board read "ruled · discuss". The overnight run never takes a held item.
+  item STAYS in Needs grooming with the code facts, and `HOLD[key]` in `decisions.py` makes the board read "ruled ·
+  discuss". The overnight run never takes a held item. **A ruling or note that RAISES a question becomes a new lettered
+  decision on the card — with the code facts in its question and a rec — in the same session** (⛔ Dave 2026-09-10, S:
+  his S-2 words raised three questions that lived only in chat; "why did those open items not find their way into the
+  card? That seems like a process miss"). Held means held for HIS rulings on the board, never for a chat conversation;
+  a chat answer is a draft of the card, not a substitute for it.
 - On the board a filed decision is ONE line (principle 14): `BAKED[id]` = letter + where it was filed.
 - One doc branch per sitting; arm auto-merge at the close (each doc PR lands in ~2 minutes, so back-to-back PRs at the
   same BACKLOG anchor go dirty). Commits pushed to a branch after its PR merged go nowhere.

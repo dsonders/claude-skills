@@ -31,6 +31,9 @@ DEC = {
   ("Is the rule “no tech hour edits after the estimate is sent”, or “only in these stages”?", [("A","After the estimate is sent — one-way",False),("B","Only in these stages",False)]),
   ("If it is estimate-based: does un-parking legitimately re-open hours for a real re-diagnosis — and who re-sends?", [("A","No — hours stay locked after the estimate",False),("B","Yes — un-parking re-opens them; the advisor re-sends",False)]),
   ("Same rule for the advisor / admin ledger, which has no stage lock today?", [("A","Yes",False),("B","No",False)]),
+  ("When can’t the advisor or admin change a line’s price? Today: a customer-pay line’s part prices lock while the estimate is out and unanswered, and an approved line’s money is frozen until the advisor re-opens it.", [("A","Only an approved customer-pay line, and re-open stays the door — drop the “estimate is out, not yet answered” lock for the advisor and admin, keep it for the parts counter",True),("B","Keep today’s two locks as they are",False),("C","Never — the advisor and admin can change any price at any time, and re-open is no longer required",False)]),
+  ("Which lines lock the tech’s hours once the estimate has gone out? There is one “sent” stamp on the RO; a line added mid-job after it was never quoted.", [("A","Only the lines that were in the estimate, worked out from when each line was created against the send stamp — a line added later stays editable until someone decides it; nothing new stored",True),("B","Every line on the RO, added later or not",False)]),
+  ("Price changes are already recorded with who made them (since June); nothing shows that history. Where does the screen go?", [("A","Its own card — a “Changes” list on the line’s Parts & Labor card for advisors and admins, drawn there",True),("B","Fold it into this build",False),("C","Not now",False)]),
  ],
  "D3": [
   ("Ship the fix as drawn — the switch keeps its full labels and the filter boxes give up the room instead?", [("A","Yes — ship it as drawn",True),("B","No — say what should give way instead, below",False)]),
@@ -121,5 +124,5 @@ BAKED = {
 # Items whose every decision is BAKED but which are NOT queued — Dave held them for a conversation.
 # The board shows the pill "ruled · discuss" and this line as the stage label instead of "queued for the next build".
 HOLD = {
- "S": "Ruled and filed — held for a conversation before any overnight run: ⟦“Let’s talk about this one.”⟧",
+ "S": "Held — ⟦“Let’s talk about this one.”⟧ Your S-2 words raised three questions; they are S-4, S-5 and S-6 below. Ruled there, S is queued.",
 }
