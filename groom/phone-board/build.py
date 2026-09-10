@@ -112,6 +112,7 @@ OPT_VIS['P-7'] = {
  'B': {'frame': real_img('pbw-locked-nocount','Bubble, no number'), 'why': 'A blue bubble means there is a note, a grey one means none; hover reads it. Nothing to count until there is more than one.'},
 }
 OPTS_FULL.add('P-7')
+CONTEXT['S-4'] = 'Your questions, 10 Sep, answered from the code. The customer’s link is a live page: every load reads the line’s current total; there is no frozen copy, and no live push — a customer who already has the page open sees the old figure until they reload. Re-open is for a line the customer has ALREADY answered: it withdraws the answer, makes the price editable and asks again. It does nothing for an unanswered line. So with A, a customer mid-decision could reload into a changed price with no notice — the build adds a mark on that line on the customer’s page, drawn on card U, where the “came down” note already lives.'
 # ----- W -----
 GALLERY['W-1'] = [('Today — the same dialog on a recon-only RO', OF.send_gate_today(), ''),]
 OPT_VIS['W-1'] = {

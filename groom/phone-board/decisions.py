@@ -119,10 +119,12 @@ BAKED = {
  "S-1": ("A", "board, 9 Sep · filed 10 Sep — NOT queued: ⟦“Let’s talk about this one”⟧ — discussed before any overnight run"),
  "S-2": ("A", "board, 9 Sep · filed 10 Sep — your words: ⟦“Advisor should be able tie change the price, even after the estimate has gone out. Let’s talk about this one. We need to get aligned on when the advisor CANT change the price. We also need way to record price changes on the RO, and who made them.”⟧ (Price changes and who made them have been recorded since June — nothing in the app shows that history yet.)"),
  "S-3": ("B", "board, 9 Sep · filed 10 Sep"),
+ "S-5": ("A", "chat, 10 Sep — ⟦“agree with your rec”⟧ · filed 10 Sep"),
+ "S-6": ("A", "chat, 10 Sep — ⟦“agree with your rec”⟧ · filed 10 Sep — the history screen gets its own card"),
 }
 
 # Items whose every decision is BAKED but which are NOT queued — Dave held them for a conversation.
 # The board shows the pill "ruled · discuss" and this line as the stage label instead of "queued for the next build".
 HOLD = {
- "S": "Held — ⟦“Let’s talk about this one.”⟧ Your S-2 words raised three questions; they are S-4, S-5 and S-6 below. Ruled there, S is queued.",
+ "S": "Held — ⟦“Let’s talk about this one.”⟧ Your S-2 words raised three questions; S-5 and S-6 are ruled, S-4 is open below. Ruled there, S is queued.",
 }
