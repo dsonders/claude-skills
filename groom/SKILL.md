@@ -3,55 +3,38 @@ name: groom
 description: Interactive triage + grooming session for the RO-bot backlog on a visual board — prioritize items, present each with standard dimensions and visual-first explanations, ballot UX decisions with mockups, and write Dave's rulings verbatim into docs/overnight/BACKLOG.md for the overnight-build run. Use when Dave says "groom", "let's groom the backlog", "triage these", "grooming board", "update the board", or wants follow-ups presented for decisions. Designed 2026-08-25 with Dave; the format rules below are his.
 ---
 
-# Groom: Visual Triage + Grooming Board
+# Groom: the grooming board and the rulings pipeline
 
-One interactive skill, two passes on ONE standing artifact (the Grooming Board). Pass 1
-(triage) ranks everything cheaply; Dave picks what advances; pass 2 (groom) spends real
-visuals only on what survived. Output = ⛔ rulings written verbatim into
-`docs/overnight/BACKLOG.md` (Queued section), which `/overnight-build` consumes.
+ONE standing board (desktop + phone, one URL, one ruling store) presents the backlog as the app's own screens. Dave
+rules on it — by letter in chat, or by tapping the board with no session running. Every ruling lands ⛔-verbatim in
+`docs/overnight/BACKLOG.md`, whose **Queued** section `/overnight-build` consumes. Board URL + owning account:
+BACKLOG.md's header and memory `reference_grooming_board_account_and_url`. Build source: `phone-board/` next to this
+file — its README is the how-to (files, store layout, build lessons); this file is the rules and the seven SOPs.
 
-## Core Rules (Dave's format, 2026-08-25 — don't drift)
+## Core rules (Dave's, 2026-08-25 → 09-09 — don't drift)
 
-0. **The board is written for Dave — not for an engineer, not for an LLM.** He decides from
-   what he'd SEE in the app. The first version of this skill produced cards full of predicate
-   boxes, `file:line` anchors, field names and "provenance chips"; he rejected it outright
-   ("putting code references in a box does not make it a mockup"). Code anchors belong in
-   BACKLOG.md's Queued entry (files-to-read), never on a card. See "Card anatomy" below.
-1. **Show more than tell.** Visuals carry the explanation; text is sparse. If he has
-   questions, he'll ask. Walls of prose are the failure mode this skill replaces.
-2. **The board presents; the file records.** The board is REGENERATED FROM BACKLOG.md —
-   every ruling lands in the file verbatim (⛔-marked) in the same turn it's made.
-3. **One standing artifact, stable URL.** Republish the same board every cycle (its URL is
-   kept in BACKLOG.md's header; from a new session, pass it as `url`). Never a new page per
-   session. Everything to be triaged AND groomed lives on it — no terminal↔Chrome bouncing.
-   Since 2026-09-09 the ONE board serves desktop AND phone (the page lays itself out ≥900px: cards expand in
-   place, Today and Proposed side by side, options in a row; below: the phone flow) — one URL, one store. The 8/25
-   desktop board (6612d0d8) is retired to archive.
-4. **Priority order:** UX-impacting items first; among those, reliability/performance
-   implications outrank pure polish. Behind-the-scenes (tech debt, security) after. Icebox last.
-5. **Votes come back by letter in chat** (or as artifact comments — those reach the session).
-6. **Each open decision sits directly under the options it decides** (Dave, 2026-08-28: "It's hard to
-   follow the design options and the decisions that need to be made. Put each open decision adjacent to
-   its design options."). No single ballot block at the bottom while a card still has open questions; a
-   "Decisions — all ruled" block at the end is fine once everything is ruled. **And feedback on a mockup is
-   answered IN the mockup (Dave, 2026-09-04: "I want to work mainly from the UX / UI spaces (review, iterate,
-   make decisions)… I expect iteration to happen in that mockup, not simply that new content / decisions needed
-   in the DECISIONS / VOTING area"):** a question about a frame ("what happens if he taps Link?") → draw the
-   frame and its result; never a chat answer, a table, or a new ballot line in its place. Each decision strip
-   sits full-width right under the frame it decides; the bottom ballot exists only once everything is ruled.
-7. **Walkthrough shape (Dave, 2026-08-30): one short walkthrough per actor** — (the "draw ONLY the recommended direction" half was SUPERSEDED 2026-09-08 by guiding principle 1: each UX option gets its own frame; the walkthrough is the shape of a complex item's frames) —
-   "Case 1 — the tech…: what they see → what the approver sees", ≤ ~6 frames per card; alternatives are one
-   text row each in a small table, never drawn. A full directions × screens matrix is built ONLY when Dave
-   explicitly asks to see each option ("I need to see each of these mocked up") — rejected 8/30 as "too many
-   UI drawings, too much redundancy". Every frame's caption names the actor AND that it is THEIR OWN action
-   ("The parts user, when they price a part") — without it a per-actor frame reads as "everyone sees everyone's
-   change" (the SA-7-C misread). Mock copy follows app design.md "Notice & status copy": event + consequence
-   plainly; one subject one surface; never render what's derivable.
-8. **When redrawing a ruled direction, keep every existing control the ruling didn't remove** (the V1
-   checklist lost its drag handles; Dave: "we're not losing the drag and drop handles, right?"). A ruling
-   that strips chrome lists what goes; everything else stays.
+0. **The board is written for Dave — not an engineer, not an LLM.** He decides from what he'd SEE in the app. Code
+   anchors go in BACKLOG.md's Queued entry, never on a card ("putting code references in a box does not make it a mockup").
+1. **Show more than tell.** Visuals carry the explanation; text is sparse. If he has questions, he'll ask.
+2. **The board presents; the file records.** Every ruling lands in BACKLOG.md verbatim (⛔) in the turn it is made — or
+   in the sweep that finds it.
+3. **One standing artifact, stable URL, desktop AND phone** (≥900px: cards expand in place, Today | Proposed side by
+   side, options in a row; below: the phone flow). Never a new page per session — every new URL splits the store.
+4. **Priority order.** Sections are PRODUCT SURFACES (Dave 9/3): MPI & Video → Parts page & queue → RO page → Dashboards
+   → Customer page → Store settings → Platform & tooling → Risk grid → Icebox → Archive. Within a section the order IS
+   the ranking: UX impact (reliability/perf over polish) → population → risk position → Dave's flags → what unblocks
+   others. Queued cards sit at the top of their section, collapsed.
+5. **Rulings arrive by letter in chat, as artifact comments, or as taps on the board** (swept by SOP 1).
+6. **Each open decision sits directly under the options it decides** (Dave 8/28). **Feedback on a mockup is answered IN
+   the mockup** (Dave 9/4: "I expect iteration to happen in that mockup, not simply that new content / decisions needed
+   in the DECISIONS / VOTING area") — redraw the frame and its result; never a chat answer, a table or a new ballot line.
+7. **A walkthrough is one short per-actor strip** (≤ ~6 frames; Dave 8/30: a full directions × screens matrix is "too
+   many UI drawings, too much redundancy"). Every caption names the actor AND that it is THEIR OWN action ("The parts
+   user, when they price a part") — the SA-7-C misread. Mock copy follows app `design.md` "Notice & status copy".
+8. **Redrawing a ruled direction keeps every control the ruling didn't remove** ("we're not losing the drag and drop
+   handles, right?"). A ruling that strips chrome lists what goes; everything else stays.
 
-## Guiding principles (⛔ Dave, 2026-09-08 → 09 — both boards; cards share ONE anatomy, each optimized for its screen)
+## Guiding principles (⛔ Dave, 2026-09-08 → 09 — both screens; cards share ONE anatomy, each optimized for its screen)
 
 1. **Every UX decision shows each option as a screen.** "This way or that way — I need to see what those directions will
    look like when implemented." An option that is a UX direction carries its own drawn frame; a non-UX option carries
@@ -110,58 +93,14 @@ visuals only on what survived. Output = ⛔ rulings written verbatim into
     fine for a flow, a label or a new element that does not exist yet — never for how an existing desktop screen
     should be laid out.
 
-The desktop board adopts this anatomy (card for it in BACKLOG.md → Needs grooming); until then, new desktop cards
-follow these principles and the older "Card anatomy" below only where it does not conflict.
+**Never on a card:** file names, function/field names, predicates, `code` chips, provenance strips, "sensitivity"
+banners in engineering terms, counts like "4 to vote", status IDs (use the label the app shows: "Waiting for Parts",
+never `waiting_for_parts`), or the words denorm/flag/predicate/backfill (say "stored information", "a one-time cleanup
+you run"). Drawn frames use the app's light look with its real row colors, pills and chips; a highlight ring lands on
+at most ONE element per frame — never on a header, a button, a section, or a frame whose DESIGN is being ruled (Dave
+9/7: "unintended blue outlines… redraw so I can rule on the actual design proposal").
 
-## Card anatomy (the approved example — copy it, don't reinvent it)
-
-`reference-board.html` next to this file is the board Dave approved on 2026-08-25 ("SO MUCH
-BETTER"). Card A on it is the template. Every groomed card, top to bottom:
-
-1. **Head** — letter key, title in product words, rank badge if it's #1 ("Why #1" in one
-   sentence about the customer, never about the code), status pill.
-2. **One-line sub** — what happens to the person, e.g. "A part added after the RO is already
-   Ready gets approved — but the RO never returns to the parts queue, so nobody pulls it."
-3. **Dimension chips** (the standard set below) + **Who hits it** (one sentence).
-4. **The story strip** — 3–4 comic-strip boxes in product words, the breaking step tinted red:
-   "① Parts adds a part → ② Advisor OKs it → ③ Today: RO drops off the queue → ④ Car delivered
-   without it." Caption = Dave's own rule the item violates, if he made one.
-5. **App screens, today vs proposed** — drawn in the APP's light look (white surface, the
-   app's slate greys, its real row colors/pills/chips, system sans), side by side, wrapping on
-   narrow widths. Read the real component first so the drawing matches (columns, labels, pill
-   styles). The proposed change gets a soft highlight ring so the eye lands on it — ON ONE ELEMENT per frame at most, never on a header, a button or a whole section, and NEVER on a frame Dave is ruling the DESIGN of (2026-09-07: "there are some unintended blue outlines in the mockup. Please redraw so I can rule on the actual design proposal" — rings on a proposed sheet read as part of the design). When there's
-   no single obvious design: pick a recommendation, draw ONLY it, and list the other lettered
-   directions as text rows with one trade-off line each (rule 7 — drawn variants only on request). Mobile surfaces = 390px phone frames of the real header/strip. The board renders in
-   light or dark; the screen frames pin their own literal light palette (scoped `.app-screen`)
-   so they look like the app in both.
-6. **Consequence line** — one sentence: what the user gets, e.g. "Parts sees the RO again, with
-   the reason, and it drops off by itself when the last part is pulled — no new status, no new
-   screen."
-7. **Decisions** — ids = card letter + number (A1, A2…), each one a full-width strip DIRECTLY UNDER
-   the frame it decides (rule 6); plain question, the recommended answer marked `REC: YES` /
-   `REC: THE SHEET` first, one-sentence why about the person. A single "Decisions — all ruled"
-   block at the bottom only once every line is ruled. The data-provenance check (below) collapses
-   to at most ONE line: "This needs one new piece of stored information on each RO — build it as
-   part of this?"
-
-**Never on a card:** file names, function/field names, predicates, `code` chips, provenance
-strips, "sensitivity" banners in engineering terms, counts like "4 to vote", status IDs
-(use the label the app shows: "Waiting for Parts", never `waiting_for_parts`), or the words
-denorm/flag/predicate/backfill (say "stored information", "a one-time cleanup you run").
-
-**Every card head is a collapse toggle, MIRRORED by a "Collapse card" caret at the bottom of every card** (Dave, 2026-08-26: "I don't want to look at them after
-they are decided"; 2026-09-07: "put a mirrored expand/collapse toggle (e.g. caret) at the bottom of each card. I like to collapse a card manually as soon as I've ruled on it" — the script appends `.card-foot .chev-foot` to each card and it shares the head's toggle + localStorage key; it hides itself when collapsed because `.card.collapsed > :not(.card-head)` is display:none). The reference board's script does it: click/Enter on `.card-head` toggles
-`.collapsed` (hides everything but the head); cards with a `Queued` key or a status pill reading
-"ruled …" (and NOT "to vote") start collapsed; the viewer's choice is remembered in
-`localStorage` keyed by the card title. Keep the script when regenerating the board, and keep the
-status-pill wording convention so auto-collapse keeps working.
-
-Triage cards (pass 1) are the same anatomy minus 5–7: head, sub, chips, who-hits-it, ONE cheap
-visual (a 3-box story strip, a mini table, or the dot on the risk grid), and the open questions
-as chips. Behind-the-scenes items still get product-word screens (a request→response card,
-a "who gets told today" table), not diagrams of code.
-
-## Standard dimensions — every item card carries these
+## Standard dimensions — every card carries these
 
 | Dimension | Values |
 |---|---|
@@ -171,160 +110,118 @@ a "who gets told today" table), not diagrams of code.
 | Reversibility | revert-cheap code ↔ touches data (decides the overnight hard floor) |
 | Population | who actually hits it — pre-answer "do we have customers using this?" |
 
-**Bug/risk items additionally:** plot on a likelihood × impact grid (one shared 2×2 with all
-risk items as dots — a glance, not paragraphs) + ONE line: the real-world scenario in which
-the bad outcome occurs.
+Bug/risk items also get a dot on the shared likelihood × impact grid + ONE line: the real-world scenario in which the
+bad outcome occurs.
 
-## Workflow
+## Workflow — the seven SOPs (⛔ Dave 2026-09-10: "I like the seven new principles. Keep all.")
 
-### Step 0 — Sweep the phone board (EVERY groom or overnight-build session, before anything else)
-Dave rules from his phone or desktop with no session running (built 2026-09-08, one responsive page 9/9). The **board** —
-https://claude.ai/code/artifact/5089d5b5-577e-402b-95ec-8b0fd421576d (URL also in BACKLOG.md's header) — saves
-each tap into the artifact's own store; nothing reads it until a session sweeps it. The sweep:
-1. `Artifact action:"read_db" db_op:"list" collection:"rulings"` and the same for `collection:"notes"`.
-   Docs: `rulings/<KEY>-<n>` = `{choice:"A", words:"…", at}` — a choice decision is ruled when `choice` is set, a
-   text-only decision when `words` is non-empty; `rulings/<KEY>-stage` = `{choice:"advance"|"keep"|"icebox"}` = Dave's
-   triage call on a NOT-YET-GROOMED item (`advance` → groom it this session with real screens; `keep` → stays in Needs
-   grooming; `icebox` → Icebox with a revisit trigger); `notes/<KEY>` = `{text, at}` = the "Questions & feedback" field.
-2. Write every ruling ⛔-VERBATIM into `docs/overnight/BACKLOG.md` under its item (`words` is Dave's wording; the
-   letter maps to the option text in the phone board's `decisions` data — quote the option text, never just "A").
-   An item whose every decision is ruled moves to **Queued** with files-to-read + sensitivity, exactly as a chat ruling.
-3. Every staged note is a question to answer IN THE FRAMES (rule 6): redraw / extend the item's card on the board
-   and the phone board, never a chat reply or a ballot line. A note that is itself a ruling gets filed as one.
-4. Commit the doc (one branch per session, auto-merge). ORDER MATTERS (9/8 lesson — the store was cleared first and the
-   ruled items briefly read as open again): once the PR is on `origin/main`, add each swept ruling to `BAKED` in
-   `phone-board/decisions.py` (id → letter + "filed #PR"), rebuild + republish the phone board (baked decisions render
-   ruled and untappable; a fully baked item reads "ruled · queued"), THEN delete the swept docs with
-   `write_db db_op:"delete"` (rulings and notes). A ruling is not swept until its ⛔ line is on main. (9/9 lesson: a
-   device that still held swept docs locally re-pushed them on reconnect — the page now pushes only docs written while
-   the store was unreachable, so deleted = gone.)
-5. Rebuild the phone board whenever the backlog changes (new to-vote cards, a card re-drawn): source in
-   `phone-board/` next to this file (README there) — `decisions.py` turns every card's questions into lettered
-   options with the rec marked (open-ended questions = text-only decisions) and `STAGE` marks which cards are still
-   triage. ⛔ Dave 9/8, the not-yet-groomed page is CURATED for a fast call: title + one-line sub, "Not yet groomed",
-   ONE basic app-UI mockup (`triage_frames.py` — visual beats text; a UX item always gets one), the three buttons
-   (Advance to grooming / Keep in backlog / Send to Icebox), the feedback field, and nothing else — the grooming
-   questions and chips fold under Details. No helper sentences. On the dashboard it wears an amber "groom?" pill.
-   `python3 build.py`, run the Playwright checks, republish with the phone board's URL as `url`.
-   Keep the card keys stable — the store is keyed on them.
+The pipeline, in one line: `cards.json` (what an item is) → `decisions.py` (what it asks: options, recs, STAGE, BAKED,
+HOLD) → frames (`option_frames.py` / `triage_frames.py` / `real-capture.mjs`) → `build.py` → checks → publish → the
+next session's sweep. File names are for you; none of them reach a card.
 
-### Pass 1 — Triage (cheap, whole backlog)
-1. Read `docs/overnight/BACKLOG.md` (from `origin/main` — the primary checkout lags) + any new
-   items Dave names (Notion cards, chat, memory follow-ups). Investigate the code enough to fill
-   the dimensions honestly — delegate repo sweeps to an Opus Explore agent; never guess a
-   dimension. The code facts feed the CHIPS and BACKLOG.md; they do not appear on the card.
-2. **Prioritize by judgment BEFORE building the board** — every groomable item ranked most→
-   least important, top to bottom of the artifact; the ORDER is the recommendation. Weigh, in
-   roughly this order: (a) UX impact, with reliability/perf implications outranking polish;
-   (b) population — how many real users hit it, how often; (c) risk-grid position for
-   bugs/risks (likelihood × impact); (d) anything Dave flagged urgent or a customer reported;
-   (e) cluster/sequencing dependencies (an item that unblocks others rises). State the #1
-   item's why in one line on its card. Sections are PRODUCT SURFACES (Dave, 2026-09-03: "that's how I'd like
-   to roll through the backlog, with MPI and Video items at the top"): MPI & Video → Parts page &
-   queue → RO page (advisor/admin/tech) → Dashboards → Customer page → Store settings (labor rates &
-   money) → Platform & tooling → Risk grid → Icebox → Archive. Queued (ruled) cards sit at the TOP of
-   their surface section, collapsed; WITHIN a section the order is the ranking.
-3. Build/refresh the board in that order (Opus agent builds the HTML from `reference-board.html`
-   + a content brief written in product words; load `artifact-design` before writing). Triage
-   cards per "Card anatomy". No mockups yet.
-4. **Look at it before publishing.** Screenshot the board (repo Playwright: copy a script into
-   `/ro-bot/app` so `playwright` resolves; `article.card` locator) and check each card against
-   the "Never on a card" list. The reviewer who let the engineer-style cards through was the
-   author.
-5. Publish (same URL — `action: read` the live artifact first, Read the saved file in full, then
-   publish with `url`), hand Dave the link + a one-line ask: "pick what advances."
+### 1 · Sweep — the first action of every groom or overnight-build session
 
-### Pass 2 — Groom (deep, only what Dave picked)
-For each advanced item, extend its card on the SAME board per "Card anatomy" 4–7:
-- **UX items:** today vs proposed app screens (desktop + mobile when the surface has both);
-  the recommended direction drawn, other lettered directions as text rows (rule 7). Text =
-  captions and trade-off lines only. (Full multi-round ballots may graduate to a design canvas — link it
-  from the card, but the decision summary stays on the board.)
-- **Behind-the-scenes items:** the same anatomy in product words (what the user/agent asked
-  for → what they got today → what they'd get). Include the risk-grid dot + the one-line
-  scenario.
-- **AI-generated output = a gallery of ≥10 REAL worst-shape inputs on the board BEFORE the decision strip (2026-09-07):** the 28 Aug golden set was hand-written and short; the real McGrath write-ups (10–30 sentences) turned a three-times-recommended cue-card direction into "back to the drawing board" the moment Dave saw ten of each. Probe the real population, take the longest/messiest ten, render them under the rule, print the counts.
-- **Real figures only + a before/after table when a rule changes money (2026-08-26, card K):**
-  every $ on a mockup is read from the actual record (read-only probe of the real RO + the org's
-  rates), never an illustrative number; every story step is what the app actually allows for
-  that role today (probe `requested_by`/authorship — a row's author can contradict the code
-  comment). When a proposed rule changes arithmetic, the card carries a per-line table
-  (decision · inputs · today · after rule A · after rule A+B) so Dave can see the logic, not
-  just the new total. Use the app's own nouns; a coined term ("note row") stops the vote.
-- **Data provenance check (engineering step, not a card element):** before drawing, verify
-  every datum a mockup RENDERS (a name, timestamp, count, status label) exists / is derivable /
-  is MISSING — and that any status or vocabulary the mock uses actually exists in the app
-  ("Recs Approved" was not a status; the approved destination is "Waiting for Parts"). MISSING →
-  one plain ballot line ("needs a new piece of stored information — build it too?"), never a
-  build-time surprise (the #1564 completion-stamp lesson). The verification facts go into
-  BACKLOG.md when the item is Queued.
-- Every card ends with its BALLOT per anatomy 7.
-- Screenshot-check again before publishing.
-5. Dave votes by letter in chat → write each ruling VERBATIM (⛔) into BACKLOG.md, move the
-   item to Queued with files-to-read + sensitivity + sentinel notes (THIS is where the
-   file:line anchors from the Explore sweep land), commit the doc, republish the board showing
-   the item as Ready to run. **ONE open doc branch per voting session** — each ruling is a new
-   commit on it (auto-merge takes it when the session pauses); back-to-back PRs inserting at the
-   same BACKLOG anchor go DIRTY on GitHub as each merges (6 PRs, 2 rebuilds on 2026-09-04). Auto-merge lands
-  each doc PR in ~2 minutes, so "one branch per session" only holds if you ARM auto-merge at the session's close —
-  otherwise it is one PR per ruling (nine on 6–7 Sep; harmless, but sequential). A per-ruling script (move the card
-  to Queued + mark the board card ruled + re-splice) makes each vote a one-call turn. A
-   "sensitivity" note picks the pre-push mirror and the ledger emphasis — NEVER a merge hold: a
-   groomed item's every decision is Dave's, so green = merge (his standing rule; re-asked 9/4).
+1. **Account check.** `Artifact action:"list"` — the board's URL must be in the user's OWN list. If it is not, the
+   session is on the other account: stop and tell Dave which account to `/login` as. (A `read_db` on the wrong account
+   fails as "no such artifact … or no access".)
+2. **Read the store.** `read_db db_op:"list"` on `rulings` and on `notes`. `rulings/<KEY>-<n>` = `{choice, words, at}`
+   (a choice decision is ruled when `choice` is set; a text-only one when `words` is non-empty); `rulings/<KEY>-stage` =
+   `{choice: advance|keep|icebox}` on a not-yet-groomed item; `notes/<KEY>` = `{text, at}`, the "Questions & feedback"
+   field.
+3. **File every ruling ⛔-VERBATIM** in BACKLOG.md under its item: quote the option's text, never just the letter; `words`
+   is Dave's wording and goes in as typed. A staged note is one of three things — a question to answer IN the frames
+   (SOP 4), a ruling to file, or a hold ("let's talk", "discuss before…") that keeps the item in Needs grooming (SOP 6).
+   `advance` → groom it this session; `keep` → stays; `icebox` → Icebox with a revisit trigger.
+4. **Commit on the session's doc branch, arm auto-merge, wait for main.**
+5. **Then, in this order:** the PR is on `origin/main` → add each swept ruling to `BAKED` in `decisions.py` (id →
+   letter + where filed; a held item also gets a `HOLD` line) → build + checks + republish (SOP 5) → THEN delete the
+   swept docs with `write_db db_op:"delete"` (rulings and notes). A ruling is not swept until its ⛔ line is on main
+   (9/8: the store was cleared first and ruled items briefly read as open again). Only docs written while the store was
+   unreachable re-push from a device, so deleted = gone.
 
-### Close
-- Recap in chat: what's Queued (run-ready), what's still open, what got iceboxed with its
-  revisit trigger. If Dave says run tonight → invoke `/overnight-build`.
+### 2 · Intake — an item becomes a card
 
-## Building the board — what actually works (2026-08-27/28)
-- **One Opus builder per card (or per pass), never one giant rewrite** — a builder asked to regenerate the
-  whole board stalled at the 600s no-progress watchdog after writing the file; it recovered only because
-  the file was already on disk. Brief: write each card to `scratchpad/cards/<key>.html`, splice with a
-  short Python script, run three checks (article count, banned-term grep, every class defined), STOP.
-- **The template's shared mock CSS lives inside the archived cards' `<style>` blocks** (`.story`,
-  `.screens`, `.app-screen`, `.as-*`, `.conseq`, phone plate/tabs) — hoist them into the main stylesheet
-  before dropping the archive, or every new card renders unstyled.
-- **Read the real screens and the real records BEFORE the brief** (Explore agent for component anatomy +
-  a read-only Firestore probe for a real RO/video): the sweep changed the V6 story (there is no Stop
-  button) and produced the whole V1 fixture (RO 832936's shot list). Shot numbering: content shots only,
-  bookends unnumbered — a locked ruling the builder will get wrong unless told.
-- **Screenshot every card before publishing and check the datums, not just the layout** — the builder
-  invented a line title, a $ figure, a note and a status label across four cards in one pass; only the
-  screenshot pass caught them. Silhouettes (grey bars, "Part 1", "Line title") are the fix when no real
-  value exists.
-- The publish gate requires the live artifact file to be Read in full (4–5 chunks of ≤1000 lines) before
-  the first republish of a session; budget for it.
-- A deleted artifact ends the watch with "artifact not found"; republish WITHOUT `url` to a new one and
-  update the URL in BACKLOG.md's header + the pipeline memory the same turn.
-- **An account switch (`/login` to another email) makes the artifact invisible too** — publish
-  without `url`, update the header URL + memory (2026-09-03: dsonders@gmail → dave@tenthgear).
-- **Probe the COUNT, not the excerpt.** MPI-6's frames drew 3 notes; the record had 4, and "McGrath
-  techs are saying this" was ONE tech on ONE inspection — the read-only probe over the whole org
-  caught both. Before drawing from a real record, query the full population and state it honestly.
-- **Edit the board with tag-depth-aware splicing, never `.*?</div>` regexes** — a row-cloning regex
-  nested the 4th note inside the 3rd on two sheets; a 12-line depth counter (`<div`/`</div>` tokens →
-  block end) fixed it. Keep `cards/<KEY>.html` as the unit; re-splice by `<span class="key">` match.
-- **Screenshot only after `document.fonts.ready`** — before the webfont lands, ballot lines render
-  unwrapped and look clipped; a real bug was chased for a round on that false alarm.
-- **Every builder/Explore brief opens with, verbatim:** "NEVER `cd` in a Bash command — every
-  command uses absolute paths"; a soft "use absolute paths" mid-brief was ignored and each
-  `cd … && grep relative-file` popped a permission prompt for Dave even under claude-yolo.
+- Sources: BACKLOG.md from `origin/main` (the primary checkout lags) + anything Dave names (Notion cards, chat, memory
+  follow-ups). The originating session fills BACKLOG.md's capture template while its context is hot.
+- A card = one entry in `cards.json`: key, section (rule 4), title in product words, one-line sub (what happens to the
+  person), the standard dimensions, population. **Keys are stable forever** — the store is keyed on them.
+- Fill the dimensions honestly from the code (delegate the sweep to an Explore agent; never guess). Code facts feed the
+  chips and BACKLOG.md, not the card.
+- Stage: `STAGE[key] = 'triage'` (+ a `STAGE_NOTE` saying why it waits) until Dave advances it. A triage page is
+  curated for a fast call (principle 4): title, sub, "Not yet groomed", ONE basic app-UI mockup (`triage_frames.py`,
+  keyed in `build.py`'s `TRIAGE_MOCK`; a UX item always gets one), the three buttons, the feedback field; the grooming
+  questions and chips fold under Details. On the dashboard it wears the amber "groom?" pill.
+- Bug/risk items also get their dot on the risk grid (`legacy_blocks.json`) with the one-line scenario.
+
+### 3 · Decide — what each card asks
+
+- `decisions.py` `DEC[key]`: one entry per question — the question in plain words, lettered options with the rec marked
+  `True`, or `[]` for a text-only answer. Ids are `<KEY>-<n>`; never renumber a live one.
+- **Fact or decision?** Before writing a question, check the code. A fact is stated (in the question itself or in
+  `CONTEXT[id]`, one situation paragraph) and the decision is reframed or dropped (principle 2).
+- **Data provenance** (engineering step, never a card element): every datum a frame renders exists / is derivable / is
+  MISSING — MISSING becomes one plain option ("needs one new piece of stored information — build it too?"), never a
+  build-time surprise (#1564). Every status or word a frame uses must exist in the app ("Recs Approved" was not a
+  status). The verification facts go to BACKLOG.md when the item is queued.
+- **Money rule changes** get a per-line before/after table from the real record (decision · inputs · today · after A ·
+  after A+B), never an illustrative number. **AI-generated output** gets a gallery of ≥10 REAL worst-shape inputs on the
+  board before the decision (9/7: ten real McGrath write-ups reversed a three-times-recommended cue-card direction).
+- The rec and its rationale sit on the option: `OPT_VIS[id][letter]['why']`, one sentence about the person it affects
+  (principle 15).
+
+### 4 · Frame — what each option looks like
+
+- Which shape: `frames_for(key)` in `build.py` — `flip` (Today | Proposed over one frame), the walkthrough (per-actor
+  strip under the same switch), or `none` for a non-UX item (principle 5). Per-option frames go in
+  `OPT_VIS[id][letter]['frame']`; a many-shape decision is a `GALLERY[id]` (`GALLERY_FULL` / `OPTS_FULL` = one per row at
+  true size).
+- **Drawn** (`lib.py`, `option_frames.py`, the `*_card.py` files) for a flow, a label, or an element that does not exist
+  yet. Read the real component first so columns, labels and pill styles match; real values from a real record or grey
+  bars; probe the COUNT, not the excerpt (MPI-6 drew 3 notes, the record had 4).
+- **Captured** (`real-capture.mjs`) for density, spacing, alignment, sizes, a component's height or shape on an EXISTING
+  screen — on the device the role uses (principles 11 and 16). `MODE=inspect` first to dump the real markup and block
+  sizes; write each option as a CSS/DOM override against real testids; capture; the measured height goes in the caption;
+  files land in `real/` + `heights.json`. One screenshot per option, one column at full width.
+- A staged note about a frame is answered by redrawing the frame and its result (rule 6) — the answer is a picture, in
+  the board's own type outside the frame (principle 13).
+
+### 5 · Build, check, publish
+
+- `python3 phone-board/build.py` (absolute paths; NEVER `cd`), then `node phone-board/test9.mjs` — phone + desktop
+  routing, tapping, notes, scroll stability, zero page errors.
+- **Screenshot pass before every publish**, after `document.fonts.ready`: every changed card at 1280 and at 390. Check
+  the DATUMS (a builder invented a line title, a $ figure, a note and a status label in one pass) and the "Never on a
+  card" list. The reviewer who let the engineer-style cards through was the author.
+- Republish with the board's URL as `url`. A deleted or invisible artifact (account switch) → publish WITHOUT `url`,
+  then update BACKLOG.md's header and memory `reference_grooming_board_account_and_url` the same turn.
+- Delegation: one Opus builder per card, never a whole-board rewrite; every brief opens, verbatim, with "NEVER `cd` in a
+  Bash command — every command uses absolute paths". Details and past failures: `phone-board/README.md`.
+
+### 6 · File and queue
+
+- **Every decision ruled** → the item's heading gains "⛔ RULED from the board, <date> — QUEUED" and the entry moves to
+  **Queued** at the top of its surface, carrying: the rulings verbatim (option text + his words), **Sensitivity** (picks
+  the pre-push mirror and the ledger emphasis — NEVER a merge hold: green = merge, Dave's standing rule), **Files to read
+  first** (THIS is where `file:line` anchors from the Explore sweep land), **Sentinels**.
+- **Held** ("let's talk", "discuss before the overnight run") → the partial rulings and his note go in verbatim, the
+  item STAYS in Needs grooming with the code facts the conversation needs, and `HOLD[key]` in `decisions.py` makes the
+  board read "ruled · discuss". The overnight run never takes a held item.
+- On the board a filed decision is ONE line (principle 14): `BAKED[id]` = letter + where it was filed.
+- One doc branch per sitting; arm auto-merge at the close (each doc PR lands in ~2 minutes, so back-to-back PRs at the
+  same BACKLOG anchor go dirty). Commits pushed to a branch after its PR merged go nowhere.
+
+### 7 · Close
+
+- Recap in chat: what is Queued (run-ready), what is still open, what is held and what the conversation must settle,
+  what went to Icebox with its revisit trigger. Update the epic status in memory. If Dave says run tonight → `/overnight-build`.
 
 ## Cost control
-Triage cards are cheap on purpose; mockups only after Dave advances an item. A deep UX groom
-≈ one mockup round of tokens — say so if he advances 5+ UX items at once. Ask ONE question
-before a redo when the answer changes what gets built (e.g. real screenshots vs drawn mocks —
-he chose drawn, in the app's style); assume the rest and say what you assumed.
+Triage cards are cheap on purpose; frames only after Dave advances an item. A deep UX groom ≈ one mockup round of
+tokens — say so if he advances 5+ UX items at once. Ask ONE question before a redo when the answer changes what gets
+built; assume the rest and say what you assumed.
 
 ## Integration
 - Upstream: Notion (capture inbox) → items named in chat → this skill.
-- Downstream: `docs/overnight/BACKLOG.md` (Queued, ⛔ rulings) → `/overnight-build`.
-- Sideways: the phone board's store (Step 0) → swept into BACKLOG.md at the start of every session; ⛔ Dave 9/8: the phone shows APP-UI frames only (Flip for simple items, the walkthrough inside a Flip for complex ones, no drawing for non-UX items) — memory `project_groom_board_mobile_ruling`.
-- `artifact-design` loaded before board HTML; mockup/board building delegated to Opus agents
-  briefed in product words with `reference-board.html` as the template.
-
-## Success criteria
-- [ ] Board current, one URL, all items carded with honest dimensions
-- [ ] Zero code identifiers on any card (screenshot-checked before publish)
-- [ ] Every advanced item decided by ballot; zero rulings left only in chat
-- [ ] BACKLOG.md updated + committed in the same session; board republished to match
+- Downstream: `docs/overnight/BACKLOG.md` (Queued, ⛔ rulings) → `/overnight-build` (its preflight runs SOP 1 too).
+- `artifact-design` loaded before any board HTML is written by hand; `artifact-capabilities` before a publish that
+  declares `db`.
