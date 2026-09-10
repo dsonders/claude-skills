@@ -46,10 +46,10 @@ def real_img(name, alt):
     return f'<img src="data:image/jpeg;base64,{b}" alt="{alt}" style="display:block;width:100%;height:auto;">'
 def q_gallery():
     dk = RH['desktopHeights']
-    def note(k): return f"{dk[k]} px" + (f" · saves {dk['today']-dk[k]}" if k!='today' and dk['today']-dk[k]>0 else (" · saves nothing on desktop — the three tiles share the tallest tile’s height" if k=='notes' else "")) + (" · at 20% the Complaint and Cause tiles run to four lines and set the row’s height" if k=='dave' else "")
+    def note(k): return f"{dk[k]} px" + (f" · saves {dk['today']-dk[k]}" if k!='today' and dk['today']-dk[k]>0 else (" · saves nothing on desktop — the three tiles share the tallest tile’s height" if k=='notes' else "")) + (" · the Complaint and Cause tiles now set the row’s height" if k=='dave' else "")
     items = [
       ('today',   'Today — the parts counter’s screen, 1440 wide'),
-      ('dave',    'Your combination — ① tighter padding + a four-column top row (30 / 30 / 20 / 20) + ③ the rail'),
+      ('dave',    'Your combination — tighter padding · notes tile at today’s width, Story Notes / Complaint / Cause sharing the rest equally, labels inline · the rail'),
       ('pad',     '① Tighter padding'),
       ('cc',      '② Complaint / Cause one line each'),
       ('rail',    '③ “Parts Needed” rail sideways'),
@@ -62,7 +62,7 @@ GALLERY['Q-1'] = q_gallery()
 CONTEXT['Q-1'] = 'Real screens of the parts page on the test store, one recall line with two parts, 1440 wide — the parts counter works on desktop. Each variant is applied to the live page and measured there. Two things the screens show: the notes tile carries an empty band because the three tiles share the tallest tile’s height, and “hover for all” sits on top of the clamped 3C text.'
 CONTEXT['Q-2'] = 'Compare ② above with Today: one line each, the full text on hover (desktop) or tap (phone).'
 CONTEXT['Q-3'] = 'Compare ③ above: the heading row goes, the label turns sideways on the left edge.'
-OPT_VIS['Q-1'] = {'D': {'frame': real_img('qd-dave','Your combination'), 'why': 'Biggest saving that keeps every control where it is: 372 px against 477. The cost is in the two 20% tiles — Complaint and Cause wrap to four lines and now set the row’s height.'}}
+OPT_VIS['Q-1'] = {'D': {'frame': real_img('qd-dave','Your combination'), 'why': 'Biggest saving that keeps every control where it is: 372 px against 477. Complaint and Cause read as one block each with the label inline, three lines of text, and “hover for all” sits clear of the text.'}}
 OPT_VIS['Q-4'] = {'A': {'why': 'Only the parts counter’s card changes; the advisor’s and tech’s line cards keep today’s height, so the same line looks different per role.'}, 'B': {'why': 'One card shape for everyone; the advisor’s Parts & Labor card and the tech’s line card shrink the same way.'}}
 CONTEXT['Q-5'] = 'Measured on the real page at 1440 wide: 477 px today, one line with two parts. A number here becomes the build’s target — leave it blank to take whatever the chosen variants give.'
 OPT_VIS['SA-6b-2'] = {'A': {'why': 'Nothing moves on the dashboards or in the money bands — the line stays a declined line everywhere; only the banner’s words change.'}, 'B': {'why': 'A new bucket: dashboards and money bands would show “declined at close” apart from customer declines — new counts, new columns.'}}

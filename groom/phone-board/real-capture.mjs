@@ -45,6 +45,10 @@ try {
   // Dave's combination (9/9): ① tighter padding + the top row as FOUR columns 30/30/20/20 (Parts counter notes · Story Notes · Complaint · Cause) + ③ the rail
   VARIANTS.fourcol = async(p)=>{ await p.evaluate((sel)=>{ const card=document.querySelector(sel); const grid=[...card.querySelectorAll('.grid')].find(g=>/grid-cols-1/.test(g.className) && /md:grid-cols-3/.test(g.className)); if(!grid) return; grid.style.gridTemplateColumns='3fr 3fr 2fr 2fr'; const third=grid.children[2]; if(third && third.classList.contains('grid')) third.style.display='contents'; }, CARD); };
   VARIANTS.dave = async(p)=>{ await VARIANTS.pad(p); await VARIANTS.fourcol(p); await VARIANTS.rail(p); };
+  // Dave 9/9 v2: notes tile keeps today's width (1/3); Story Notes · Complaint · Cause split the rest equally; COMPLAINT/CAUSE labels inline
+  VARIANTS.fourcol2 = async(p)=>{ await p.evaluate((sel)=>{ const card=document.querySelector(sel); const grid=[...card.querySelectorAll('.grid')].find(g=>/grid-cols-1/.test(g.className) && /md:grid-cols-3/.test(g.className)); if(!grid) return; grid.style.gridTemplateColumns='3fr 2fr 2fr 2fr'; const third=grid.children[2]; if(third && third.classList.contains('grid')) third.style.display='contents';
+    ['Complaint','Cause'].forEach(name=>{ const lbl=[...card.querySelectorAll('*')].find(e=>e.childElementCount===0 && e.textContent.trim()===name); if(!lbl) return; const tile=lbl.parentElement; tile.style.display='block'; lbl.style.display='inline'; lbl.style.marginRight='8px'; lbl.style.verticalAlign='baseline'; const txt=lbl.nextElementSibling; if(txt){ txt.style.display='inline'; txt.style.webkitLineClamp='unset'; txt.style.overflow='visible'; } }); }, CARD); };
+  VARIANTS.dave = async(p)=>{ await VARIANTS.pad(p); await VARIANTS.fourcol2(p); await VARIANTS.rail(p); };
   // Parts users work on DESKTOP (Dave 9/9) — capture there. 1440×900 is the common shop monitor size.
   const d = await session({width:1440,height:900}, false);
   for (const [k, apply] of Object.entries(VARIANTS).filter(([k])=>['today','dave'].includes(k))) {
