@@ -4,7 +4,7 @@ DEC = {
   ("Stop recording a delivery state from the pricing-time answer? Nothing on any screen changes — the one thing that does is the advisor’s re-open warning below.", [("A","Yes — stop it; the re-open warning goes quiet",True),("B","Leave it as it is — the recorded state is invisible, and the warning still works",False),("C","Icebox",False)]),
  ],
  "Q": [
-  ("Which variants go on the ballot — your three, plus which extras?", [("A","Your three only",False),("B","Your three + collapse the notes band",False),("C","Your three + the extras — notes band, part on one row, a per-user “Compact” setting",False),("D","Your combination — tighter padding, notes tile at today’s width with Story Notes / Complaint / Cause sharing the rest, inline labels, the rail",True)]),
+  ("Which variants go on the ballot — your three, plus which extras?", [("A","Your three only",False),("B","Your three + collapse the notes band",False),("C","Your three + the extras — notes band, part on one row, a per-user “Compact” setting",False),("D","Your combination — tighter padding, notes tile at today’s width with Story Notes / Complaint / Cause sharing the rest, eyebrow labels, the rail",True)]),
   ("Complaint / Cause: one line + hover, or keep two lines and shrink elsewhere?", [("A","One line + hover",False),("B","Keep two lines, shrink elsewhere",False)]),
   ("Is a sideways “Parts Needed” rail worth the legibility cost?", [("A","Yes",False),("B","No",False)]),
   ("Parts page only, or the advisor and tech cards too?", [("A","Parts page only",False),("B","Advisor and tech cards too",False)]),
