@@ -125,7 +125,10 @@ The pipeline, in one line: `cards.json` (what an item is) → `decisions.py` (wh
 HOLD) → frames (`option_frames.py` / `triage_frames.py` / `real-capture.mjs`) → `build.py` → checks → publish → the
 next session's sweep. File names are for you; none of them reach a card.
 
-### 1 · Sweep — the first action of every groom or overnight-build session
+### 1 · Sweep — the first action of every groom or overnight-build session, and before ANY "what's open" answer
+
+Dave rules on the board while the chat runs (10 Sep: P was "ruled · here" on his screen while the chat still called it
+open). A status answer that did not start with a sweep is a guess.
 
 1. **Account check.** `Artifact action:"list"` — the board's URL must be in the user's OWN list. If it is not, the
    session is on the other account: stop and tell Dave which account to `/login` as. (A `read_db` on the wrong account

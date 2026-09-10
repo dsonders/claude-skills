@@ -52,6 +52,8 @@ Dave's verbatim words in any of those strings are wrapped `⟦…⟧` — `app.j
 - **Sweep order (9/8 lesson):** file → PR on main → BAKED → rebuild + republish → delete store docs. Clearing first made
   ruled items read as open again. A reconnecting device re-pushed swept docs until 9/9 — the page now pushes only docs
   written while the store was unreachable.
+- **Card P (9/10) — a whole design BRIEF applied live:** `p-brief-capture.mjs` seeds its own fixture (long part name, a note, qty 2), captures both views (locked / edit / after "+ Add part") with the brief as CSS/DOM overrides, hover states as absolutely-positioned cards INSIDE the card element (an element screenshot clips anything outside it), at `WIDTH=1440` (492 px card) and `WIDTH=1920` (748 px — Dave's own screen, from his screenshot). Measure `scrollWidth > clientWidth` per state to prove "no sideways scroll". Hide the fixed voice bar first (`Hold to make a note` ancestor) or it bleeds into every shot.
+- **CSS order in `PAGE_CSS`:** the base rules sit BELOW the 9/8 type-scale block, so that block was dead for a month (computed 17 px, not 19). Phone-only overrides go LAST in `PAGE_CSS`, inside `@media (max-width: 899px)`; verify with a computed-style probe, not by eye.
 - **Real captures (9/9):** the first capture of the parts page was at phone width — the wrong device for a desktop-only
   role; redone at 1440. `MODE=inspect` first: write overrides against the real testids, not the anatomy you assume.
 
