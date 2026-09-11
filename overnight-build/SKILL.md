@@ -151,6 +151,13 @@ On each agent report / Codex block:
   block of that shape, stop patching the flagged line: enumerate the whole matrix (or replace the
   instrument) in one round — see app `docs/lessons-learned/video-batch-2026-08-28.md`.
   **An acceptance gate over an AI's RE-ORDERING of the tech's words is the worst case of this shape** (#1907, 2026-09-08: four rounds — unordered set → one rotation → contractions + subject reassignment → two unknown nouns, either can front — then Dave closed it): on the SECOND block, split the PR — ship the his-words-only fallback (subject-first, negations never dropped, the cap yields to a reversal) and close or park the acceptance path with Dave's one-word question; never spend a third round teaching a re-ordering rule the catalog cannot ground.
+  **After the vocabulary is table-driven, a block on a NEW AXIS is a RULING, not a round** (#1966, 2026-09-11: r1/r2
+  negation → a 29-word table + clause scan; r3 tense/mood — "Recommended repairs were completed" — a regex cannot tell an
+  outstanding recommendation, so the PR parked with three options; Dave chose "accept as built"; r4 = the four sentences
+  PINNED as accepted + a "Ruling" section quoting his words at the TOP of the PR body → the delta review read it as a
+  design decision and passed first try). A source-text CONTROL-FLOW classifier (E1 #1968: window → enclosing/early-return
+  → fire-time id + flag polarity) never converges — reshape to a HELPER that is the only way to do the operation and lint
+  only for the bare call. Lesson doc: app `docs/lessons-learned/video-batch-2026-08-28.md` (the fence class, 6 hits).
   **Since #1827 (2026-09-05) a phrasing counterexample on the three heuristic-parser files
   (`mpi-voice-processor.ts`, `video-findings.ts`, `video-talking-points-job.ts`) is P2 —
   advisory, not a block.** Don't patch the regex for it; add the sentence to the eval corpus
@@ -205,6 +212,10 @@ Dave reads, reverts if needed, republishes.
 ### Step 6 — After republish
 - `npm run smoke:prod`; `npm run verify:deploy -- --expect "<sentinel>"` per PR (collect
   sentinels in the brief as you go — client-bundle strings only, never server-only literals).
+- **A ruled COPY rename in the batch will turn a live-only smoke pin red** (2026-09-11: `ui-permission-gates` UI #6 asserted the
+  label "Edit Labor Rate" that #1977 renamed; the permission assertions behind it never ran). Read the failing assertion before
+  calling smoke red: a label pin on renamed copy = fix the test to pin what the click UNLOCKS (#1980), re-run that one test live,
+  and treat the gate as green. The builder brief now grep-checks `__tests__/e2e` + `__tests__/workflow` for the old literal.
 - **Live-verify EVERY PR's user-facing surfaces on prod, per actor** — not one representative flow. 2026-09-01: the full pass found 4 client misses in a PR that had 12k green tests + mirror + Codex-clean (#1688 → fix #1705). Protocol: smoke FIRST; then 1–2 Opus agents on disjoint surfaces, TD1 only, fixtures closed on exit, verdict PROVED / FAILED-with-evidence / NOT-DRIVABLE-why per item, evidence in the scratchpad; a PR-body line "pinned by tests, not seen in a browser" names the first surfaces to drive.
 - Update the board: the run's shipped cards → Archive rows, AND sweep EVERY other section's cards against `gh pr list --state merged` since the last board update — a sibling session's ship (the cue-card rebuild, 8 Sep) leaves a "parked / to vote" card lying about a merged feature (Dave, 2026-09-08: "move anything shipped to the archive area"). Shipped rows are one line: what the user gets + PR numbers; a shipped item's open follow-ups become the new cards. Then write/refresh the memory entry (rulings + follow-ups) so no future
   session re-litigates; `/compound` if the run surfaced a reusable lesson.

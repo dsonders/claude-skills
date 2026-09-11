@@ -28,6 +28,11 @@ Non-negotiables (also in the brief header — they bind you):
   `.claude` tree: `npm --prefix <tree> run test -- --runTestsByPath … --testPathIgnorePatterns=…` (else it tests the
   primary). Minted tree: symlink `.env` + `node_modules` (`cp .env` is denied).
 
+- Copy + sentinels: a diff that renames or rewrites user-visible copy greps `__tests__/e2e` and `__tests__/workflow` for the OLD
+  literal and updates those live-only pins in the same PR (CI never runs them; smoke:prod finds them after the republish). A diff
+  that changes bytes a QUEUED `--expect` in docs/release-verification.md names rewrites that row in the same PR (else
+  `check:release-rows` goes red at the next CI). Never write the bare `--expect` flag in prose — say "no bundle sentinel".
+
 Kill every background watcher/log-tail you started BEFORE your final report (each one that exits later re-wakes you for nothing).
 Report: PR number(s) + URL(s), merge state, gates, probe table, prod-verify sentinel,
 parked items, any deviation from the brief and why.
