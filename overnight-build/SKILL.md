@@ -70,6 +70,10 @@ Make a todo list and work through it.
   and finish grooming in conversation — do not launch.
 - Spend headroom: warn Dave if a recent run hit the usage cap (agents die silently on it).
 - Keep the machine awake: `nohup caffeinate -dis >/dev/null 2>&1 & disown` (verify with `pgrep`) — `-i` alone does NOT stop lid/system sleep (2026-08-30: the machine slept 30 min in, killing all 4 agents mid-turn). Lid stays open. **Sleep recovery:** agents die with context INTACT — SendMessage each one "the machine slept; re-orient from disk (`git status`/`log` in your tree), continue" instead of respawning; all 4 resumed cleanly.
+- **`ListAgents` first — a BUSY sibling session on this machine is a collision, not background noise.** Message it before
+  writing the brief: which items and files it holds, which worktrees it has claimed, and who owns `BACKLOG.md` /
+  `release-verification.md` tonight (one docs PR per session, sequenced — the second rebases). 2026-09-11: the sibling had
+  two PRs in flight, owned both docs files, and named its claimed pool trees; one message each way and nothing crossed.
 - Decide parallel vs serial NOW: parallel agents need an un-isolated manager (see Step 3);
   if this session already entered a worktree, plan one agent running workstreams in sequence.
 - Note which PRs will be review-first anyway (un-ruled edges you already know about).
@@ -199,7 +203,7 @@ On each agent report / Codex block:
 
 ### Step 5 — Morning ledger
 
-**Morning review protocol (Dave's preferred flow, 2026-08-31):** after delivering the ledger, walk the needs-Dave items ONE at a time — a succinct briefing (user-visible before/after table, review state, what's baked in that he hasn't ruled) ending in ONE call with a rec; EXECUTE each ruling (merge/retarget/fix) before briefing the next item. A call about what a USER SEES (row copy, what a tick does, a state label) gets its mockup WITH the briefing (2026-09-05: "This case needs a mockup so I can see the full flow"); Dave then edits copy inline on the frame — redraw, mark the decision on the frame, and ship the copy as a follow-up PR. Stacked children retarget via `git rebase --onto origin/main <ORIGINAL fork point>` — after the parent was itself rebased, its branch tip is NOT the child's upstream (memory `reference_stacked_pr_actions_gotchas`).
+**Morning review protocol (Dave's preferred flow, 2026-08-31):** after delivering the ledger, walk the needs-Dave items ONE at a time — a succinct briefing (user-visible before/after table, review state, what's baked in that he hasn't ruled) ending in ONE call with a rec; EXECUTE each ruling (merge/retarget/fix) before briefing the next item. A call about what a USER SEES (row copy, what a tick does, a state label, where a note renders) gets its mockup WITH the briefing, on a DISPOSABLE artifact page built from real captures — never as ledger prose and never on the grooming board (2026-09-05: "This case needs a mockup so I can see the full flow"; 2026-09-11: call 3 went out as text and Dave had to ask "show me the case with mockups (new disposable HTML, not the grooming board)"; the case page cost one turn once built — build it BEFORE the ledger); Dave then edits copy inline on the frame — redraw, mark the decision on the frame, and ship the copy as a follow-up PR. Stacked children retarget via `git rebase --onto origin/main <ORIGINAL fork point>` — after the parent was itself rebased, its branch tip is NOT the child's upstream (memory `reference_stacked_pr_actions_gotchas`).
 
 Produce the debrief from `templates/ledger-template.md`: bottom line first; one plain-language
 line per merged PR (what a user sees before/after) + `git revert -m 1 <sha>` command; parked
