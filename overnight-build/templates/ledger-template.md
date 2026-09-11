@@ -7,17 +7,17 @@ bold on its own line, then `➜ rec:` on the next. Detail lives in PR bodies + m
 
 **Bottom line:** <one sentence — N merged, M waiting on you, what's blocked.>
 
+## Your calls (the forks I resolved by assumption — answer top to bottom)
+**1. <the fork, one line: the two ways it could go>** — #NNNN
+➜ rec: <one line>
+<mockup link — what a user sees under each way>
+
 ## Board
 | | PR | Item | State | You |
 |---|---|---|---|---|
 | ✅ | #NNNN | <name> | merged | nothing — revert `git revert -m 1 <sha>` if you dislike it |
 | 🟡 | #NNNN | <name> | open, Dave reviews | <one-word ask> |
 | ⛔ | #NNNN | <name> | Codex-blocked rN | round N+1 or park? |
-
-## Your calls (answer top to bottom)
-**1. <question, one line>** — #NNNN
-➜ rec: <one line>
-<one line of why, optional>
 
 ## Not built / hard floor
 - 🚫 <item> — <one-line reason>

@@ -148,6 +148,15 @@ open). A status answer that did not start with a sweep is a guess.
    (9/8: the store was cleared first and ruled items briefly read as open again). Only docs written while the store was
    unreachable re-push from a device, so deleted = gone.
 
+**Footprint check (same sweep, before grooming any card on a shipped surface).** For every *Verified* row in
+`docs/release-verification.md` that names a **Footprint** (the field / event / status the feature writes when a real
+person uses it), count it at McGrath with the read-only probe (memory `reference_firestore_readonly_probe_recipe`):
+fired ÷ eligible since republish. The count goes on the card's **Population** chip as the real number ("bulk move: 0 of
+41 eligible ROs in 3 weeks") — never as a new card, ballot or message (⛔ Dave, 2026-09-11: "I don't like the idea of
+adding new backlog cards just because nobody has tried a new feature. Just more noise for me."). A zero with no
+eligible population reads "no eligible ROs yet". Three unused features on ONE surface = one sentence in the session,
+said once. A feature with no footprint stays unmeasured — never add client events or product code to measure it.
+
 ### 2 · Intake — an item becomes a card
 
 - Sources: BACKLOG.md from `origin/main` (the primary checkout lags) + anything Dave names (Notion cards, chat, memory
@@ -177,6 +186,16 @@ open). A status answer that did not start with a sweep is a guess.
   board before the decision (9/7: ten real McGrath write-ups reversed a three-times-recommended cue-card direction).
 - The rec and its rationale sit on the option: `OPT_VIS[id][letter]['why']`, one sentence about the person it affects
   (principle 15).
+- **Every ballot carries a subtraction option and one off-pattern option** (⛔ Dave, 2026-09-11, from Mollick's
+  "variance" point): one lettered option is always *do nothing* / *delete the thing* (his most common ruling, almost
+  never offered), and one is deliberately outside the shape the other options share (a different surface, a removal
+  instead of an addition, the tech's manual path instead of automation). Neither needs a frame unless it is a UX
+  direction; each carries its one implication line. A ballot whose options are three variants of one idea is not ready.
+- **Design-heavy item = his raw take BEFORE the mockups** (⛔ Dave, 2026-09-11: "implement 1 and 3 as written, and 2
+  only for design-heavy items"). Design-heavy = a new surface, a redesign of an existing card/sheet/page, or anything
+  whose ruling is about how it should *feel*. For those the first message is one line — "how would you want this to
+  feel?" — and the frames are drawn from his answer. Not for small ballots (a label, a placement, a toggle): there the
+  options go straight up. The 7 Sep cue-card reversal is the proof that his input first beats my variants first.
 
 ### 4 · Frame — what each option looks like
 

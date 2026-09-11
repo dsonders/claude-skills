@@ -205,6 +205,14 @@ On each agent report / Codex block:
 
 **Morning review protocol (Dave's preferred flow, 2026-08-31):** after delivering the ledger, walk the needs-Dave items ONE at a time — a succinct briefing (user-visible before/after table, review state, what's baked in that he hasn't ruled) ending in ONE call with a rec; EXECUTE each ruling (merge/retarget/fix) before briefing the next item. A call about what a USER SEES (row copy, what a tick does, a state label, where a note renders) gets its mockup WITH the briefing, on a DISPOSABLE artifact page built from real captures — never as ledger prose and never on the grooming board (2026-09-05: "This case needs a mockup so I can see the full flow"; 2026-09-11: call 3 went out as text and Dave had to ask "show me the case with mockups (new disposable HTML, not the grooming board)"; the case page cost one turn once built — build it BEFORE the ledger); Dave then edits copy inline on the frame — redraw, mark the decision on the frame, and ship the copy as a follow-up PR. Stacked children retarget via `git rebase --onto origin/main <ORIGINAL fork point>` — after the parent was itself rebased, its branch tip is NOT the child's upstream (memory `reference_stacked_pr_actions_gotchas`).
 
+**The ledger leads with the interesting forks, not the approvals** (⛔ Dave, 2026-09-11, from Mollick's "interest"
+point — "if agents make every interesting decision and leave people with the approvals, the exceptions, and the
+failures, we will have automated the wrong half"). Any place a build resolved a REAL design fork by assumption — two
+ways a user-facing thing could genuinely go, and the brief did not rule it — is pulled to the top as **Your calls**,
+framed as the decision (the two ways, what a user sees under each, the rec), with its mockup. Merged-under-a-standing-
+rule PRs, Codex rounds and hard-floor items are batched BELOW it. A ledger whose top section is a list of merged PRs
+with the forks buried in PR bodies is wrong. Routine work under a standing rule keeps building without him.
+
 Produce the debrief from `templates/ledger-template.md`: bottom line first; one plain-language
 line per merged PR (what a user sees before/after) + `git revert -m 1 <sha>` command; parked
 PRs with their question reduced to a one-word-answerable ask; hard-floor items awaiting
