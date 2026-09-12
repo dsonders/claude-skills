@@ -174,7 +174,7 @@
       document.getElementById('rl-'+id).innerHTML = ruled ? '<span>Ruled'+(r.choice?' · '+esc(r.choice):'')+' · '+fmt(r.at)+'</span><button data-clear="'+esc(id)+'">clear</button>' : '';
       var cb0 = old.querySelector('[data-clear]'); if (cb0) cb0.addEventListener('click', function(){ clearRuling(id); refreshDecision(c, id); });
       old.querySelector('[data-words]').classList.toggle('filled', !!(r.words&&r.words.trim())); return; }
-    var tmp = document.createElement('div'); tmp.innerHTML = decisionHTML(c, d); var nw = tmp.firstChild; old.replaceWith(nw);
+    var tmp = document.createElement('div'); tmp.innerHTML = decisionHTML(c, d); var nw = tmp.firstChild; var yHold = window.scrollY; old.replaceWith(nw); window.scrollTo(0, yHold);
     nw.querySelectorAll('[data-choose]').forEach(function(b){ b.addEventListener('click', function(){ var l = b.getAttribute('data-choose'); var prev = rulings[id] || {}; writeRuling(id, {choice:l, words:prev.words||'', at:now()}); refreshDecision(c, id); }); });
     var cb = nw.querySelector('[data-clear]'); if (cb) cb.addEventListener('click', function(){ clearRuling(id); refreshDecision(c, id); });
     var t = nw.querySelector('[data-words]'); if (t) { var timer; t.addEventListener('input', function(){ clearTimeout(timer); timer = setTimeout(function(){ var prev = rulings[id] || {}; var words = t.value; if (!words.trim() && !prev.choice) { if (rulings[id]) clearRuling(id); } else { writeRuling(id, {choice:prev.choice||'', words:words, at:now()}); } refreshDecision(c, id, true); }, 600); }); }

@@ -1,52 +1,91 @@
 # id suffix, question, options [(letter, text, rec)], text_only
+# Every ballot carries a do-nothing / delete option and one off-pattern option (⛔ Dave 2026-09-11).
 DEC = {
- "SA-20b": [
-  ("Stop recording a delivery state from the pricing-time answer? Nothing on any screen changes — the one thing that does is the advisor’s re-open warning below.", [("A","Yes — stop it; the re-open warning goes quiet",True),("B","Leave it as it is — the recorded state is invisible, and the warning still works",False),("C","Icebox",False)]),
+ # ----- MPI & Video -----
+ "BG": [
+  ("The words on the admin Settings card — which?", [
+    ("A","“Technicians can mark all remaining items green” — an on/off switch",True),
+    ("B","“Bulk ‘All Green’ for technicians” — an on/off switch",False),
+    ("C","“Marking the rest green” — a menu: Allowed / Not allowed, like the card above it",False),
+    ("D","Other words — say them below",False),
+    ("E","Don’t build a setting — bulk green stays on for everyone",False),
+    ("F","No setting: remove bulk green for every store instead",False)]),
+  ("The setting is OFF and a voice note ends “all other items green” — what does the tech see?", [
+    ("A","Nothing — the rest of the items simply stay pending",False),
+    ("B","The sentence lands on the review sheet’s “1 note needs review” card, so he sees it did not apply",True),
+    ("C","Parked, plus one line under it: “Bulk green is off for this store.”",False)]),
+  ("Does OFF also remove “Mark the Rest Green” — the button once some items are touched?", [
+    ("A","Yes — every bulk button goes",True),
+    ("B","No — only the untouched-inspection “All Green” goes",False)]),
+  ("Does the video reader’s “everything else is good” obey the same switch?", [
+    ("A","Yes — one setting, every reader",True),
+    ("B","No — video keeps bulk green",False)]),
  ],
- "Q": [
-  ("Which variants go on the ballot — your three, plus which extras?", [("A","Your three only",False),("B","Your three + collapse the notes band",False),("C","Your three + the extras — notes band, part on one row, a per-user “Compact” setting",False),("D","Your combination — tighter padding, notes tile at today’s width with Story Notes / Complaint / Cause sharing the rest, eyebrow labels, the rail",True)]),
-  ("Complaint / Cause: one line + hover, or keep two lines and shrink elsewhere?", [("A","One line + hover",False),("B","Keep two lines, shrink elsewhere",False)]),
-  ("Is a sideways “Parts Needed” rail worth the legibility cost?", [("A","Yes",False),("B","No",False)]),
-  ("Parts page only, or the advisor and tech cards too?", [("A","Parts page only",False),("B","Advisor and tech cards too",False)]),
-  ("Target height for one line + two parts?", []),
+ "NG": [
+  ("“All the belts don’t look good.” — today the app reads it as an all-clear and greens the belts. Fix it?", [
+    ("A","Yes — read don’t / don’t / dont as one word before matching, so it is caught like “do not”",True),
+    ("B","Leave it",False),
+    ("C","Go wider: refuse any bulk all-clear when a “no” or “not” appears anywhere in the note (would also refuse “no leaks, everything else fine”)",False)]),
+  ("“No cracked belts.” — the AI reader greens Drive Belts from it today. Wanted?", [
+    ("A","Keep it — he said they are fine",True),
+    ("B","Refuse it like the collective phrases: the row stays pending and the sentence goes to the review sheet",False),
+    ("C","Keep it, but mark the row “set from a ‘no’” so the tech can see why it went green",False)]),
+  ("“I do not recommend a flush or suggest any service.” — reads as a recommendation because of the “or”. Fix it?", [
+    ("A","Yes — the “do not” governs the whole sentence",True),
+    ("B","Accept it — add the sentence to the test set as known behaviour",False),
+    ("C","Refuse to read any sentence with both a “not” and an “or” — send it to the review sheet instead",False)]),
  ],
- "P": [
-  ("Locked view = the parts page’s row exactly, or the money ledger’s row with stock + note added?", [("A","The parts page’s row exactly — drawn above",True),("B","The ledger’s row, with stock + note added",False)]),
-  ("Edit mode gets the Note cell and the Sum / Manual parts total too?", [("A","Yes",True),("B","No — pricing fields only",False)]),
-  ("Admin gets the ⚠ unpriced flag and × delete per row?", [("A","Both",True),("B","The flag only",False),("C","Neither",False)]),
-  ("If a parts user is mid-edit on the line — take over with the warning, or refuse?", [("A","Take over, with the warning",False),("B","Refuse until they finish",False)]),
-  ("The card is 492 px wide. Keep today’s row, which already shows the note under the part with nothing off screen — or the parts page’s six-column row as ruled, which scrolls sideways?", [("A","Keep today’s row — revisits P-1",True),("B","Six-column row, with a note mark you hover",False),("C","Six-column row, with the note as a line under the part",False)]),
-  ("Your brief, applied to the real card — ship the two views as drawn?", [("A","Yes — build it as drawn",True),("B","No — say what changes below",False)]),
-  ("The bubble’s number: a part carries ONE note today, so a count can only ever read 1.", [("A","Show the count — it reads 1 whenever there is a note",False),("B","No number — a filled bubble means there is a note; empty means none",True)]),
+ "VRC": [
+  ("The three choices, on the real sheet — as built?", [
+    ("A","Yes — all three stand",True),
+    ("B","Change one — say which below",False),
+    ("C","Put one total back above the two steps: “N items to review”",False)]),
  ],
- "SA-6b": [
-  ("Label it “Declined at close”, read from the RO’s own closed-without-a-response mark?", [("A","Yes — “Declined at close”",True),("B","No — keep “Declined by the customer”",False)]),
-  ("Dashboards and money bands keep counting it as declined — only the banner names the reason?", [("A","Yes",True),("B","No — count it separately",False)]),
+ "VC7": [
+  ("How should the missing corners get onto the card?", [
+    ("A","Add a tires example beside the brakes one in the writer’s rule — measured on the test set first",True),
+    ("B","Move the related readings above the finding’s own notes, so the corners are read first — measure",False),
+    ("C","Leave it — the tech can add the fronts on camera",False),
+    ("D","Don’t ask the writer: the app appends the corners line itself under the card (LF 7/32″ · RF 7/32″), always there",False)]),
  ],
- "W": [
-  ("Leave internal lines out of the warning entirely, or keep them with internal wording?", [("A","Leave internal lines out",False),("B","Keep them, with internal wording",False)]),
-  ("Same for warranty and recall lines (the customer sees them at $0)?", [("A","Yes — same treatment",False),("B","No — warranty and recall stay in",False)]),
+ "VC8": [
+  ("A green good-news shot and the red axle:", [
+    ("A","Green cards stay corner-blind — the red axle has its own red card in the same deck",True),
+    ("B","Green cards carry siblings only when they are also green (“all four tires 7/32″”)",False),
+    ("C","Full corners on green cards too, reds included",False),
+    ("D","Take green shots out of the deck — the red card already carries the good corners",False)]),
  ],
- "S": [
-  ("Is the rule “no tech hour edits after the estimate is sent”, or “only in these stages”?", [("A","After the estimate is sent — one-way",False),("B","Only in these stages",False)]),
-  ("If it is estimate-based: does un-parking legitimately re-open hours for a real re-diagnosis — and who re-sends?", [("A","No — hours stay locked after the estimate",False),("B","Yes — un-parking re-opens them; the advisor re-sends",False)]),
-  ("Same rule for the advisor / admin ledger, which has no stage lock today?", [("A","Yes",False),("B","No",False)]),
-  ("When can’t the advisor or admin change a line’s price? Today: a customer-pay line’s part prices lock while the estimate is out and unanswered, and an approved line’s money is frozen until the advisor re-opens it.", [("A","Only an approved customer-pay line, and re-open stays the door — drop the “estimate is out, not yet answered” lock for the advisor and admin, keep it for the parts counter",True),("B","Keep today’s two locks as they are",False),("C","Never — the advisor and admin can change any price at any time, and re-open is no longer required",False)]),
-  ("Which lines lock the tech’s hours once the estimate has gone out? There is one “sent” stamp on the RO; a line added mid-job after it was never quoted.", [("A","Only the lines that were in the estimate, worked out from when each line was created against the send stamp — a line added later stays editable until someone decides it; nothing new stored",True),("B","Every line on the RO, added later or not",False)]),
-  ("Price changes are already recorded with who made them (since June); nothing shows that history. Where does the screen go?", [("A","Its own card — a “Changes” list on the line’s Parts & Labor card for advisors and admins, drawn there",True),("B","Fold it into this build",False),("C","Not now",False)]),
-  ("The customer’s link is live, so a line whose price changes while they are still deciding shows the new figure on reload. The words on that line’s card:", [("A","“Your price for this went up $200 since we sent this.” — the mirror of the “came down $200” note you ruled on card U",True),("B","“Your price for this changed to $850 since we sent this.”",False),("C","No mark — the new figure shows, nothing says it changed",False)]),
+ # ----- Parts page & queue -----
+ "SO": [
+  ("One customer sentence on both surfaces — which?", [
+    ("A","The hint’s: “2 parts have no price — their lines will be quoted with those parts counted as $0.00.”",True),
+    ("B","The dialog’s: “2 parts still need pricing. Those lines will be quoted to the customer with the unpriced parts counted as $0.00 — and the customer can approve them at that price.”",False),
+    ("C","Leave both as they are",False),
+    ("D","Drop the inline hint — the dialog is the gate, one warning is enough",False)]),
  ],
+ # ----- RO page -----
+ "BM": [
+  ("Which fix?", [
+    ("A","The bar wraps to two rows when it is narrow — the question on its own line, the pills wrap",True),
+    ("B","Hide the Customer-link panel while the bar is up — the bar takes the full width, like the tech’s",False),
+    ("C","Leave it — the buttons work; advisors rarely bulk-move at 1440 with the panel open",False),
+    ("D","On the advisor’s desktop, open bulk move as the phone’s bottom sheet instead of a bar",False)]),
+ ],
+ "PH": [
+  ("Before anything is drawn: how should this feel? Where would you look for it on the line, and what would you expect it to show?", []),
+  ("Scope:", [
+    ("A","Money changes only — price, quantity, labor hours and rate",True),
+    ("B","Every recorded change — stock answer and note too",False),
+    ("C","Not now — wait until an advisor asks who changed a price",False),
+    ("D","No screen: put the changes in the RO’s internal notes as they happen, one note per change",False)]),
+ ],
+ # ----- Dashboards -----
  "D3": [
-  ("Ship the fix as drawn — the switch keeps its full labels and the filter boxes give up the room instead?", [("A","Yes — ship it as drawn",True),("B","No — say what should give way instead, below",False)]),
+  ("Ship the fix as drawn — the switch keeps its full labels and the filter boxes give up the room instead?", [("A","Yes — ship it as drawn",True),("B","No — say what should give way instead, below",False),("C","Leave it — “Li” stays",False)]),
  ],
  "SA-7b": [
-  ("Store one new piece of information on each RO so the two families can be told apart — build it as part of this?", [("A","Yes",True),("B","No — go back to “Needs customer OK” and accept it is wrong when only the store is waiting",False)]),
+  ("Store one new piece of information on each RO so the two families can be told apart — build it as part of this?", [("A","Yes",True),("B","No — go back to “Needs customer OK” and accept it is wrong when only the store is waiting",False),("C","Drop the badge — the row colors and the LINES column already carry it",False)]),
   ("Wording per family — “Needs customer OK” / “Needs store OK”, the words the RO page’s band already uses?", [("A","Yes",True),("B","Other wording — say it below",False)]),
- ],
- "D2": [
-  ("Ring, tinted fill, or both — and which color? Name the color below.", [("A","Ring",False),("B","Tinted fill",False),("C","Both",False)]),
-  ("Does a default choice (“Newest”, “All statuses”) count as active?", [("A","No",True),("B","Yes",False)]),
-  ("Count on Clear (“Clear 2”)?", [("A","Yes",False),("B","No",False)]),
  ],
  "X": [
   ("Bring the count back as “price gaps” — the RO header’s rule (labor hours missing or 0, a part row blank or $0)? “Only blanks” can no longer count anything: since 8/27 every line carries a total.", [("A","Yes — “N price gaps”, the RO header’s rule",True),("B","No — drop the row; nothing is left for it to count",False)]),
@@ -56,20 +95,27 @@ DEC = {
   ("Label only — one change, no behavior?", [("A","Yes",True),("B","No",False)]),
   ("If the customer page carries the word anywhere, change it there too? (Checked 9/8: it never does — the word is staff-only.)", [("A","Yes — change it there too",False),("B","No — customer page untouched",False)]),
  ],
- "U": [
-  ("Inline under the line, or a banner at the top of the page?", [("A","Inline under the line",True),("B","A banner at the top",False)]),
-  ("Show the old price, or only the amount it came down?", [("A","The amount only",True),("B","Old price and new price",False)]),
-  ("Every visit, or once?", [("A","Once",False),("B","Every visit",False)]),
- ],
+ # ----- Store settings -----
  "T": [
-  ("Store the rate only, or the whole agreed snapshot (rate, hours, parts)?", [("A","The rate only",False),("B","The whole snapshot",False)]),
+  ("Store the rate only, or the whole agreed snapshot (rate, hours, parts)?", [("A","The rate only",False),("B","The whole snapshot",False),("C","Do nothing — keep the five special cases; they hold today",False)]),
   ("Old approved lines: work the rate back from the stored total, or leave them on the total?", [("A","Work it back",False),("B","Leave them on the total",False)]),
  ],
+ # ----- Platform & tooling -----
+ "EH": [
+  ("The phantom rows already written — about two per pricing or decision save at McGrath since the recorder shipped:", [
+    ("A","A one-time cleanup you run deletes them",True),
+    ("B","Leave the rows; the statistics learn to skip an unchanged field with an empty after-text",False),
+    ("C","Do nothing — the writer fix stops new ones; the old era stays inflated",False),
+    ("D","Retire the edit statistics — if nobody reads them, there is nothing to fix",False)]),
+ ],
+ "Y3": [
+  ("Take the eight recommendations as a block, or pull any one out?", [("A","All eight, as a block",True),("B","Pull one out — say which below",False),("C","Drop all eight",False)]),
+ ],
  "Y2": [
-  ("Take the three recommendations as a block, or pull any one out?", [("A","All three, as a block",False),("B","Pull one out — say which below",False)]),
+  ("Take the three recommendations as a block, or pull any one out?", [("A","All three, as a block",False),("B","Pull one out — say which below",False),("C","Drop all three",False)]),
  ],
  "Y": [
-  ("Take the seven recommendations as a block, or pull any one out?", [("A","All seven, as a block",False),("B","Pull one out — say which below",False)]),
+  ("Take the seven recommendations as a block, or pull any one out?", [("A","All seven, as a block",False),("B","Pull one out — say which below",False),("C","Drop all seven",False)]),
  ],
  "Z": [
   ("Make the guard refuse?", [("A","Yes",True),("B","No",False)]),
@@ -81,55 +127,17 @@ DEC = {
  ],
 }
 
-# Stage per card. "triage" = not yet groomed: the decision needed NOW is whether to groom it at all
-# (Advance to grooming / Keep in backlog / Send to Icebox); its questions are what grooming would settle and
-# may be ruled early. Anything not listed is "groomed" = ready to rule. STAGE_NOTE says why it is waiting.
-STAGE = {
- # Q and SA-20b were advanced by Dave from the phone on 2026-09-08 (rulings/Q-stage, rulings/SA-20b-stage) → groomed here.
-}
-STAGE_NOTE = {
- "Q": "Mockups on a real RO come next if this advances — the three shapes above are silhouettes, not the app.",
- "SA-20b": "The table above describes stored state, not a screen — the parts pricing grid has no delivery pill. A real frame comes with grooming.",
-}
+# Stage per card. "triage" = not yet groomed (Advance / Keep / Icebox). Anything not listed is "groomed" = ready to rule.
+# 12 Sep: every new card came in groomed — the facts were complete and the frames cheap (real captures existed), so the
+# advance-first round trip would only have cost Dave a day.
+STAGE = {}
+STAGE_NOTE = {}
 
 # Rulings already SWEPT into BACKLOG.md (origin/main) — baked into the board so they read as ruled and filed.
 # Add here at every sweep, after the doc PR lands and BEFORE deleting the store docs.
 BAKED = {
- "D2-1": ("A", "phone board, 8 Sep · filed #1934"),
- "D2-2": ("A", "phone board, 8 Sep · filed #1934"),
- "D2-3": ("B", "phone board, 8 Sep · filed #1934"),
- "U-1":  ("A", "phone board, 8 Sep · filed #1934"),
- "U-2":  ("A", "phone board, 8 Sep · filed #1934"),
- "U-3":  ("B", "phone board, 8 Sep · filed #1934"),
- "P-3":  ("C", "phone board, 8 Sep · filed #1934"),
  "D1-2": ("A", "phone board, 8 Sep · filed #1934 — the customer page never says “booked”, so nothing changes"),
- "P-1":  ("A", "phone board, 8 Sep · filed 9 Sep — see P-5: the card is 492 px wide"),
- "P-2":  ("A", "phone board, 8 Sep · filed 9 Sep"),
- "P-4":  ("A", "phone board, 8 Sep · filed 9 Sep"),
- "P-6":  ("A", "board, 10 Sep · filed 10 Sep — build it as drawn"),
- "P-7":  ("B", "board, 10 Sep · filed 10 Sep — no number on the bubble"),
- "P-5":  ("brief", "your brief, 10 Sep — same elements in both views, one row per part, no sideways scroll, notes behind a bubble · filed 10 Sep"),
- "SA-6b-1": ("A", "phone board, 8 Sep · filed 9 Sep"),
- "SA-6b-2": ("A", "phone board, 8 Sep · filed 9 Sep"),
- "W-1":  ("B", "phone board, 8 Sep · filed 9 Sep — with your dialog copy"),
- "W-2":  ("A", "phone board, 8 Sep · filed 9 Sep"),
- "Q-1": ("D", "board, 9 Sep · filed 10 Sep — real desktop screens, 477 → 372 px measured"),
- "Q-2": ("B", "board, 10 Sep · filed 10 Sep"),
- "Q-3": ("A", "board, 10 Sep · filed 10 Sep"),
- "Q-4": ("A", "board, 10 Sep · filed 10 Sep"),
- "Q-5": ("NA", "board, 10 Sep · filed 10 Sep — “NA”: no numeric target, the combination as measured is the target"),
- "SA-20b-1": ("A", "board, 9 Sep · filed 10 Sep"),
- "S-1": ("A", "board, 9 Sep · filed 10 Sep — NOT queued: ⟦“Let’s talk about this one”⟧ — discussed before any overnight run"),
- "S-2": ("A", "board, 9 Sep · filed 10 Sep — your words: ⟦“Advisor should be able tie change the price, even after the estimate has gone out. Let’s talk about this one. We need to get aligned on when the advisor CANT change the price. We also need way to record price changes on the RO, and who made them.”⟧ (Price changes and who made them have been recorded since June — nothing in the app shows that history yet.)"),
- "S-3": ("B", "board, 9 Sep · filed 10 Sep"),
- "S-4": ("A", "chat, 10 Sep — ⟦“go with rec”⟧ · filed 10 Sep — the advisor and admin change any price except an approved customer-pay line, where re-open stays the door"),
- "S-7": ("C", "board, 10 Sep · filed 10 Sep — no mark on the customer’s page"),
- "S-5": ("A", "chat, 10 Sep — ⟦“agree with your rec”⟧ · filed 10 Sep"),
- "S-6": ("A", "chat, 10 Sep — ⟦“agree with your rec”⟧ · filed 10 Sep — the history screen gets its own card"),
 }
 
 # Items whose every decision is BAKED but which are NOT queued — Dave held them for a conversation.
-# The board shows the pill "ruled · discuss" and this line as the stage label instead of "queued for the next build".
-HOLD = {
-
-}
+HOLD = {}

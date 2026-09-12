@@ -1,0 +1,47 @@
+{
+  "today": {
+    "select": 62,
+    "selectBarWidth": 492,
+    "selectContentWidth": 677,
+    "internalPillHit": false,
+    "internalPillCoveredBy": "text-[15px] font-bold text-white",
+    "cancelHit": false,
+    "ask": 62,
+    "askBarWidth": 492,
+    "askContentWidth": 490,
+    "askQuestionWidth": 0,
+    "askQuestionScrollWidth": 241,
+    "askKeepHit": true,
+    "askRewriteHit": true
+  },
+  "wrap": {
+    "select": 170,
+    "selectBarWidth": 492,
+    "selectContentWidth": 490,
+    "internalPillHit": true,
+    "internalPillCoveredBy": null,
+    "cancelHit": true,
+    "ask": 120,
+    "askBarWidth": 492,
+    "askContentWidth": 490,
+    "askQuestionWidth": 458,
+    "askQuestionScrollWidth": 458,
+    "askKeepHit": true,
+    "askRewriteHit": true
+  },
+  "nopanel": {
+    "select": 62,
+    "selectBarWidth": 1248,
+    "selectContentWidth": 1246,
+    "internalPillHit": true,
+    "internalPillCoveredBy": null,
+    "cancelHit": true,
+    "ask": 62,
+    "askBarWidth": 1248,
+    "askContentWidth": 1246,
+    "askQuestionWidth": 241,
+    "askQuestionScrollWidth": 241,
+    "askKeepHit": true,
+    "askRewriteHit": true
+  }
+}

@@ -1,39 +1,30 @@
 import os, json, html, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from lib import ro_panel, owner_page, step, sil
-from parts_card import parts_card
-exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'admin_card.py')).read())
+from lib import sil
 from decisions import DEC, STAGE, STAGE_NOTE, BAKED, HOLD
-from triage_frames import parts_card_tall, stock_answer_row, parts_line_variant, Q_VARIANTS
 import option_frames as OF
+import bg_frames as BG
 import os as _os
-MEASURED = json.load(open(_os.path.join(_os.path.dirname(_os.path.abspath(__file__)),'measured.json'))) if _os.path.exists(_os.path.join(_os.path.dirname(_os.path.abspath(__file__)),'measured.json')) else {}
 O=os.path.dirname(os.path.abspath(__file__))
 cards=json.load(open(O+'/cards.json'))
 board_css=open(O+'/board.css').read()
 
 SECTION_ORDER=["MPI & Video","Parts page & queue","RO page — advisor, admin, tech","Dashboards","Customer page","Store settings — labor rates & money","Platform & tooling"]
 
-# ---- frames for the three drawn items ----
+# ---- Flip / walkthrough frames per card (Today | Proposed over one frame) ----
 def frames_for(key):
-    if key=="SA-6b":
-        return dict(kind="flip", caption="The advisor, opening the line after close.",
-            today=ro_panel("Declined by the customer"), proposed=ro_panel("Declined at close", ring=True))
-    if key=="U":
-        return dict(kind="flip", caption="The customer, back on their own page after the drop — inline, the amount only.",
-            today=owner_page(), proposed=owner_page(note=True))
+    if key=="BG":
+        return dict(kind="flip", caption="The technician, at the bottom of an inspection step — the store has the setting OFF.",
+            today=BG.tech_step(False), proposed=BG.tech_step(True))
     return dict(kind="none")
 
-# Per-decision clarifiers (Dave 9/8: 'when you ask me this way or that way, I need to see what each looks like').
-# CONTEXT[dec_id] = one situation paragraph. OPT_VIS[dec_id][letter] = {'frame': html, 'why': implication}. GALLERY[dec_id] = list of (label, html, note) shown above the options.
+# Per-decision clarifiers. CONTEXT[dec_id] = one situation paragraph. OPT_VIS[dec_id][letter] = {'frame': html, 'why': implication}.
+# GALLERY[dec_id] = list of (label, html, note) shown above the options.
 CONTEXT, OPT_VIS, GALLERY = {}, {}, {}
-GALLERY_WIDE = {'Q-1'}
-GALLERY_FULL = {'Q-1'}  # one column at every width — the frames are full desktop screens
-OPTS_FULL = {'P-5','Q-1'}     # options one per row — real desktop screens at their true size
+GALLERY_WIDE, GALLERY_FULL, OPTS_FULL = set(), set(), set()
 
 import base64 as _b64
-REAL = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), 'real')
-RH = json.load(open(REAL+'/heights.json'))
+REAL = _os.path.join(O, 'real')
 import struct as _struct
 def _jpeg_size(path):
     with open(path,'rb') as f:
@@ -46,123 +37,152 @@ def _jpeg_size(path):
             h, w = _struct.unpack('>HH', data[i+5:i+9]); return w, h
         seg = _struct.unpack('>H', data[i+2:i+4])[0]; i += 2 + seg
     return None, None
-def real_img(name, alt):
+def real_img(name, alt, dpr=2):
+    """A real screenshot at its real CSS size (captures are 2× device pixels unless dpr says otherwise)."""
     path = f'{REAL}/{name}.jpg'
     b = _b64.b64encode(open(path,'rb').read()).decode()
     w, h = _jpeg_size(path)
-    # captures are 2× device pixels — show them at their real CSS size, never stretched to the column
-    css_w = f'width:{w//2}px;' if w else 'width:100%;'
-    return f'<img src="data:image/jpeg;base64,{b}" alt="{alt}" style="display:block;{css_w}max-width:100%;height:auto;">'
-def q_gallery():
-    dk = RH['desktopHeights']
-    def note(k): return f"{dk[k]} px" + (f" · saves {dk['today']-dk[k]}" if k!='today' and dk['today']-dk[k]>0 else (" · saves nothing on desktop — the three tiles share the tallest tile’s height" if k=='notes' else "")) + (" · the Complaint and Cause tiles now set the row’s height" if k=='dave' else "")
-    items = [
-      ('today',   'Today — the parts counter’s screen, 1440 wide'),
-      ('dave',    'Your combination — tighter padding · notes tile at today’s width, Story Notes / Complaint / Cause sharing the rest equally, eyebrow labels · the rail'),
-      ('pad',     '① Tighter padding'),
-      ('cc',      '② Complaint / Cause one line each'),
-      ('rail',    '③ “Parts Needed” rail sideways'),
-      ('notes',   '④ Collapse the notes band'),
-      ('onerow',  '⑤ Each part on one text row'),
-      ('compact', '⑥ “Compact” = ①+②+④+⑤ together'),
-    ]
-    return [(label, real_img('qd-'+k, label), note(k)) for k,label in items]
-GALLERY['Q-1'] = q_gallery()
-CONTEXT['Q-1'] = 'Real screens of the parts page on the test store, one recall line with two parts, 1440 wide — the parts counter works on desktop. Each variant is applied to the live page and measured there. Two things the screens show: the notes tile carries an empty band because the three tiles share the tallest tile’s height, and “hover for all” sits on top of the clamped 3C text.'
-CONTEXT['Q-2'] = 'Compare ② above with Today: one line each, the full text on hover (desktop) or tap (phone).'
-CONTEXT['Q-3'] = 'Compare ③ above: the heading row goes, the label turns sideways on the left edge.'
-OPT_VIS['Q-1'] = {'D': {'frame': real_img('qd-dave','Your combination'), 'why': 'Biggest saving that keeps every control where it is: 372 px against 477. Complaint and Cause carry their label as an eyebrow above two full-width lines of text, and “hover for all” sits clear of the text.'}}
-OPT_VIS['Q-4'] = {'A': {'why': 'Only the parts counter’s card changes; the advisor’s and tech’s line cards keep today’s height, so the same line looks different per role.'}, 'B': {'why': 'One card shape for everyone; the advisor’s Parts & Labor card and the tech’s line card shrink the same way.'}}
-CONTEXT['Q-5'] = 'Measured on the real page at 1440 wide: 477 px today, one line with two parts. A number here becomes the build’s target — leave it blank to take whatever the chosen variants give.'
-OPT_VIS['SA-6b-2'] = {'A': {'why': 'Nothing moves on the dashboards or in the money bands — the line stays a declined line everywhere; only the banner’s words change.'}, 'B': {'why': 'A new bucket: dashboards and money bands would show “declined at close” apart from customer declines — new counts, new columns.'}}
-OPT_VIS['T-1'] = {'A': {'why': 'Each approved line remembers the labor rate it was agreed at. Hours and parts keep re-deriving; a later rate change leaves the line alone.'}, 'B': {'why': 'The line remembers rate, hours and parts as agreed, as one frozen snapshot. Any later edit is visibly a change from the agreed figures — more to store, simpler to reason about.'}}
-OPT_VIS['T-2'] = {'A': {'why': 'A one-time cleanup you run: every already-approved line gets a rate worked back from its stored total and hours. Lines with no hours can’t be worked back and stay on the total.'}, 'B': {'why': 'Old approved lines keep their stored total and the “never re-figure a frozen line” special case until they close; only lines approved after the build carry a rate.'}}
-OPT_VIS['Z-1'] = {'A': {'why': 'A build session that tries to take a worktree another session holds is stopped with a message, instead of proceeding and wiping the other’s work.'}, 'B': {'why': 'The claim stays a convention; a session that ignores it can still wipe a sibling’s build.'}}
-OPT_VIS['Z-2'] = {'A': {'why': 'One copy of the env-seeding script, outside the repo. Nothing to keep in sync.'}, 'B': {'why': 'A second copy inside the repo; every change has to be made twice or the two drift.'}}
-OPT_VIS['EX5-1'] = {'A': {'why': 'Nothing changes now. The bot stops proposing the major bump; the move is picked up when the current version reaches end of life or an advisory reaches this app.'}, 'B': {'why': 'A medium build now: three catch-all routes rewritten, the error-forwarding change across ~200 handlers, and a live pass on every request path before it ships.'}}
-OPT_VIS['EX5-2'] = {'A': {'why': 'Routes and types move first under the current version — reviewable on its own — then a small flip PR.'}, 'B': {'why': 'One large PR; Codex rounds scale with size, and a live regression is harder to pin to a cause.'}}
-OPT_VIS['Y2-1'] = {'A': {'why': 'The three recommendations in the table ship as one small PR.'}, 'B': {'why': 'Name the one to hold below; the other two ship.'}}
-OPT_VIS['Y-1'] = {'A': {'why': 'The seven recommendations in the table ship as one small PR.'}, 'B': {'why': 'Name the one(s) to hold below; the rest ship.'}}
-OPT_VIS['W-2'] = {'A': {'why': 'Warranty and recall lines are treated like internal ones: they never trigger the customer-sees-a-gap warning.'}, 'B': {'why': 'Warranty and recall lines stay in the warning, since the customer’s page does list them (at $0).'}}
-OPT_VIS['S-3'] = {'A': {'why': 'The advisor’s and admin’s hours field follows the same rule as the tech’s, so nobody can re-open hours under a sent estimate.'}, 'B': {'why': 'The advisor and admin keep editing hours at any stage, as today; the rule binds the tech only.'}}
+    css_w = f'width:{w//dpr}px;aspect-ratio:{w}/{h};' if w else 'width:100%;'
+    # aspect-ratio reserves the box before the image decodes, so a re-render never shifts the page under a tap
+    return f'<img src="data:image/jpeg;base64,{b}" alt="{alt}" width="{w}" height="{h}" style="display:block;{css_w}max-width:100%;height:auto;">'
+def has_real(name): return _os.path.exists(f'{REAL}/{name}.jpg')
 
+# ================= MPI & Video =================
+# ----- BG: the bulk-green setting -----
+CONTEXT['BG-1'] = 'The admin Settings page, drawn in the pattern of the card above it (“MPI → Labor Line Promotion”). The switch state carries the rule; there is no helper sentence beyond the one that names it. An unset store reads ON.'
+OPT_VIS['BG-1'] = {
+ 'A': {'frame': BG.settings_card('a'), 'why': 'Reads as a permission — what technicians may do — and the switch is the rule.'},
+ 'B': {'frame': BG.settings_card('b'), 'why': 'Names the button the tech knows; “Allowed” as the helper.'},
+ 'C': {'frame': BG.settings_card('c'), 'why': 'Mirrors the promotion card exactly, a menu instead of a switch — two words to read.'},
+ 'D': {'why': 'Type the label and the switch words below; the card gets redrawn.'},
+ 'E': {'why': 'Nothing changes for anyone; the request from the admins is closed as “no”.'},
+ 'F': {'why': 'Every tech everywhere marks each item; no store can turn it back on.'},
+}
+CONTEXT['BG-2'] = 'Checked in the code: today the app deliberately strips a recognized “all other items green” phrase out of the review list so it can never become a review row. A stops that sweep and the phrase disappears with it — the cheap build. B and C need a new “recognized but refused” state so the sentence can be shown. The row would carry the app’s existing label for a clause that did not apply: “Part of a note that matched something else”.'
+OPT_VIS['BG-2'] = {
+ 'A': {'frame': BG.review_sheet('silent'), 'why': 'The tech sees two findings and 22 pending items; nothing tells him his last sentence did nothing.'},
+ 'B': {'frame': BG.review_sheet('parked'), 'why': 'His words never vanish — the sentence sits on the review card and the pending rows are the state. Costs the new state.'},
+ 'C': {'frame': BG.review_sheet('reason'), 'why': 'Same as B with one line of explanation; the app’s own rule is no helper lines unless they name a problem — this one does.'},
+}
+OPTS_FULL.add('BG-1'); OPTS_FULL.add('BG-2')
+GALLERY['BG-3'] = [('The desktop entry — today, and with the setting OFF', BG.desktop_entry_button(False) + BG.desktop_entry_button(True), '')]
+OPT_VIS['BG-3'] = {'A': {'why': 'Both labels of the one button go — “All Green” and “Mark the Rest Green” are the same control in two states.'}, 'B': {'why': 'A tech who has touched one item can still green the rest in one tap; the setting only removes the untouched-inspection shortcut.'}}
+OPT_VIS['BG-4'] = {'A': {'why': 'A video whose narration ends “everything else is good” greens nothing at an OFF store; the same rows stay pending.'}, 'B': {'why': 'Video keeps the shortcut; only dictation and the buttons obey the switch — two rules for one phrase.'}}
 
-# ----- P -----
-def ledger_row_with_stock_note():
-    return OF.app(f'<div style="border-radius: 6px; border: 1px solid #e5e7eb; background: #fff; padding: 12px;"><div style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 8px;">Parts <span style="font-size: 12px; font-weight: 400; color: #9ca3af;">1</span></div><div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;"><span style="font-size: 14px; font-weight: 600; color: #0f172a;">Fuel pump module</span><span style="font-size: 12px; font-family: ui-monospace, Menlo, monospace; color: #9ca3af;"># RC-FP-002</span><span style="display: inline-flex; align-items: center; border-radius: 999px; background: #f1f5f9; color: #64748b; font-size: 10.5px; font-weight: 600; padding: 2px 8px;">Stock ?</span><span style="display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: #64748b;">📝 no note</span><span style="margin-left: auto; display: inline-flex; gap: 8px; align-items: center;"><span style="font-size: 12px; color: #6b7280;">×1</span><span style="font-family: ui-monospace, Menlo, monospace; font-size: 13px; color: #d1d5db;">—</span></span></div></div>', bg="#d1d5db")
-GALLERY['P-6'] = [
- ('Today, locked — your screen (1920 wide: the card is 748 px)', real_img('pbw-today-locked','Today, locked'), '748 × 442 px'),
- ('Locked, as briefed — “Edit”, one row per part: name · part # · stock · bubble · qty · price. The note line and the add row are gone', real_img('pbw-locked','Locked, proposed'), '748 × 361 px · saves 81'),
- ('Hover on the bubble — the note', real_img('pbw-locked-hover-note','Hover on the bubble'), ''),
- ('Hover on a cut-off name — the full name (the same for a cut-off part #; a name that fits opens nothing)', real_img('pbw-locked-hover-name','Hover on a cut-off name'), ''),
- ('Today, Edit', real_img('pbw-today-edit','Today, edit'), '748 × 479 px'),
- ('Edit, as briefed — the bubble sits between In stock? and Unit price; the entry row is replaced by “+ Add part”, the parts page’s button', real_img('pbw-edit','Edit, proposed'), '748 × 485 px'),
- ('Edit, after “+ Add part” — the entry row opens under the parts, with Cancel', real_img('pbw-edit-adding','Edit, adding a part'), '748 × 518 px'),
- ('The same locked row on a 1440 monitor, where the card is 492 px — the name and the part # share about 140 px, so both cut off and the hover does the work', real_img('pb-locked','Locked at 1440'), '492 × 361 px'),
- ('Edit on a 1440 monitor — this is today’s grid plus the bubble; the Part name box is 86 px, as it is today. Nothing scrolls sideways', real_img('pb-edit','Edit at 1440'), '492 × 485 px'),
+# ----- NG: three negations -----
+CONTEXT['NG-1'] = 'Measured on the app as it runs today: “All the belts do not look good” is caught; “All the belts don’t look good” — straight or curly apostrophe — is not, and the belts go green.'
+OPT_VIS['NG-1'] = {'A': {'why': 'The three spellings become one word to every rule that reads a technician’s words; the full dictation test set runs before it ships.'}, 'B': {'why': 'A tech who says “don’t” keeps getting an all-clear he did not give.'}, 'C': {'why': 'Safer on paper, but it would also refuse honest all-clears such as “no leaks, everything else is fine”.'}}
+CONTEXT['NG-2'] = 'The deterministic rules refuse every collective “no” except “no leaks”; the AI reader, reading the same sentence, greens Drive Belts 3 times in 3 for “No cracked belts.” It has done so since before the 8 Sep run.'
+OPT_VIS['NG-2'] = {'A': {'why': 'A specific item named with a specific defect that is absent is a finding; the tech gets the green he meant.'}, 'B': {'why': 'Consistent with the collective rule; one more tap for the tech on every “no …” sentence.'}, 'C': {'why': 'The green stands and the tech can see where it came from — one new mark on the row.'}}
+CONTEXT['NG-3'] = 'From the 9/11 review of the “I recommend …” floor: the sentence is split at “or”, so the “do not” before “recommend” never reaches “suggest”, and the row is held back from green as if the tech had recommended work.'
+OPT_VIS['NG-3'] = {'A': {'why': 'One word dropped from the split list; the row greens as he meant.'}, 'B': {'why': 'The row stays held; the sentence is written into the test set as accepted so it never surprises anyone again.'}, 'C': {'why': 'The tech decides on the review sheet; more taps, no guessing.'}}
+
+# ----- VRC: the video review sheet as built -----
+GALLERY['VRC-1'] = [
+ ('Step 1 — the header IS the step: “N MPI Items To Review”, no total above it', real_img('vr-step1','Step 1'), ''),
+ ('Step 2 — unmatched items; “Apply Selected” stays even with rows unticked', real_img('vr-step2','Step 2'), ''),
+ ('“Dismiss All” asks once, then works row by row and stops at the first refusal', real_img('vr-dismiss','Dismiss all'), ''),
 ]
-GALLERY_FULL.add('P-6')
-CONTEXT['P-6'] = 'Your brief applied live to the real card on the test store (admin, fixture RO, one recall line with two parts, one note). Measured: no sideways scroll in any state at 1920 or 1440. Two things to know. A part carries one note today, so the bubble’s number can only ever read 1 — that is P-7. And the Part # box in Edit keeps today’s fixed width in these frames, so a long number is cut even on your screen and the hover shows the rest; the build can let that box take the spare room on wide screens.'
-OPT_VIS['P-6'] = {
- 'A': {'why': 'Both views show the same six things per part, one row each, no sideways scroll; Edit is the only view with an add affordance, and it is the parts page’s button.'},
- 'B': {'why': 'Say what should differ in the field below; the frames get redone.'},
-}
-OPT_VIS['P-7'] = {
- 'A': {'frame': real_img('pbw-locked','Bubble with the count'), 'why': 'The badge says “1” on every part with a note — a number that never changes until part notes become a thread.'},
- 'B': {'frame': real_img('pbw-locked-nocount','Bubble, no number'), 'why': 'A blue bubble means there is a note, a grey one means none; hover reads it. Nothing to count until there is more than one.'},
-}
-OPTS_FULL.add('P-7')
-CONTEXT['S-4'] = 'Your questions, 10 Sep, answered from the code. The customer’s link is a live page: every load reads the line’s current total; there is no frozen copy, and no live push — a customer who already has the page open sees the old figure until they reload. Re-open is for a line the customer has ALREADY answered: it withdraws the answer, makes the price editable and asks again. It does nothing for an unanswered line. So with A, a customer mid-decision could reload into a changed price with no notice — the build adds a mark on that line on the customer’s page, drawn on card U, where the “came down” note already lives.'
+GALLERY_FULL.add('VRC-1')
+CONTEXT['VRC-1'] = 'Three calls the 8 Sep build made on your copy (card VR) that you have not seen:\n1 · A total above a per-step header was the busyness you objected to, so the step header is the top header.\n2 · “Apply all results” over a half-ticked list would be a false claim, so the button reads “Apply Selected”.\n3 · There is no bulk dismiss on the server, so “Dismiss All” runs row by row and any row it could not dismiss stays on the sheet asking.'
+OPT_VIS['VRC-1'] = {'A': {'why': 'Nothing to build.'}, 'B': {'why': 'Say which of the three below; it becomes its own small build.'}, 'C': {'why': 'A second number above the step header — the shape you called busy on 7 Sep.'}}
 
-def deck_card(mark=None):
-    m = f'<div style="margin-top:10px;display:flex;align-items:flex-start;gap:6px;font-size:12.5px;line-height:1.4;color:#92400e;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:8px 10px;"><span style="flex:none;margin-top:1px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/></svg></span><span>{mark}</span></div>' if mark else ''
-    return OF.app(f"""<div style="padding:14px 14px 6px;background:#f8fafc;"><div style="border-radius:20px;background:#fff;box-shadow:0 8px 24px rgba(15,23,42,.10);overflow:hidden;position:relative;"><div style="position:absolute;left:12px;top:12px;display:inline-flex;align-items:center;gap:4px;border-radius:999px;background:rgba(255,255,255,.95);padding:4px 10px;font-size:11px;font-weight:700;color:#b45309;box-shadow:0 1px 2px rgba(0,0,0,.08);">Recommended</div><div style="height:118px;background:linear-gradient(160deg,#e2e8f0,#cbd5e1);"></div><div style="padding:14px 18px 6px;"><h3 style="margin:0;font-size:19px;font-weight:700;line-height:1.15;color:#0f172a;">RF WHEEL BENT</h3><p style="margin:6px 0 0;font-size:13.5px;line-height:1.35;color:#64748b;">Right front wheel is bent — the steering wheel shakes above 45 mph. We recommend replacing it.</p><p style="margin:12px 0 0;font-size:22px;font-weight:800;color:#0f172a;">$850.00 <span style="font-size:13px;font-weight:500;color:#94a3b8;">parts + labor</span></p>{m}</div><div style="display:flex;gap:10px;padding:14px 18px 16px;"><span style="flex:1;border-radius:999px;border:1px solid #e2e8f0;background:#fff;padding:12px 0;text-align:center;font-size:15px;font-weight:600;color:#475569;">Not today</span><span style="flex:1.4;border-radius:999px;background:#16a34a;padding:12px 0;text-align:center;font-size:15px;font-weight:600;color:#fff;">✓ Approve</span></div></div></div>""", bg="#f8fafc")
-OPT_VIS['S-7'] = {
- 'A': {'frame': deck_card('Your price for this went up $200 since we sent this.'), 'why': 'The customer sees the change named on the card they are deciding from — the same shape as the “came down” note, the other direction.'},
- 'B': {'frame': deck_card('Your price for this changed to $850 since we sent this.'), 'why': 'Names the new figure, not the difference — the customer works out how much it moved.'},
- 'C': {'frame': deck_card(), 'why': 'The card silently shows the new figure; a customer who saw the old one has no way to know it moved.'},
+# ----- VC7 / VC8 -----
+CONTEXT['VC7-1'] = 'Measured on the cue-card test set (20 real inputs × 3 runs): Rear Tires RO-11 shows the green front 7/32″ in 0 of 3 cards; Rear Brakes RO-12 in 1 of 3; Rear Brakes RO-09 and Front Tires RO-16 in 3 of 3. The corners are handed to the writer every time; the writer leaves them out when the finding’s own notes already carry two corners. The rule’s only example is brakes.'
+OPT_VIS['VC7-1'] = {'A': {'why': 'The cheapest change to the writer, with the before/after numbers in the build’s record.'}, 'B': {'why': 'Reorders what the writer reads; may help or hurt other cards — the test set decides.'}, 'C': {'why': 'The tech remembers the fronts on camera, or doesn’t.'}, 'D': {'why': 'Always on the card, nothing to teach — but it is the app’s line under the writer’s, not one of his sentences.'}}
+CONTEXT['VC8-1'] = 'Green shots are opt-in and carry the flag line “Looks good — reassure the customer”. Handing the writer the red rear corners on a green front-tires card means it may say “rear tires 2/32″” on the good-news shot, against its own flag line.'
+OPT_VIS['VC8-1'] = {'A': {'why': 'The good news stays good news; the red card in the same deck carries the bad.'}, 'B': {'why': '“All four tires 7/32″” on a green card when it is true; silence when a sibling is red.'}, 'C': {'why': 'The tech gets every reading on every card, and a green card can contradict its own flag line.'}, 'D': {'why': 'Reverses the 3 Sep picker decision that let a tech add a good-news shot.'}}
+
+# ================= Parts page & queue =================
+TRI_SM = OF.TRI.replace('width="20" height="20"', 'width="14" height="14"')
+def hint_frame(sentence):
+    return OF.app(f'<div style="display:flex;flex-direction:column;gap:6px;"><div style="min-height:44px;border-radius:6px;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;">Send to advisor</div><div style="font-size:12.5px;line-height:1.4;color:#92400e;display:flex;gap:6px;align-items:flex-start;"><span style="flex:none;">{TRI_SM}</span><span>{sentence}</span></div></div>')
+SO_A = '2 parts have no price — their lines will be quoted with those parts counted as $0.00.'
+SO_B = '2 parts still need pricing. Those lines will be quoted to the customer with the unpriced parts counted as $0.00 — and the customer can approve them at that price.'
+GALLERY['SO-1'] = [('Today — the hint under the button', hint_frame(SO_A), ''), ('Today — the dialog after tapping it', OF.send_gate_today(), '')]
+CONTEXT['SO-1'] = 'The internal and warranty sentences already match on both surfaces (the 10–11 Sep builds). Only the customer sentence still has two versions.'
+OPT_VIS['SO-1'] = {
+ 'A': {'frame': OF.dialog('Some parts aren’t priced yet', SO_A, 'Send anyway', 'Cancel', icon=OF.TRI), 'why': 'The shorter one; the dialog says what the hint said, one sentence.'},
+ 'B': {'frame': hint_frame(SO_B), 'why': 'The longer one under the button too — it names the customer and that they can approve at $0.00.'},
+ 'C': {'why': 'Two wordings for one fact, as today.'},
+ 'D': {'frame': OF.app('<div style="min-height:44px;border-radius:6px;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;">Send to advisor</div>'), 'why': 'The button stands alone; the dialog carries the warning.'},
 }
-CONTEXT['S-7'] = 'The customer’s deck — the card they approve or decline from — drawn at phone width with a price that went up after the link was sent. The mark sits under the price, before the buttons.'
-# ----- W -----
-GALLERY['W-1'] = [('Today — the same dialog on a recon-only RO', OF.send_gate_today(), ''),]
-OPT_VIS['W-1'] = {
- 'A': {'frame': OF.send_button_only(), 'why': 'Internal lines never feed the warning. A recon-only RO sends with no dialog; on a mixed RO the count covers customer-visible lines only.'},
- 'B': {'frame': OF.send_gate_internal(), 'why': 'Internal lines stay counted, with words that are true for them: no customer, the store’s figures carry the $0 until priced.'},
+
+# ================= RO page =================
+# ----- BM: bulk move at 1440 (real captures, advisor role) -----
+BMH = json.load(open(REAL+'/bm-heights.json')) if _os.path.exists(REAL+'/bm-heights.json') else None
+def _bm(name, alt, fallback=None):
+    if has_real(name): return real_img(name, alt)
+    return real_img(fallback, alt, dpr=1) if fallback and has_real(fallback) else None
+def _h(v, k):
+    try: return f"{BMH[v][k]} px tall" if BMH and BMH.get(v,{}).get(k) is not None else ''
+    except Exception: return ''
+gal = []
+t_sel = _bm('bm-today-select','Today, select', 'bm-fallback-select'); t_ask = _bm('bm-today-ask','Today, ask', 'bm-fallback-ask')
+if t_sel: gal.append(('Today, 1440 — choosing the pay type: Internal and Cancel sit under the Customer-link panel; a click on Internal lands on the panel', t_sel, '62 px · 677 px of content in a 492 px column'))
+if t_ask: gal.append(('Today, 1440 — the rewrite question: two buttons, the question line measures 0 px', t_ask, '62 px'))
+GALLERY['BM-1'] = gal
+GALLERY_FULL.add('BM-1'); OPTS_FULL.add('BM-1')
+CONTEXT['BM-1'] = 'Real screens of the advisor’s RO page on the test store at 1440 wide, three lines selected. The tech’s page has no Customer-link panel, so the same bar has the full width and both stages read fine there.'
+w_sel = _bm('bm-wrap-select','Wrapped, select'); w_ask = _bm('bm-wrap-ask','Wrapped, ask'); n_sel = _bm('bm-nopanel-select','No panel, select'); n_ask = _bm('bm-nopanel-ask','No panel, ask')
+def _join(*fr): return ''.join(f'<div style="margin-bottom:8px;">{f}</div>' for f in fr if f)
+OPT_VIS['BM-1'] = {
+ 'A': {'frame': (_join(w_sel, w_ask) or None), 'why': 'Every pill is reachable and the question gets its own line. Measured: 62 → 170 px while choosing the pay type (three rows — “Move to” and four pills do not fit on two at this width), 62 → 120 px at the question. The tech’s bar is untouched.'},
+ 'B': {'frame': (_join(n_sel, n_ask) or None), 'why': 'The panel steps aside for the seconds the bar is up and comes back after: one 62 px row like the tech’s, everything clickable. The right half of the page is empty meanwhile.'},
+ 'C': {'why': 'The move still lands and the buttons work; the advisor never sees the question and cannot pick Internal on this screen.'},
+ 'D': {'why': 'The phone’s stepped sheet on a desktop — one shape for both devices, but a sheet over a 1440 page for a three-line move is heavy.'},
 }
-CONTEXT['W-1'] = 'This is the parts counter’s Send to advisor button. The warning counts unpriced parts on every line, internal ones included, but talks about the customer.'
-# ----- S -----
-GALLERY['S-1'] = [('Today', OF.stage_strip('today'), ''), ('A — one-way after the link goes out', OF.stage_strip('A'), ''), ('B — stage rule, un-park never lands in Dispatched once sent', OF.stage_strip('B'), '')]
-CONTEXT['S-1'] = 'What the tech’s Labor hours field allows, stage by stage. The RO already records when the customer link went out, so rule A has a fact to key off.'
-OPT_VIS['S-1'] = {'A': {'why': 'Simple to explain: once the estimate has gone to the customer, a tech never edits hours again on that line — whatever stage the RO visits.'}, 'B': {'why': 'Keeps today’s stage-based rule and closes the hole at the un-park step only; a future stage or status could open a new hole.'}}
-OPT_VIS['S-2'] = {'A': {'frame': OF.app(OF.hours_field(True, 'Hours lock once the estimate has gone to the customer'), bg="#f8fafc"), 'why': 'A real re-diagnosis goes through the advisor, who edits hours on the ledger and re-sends.'}, 'B': {'frame': OF.app(OF.hours_field(False, ''), bg="#f8fafc"), 'why': 'Un-parking re-opens the tech’s hours; the advisor is told to re-send the estimate (the re-ask notice under the field).'}}
-# ----- SA-7b -----
+
+# ----- PH: the Changes list (design-heavy → his raw take first) -----
+GALLERY['PH-1'] = [('Where it would live — the admin’s Parts & Labor card today, on your 1920 screen', real_img('pbw-locked','Parts & Labor card today'), '')]
+GALLERY_FULL.add('PH-1')
+CONTEXT['PH-1'] = 'What is recorded already, per change, since June: the field (part price, quantity, stock answer, note, labor hours, labor rate), the value before and after, who made it and when. Actor names would show with the per-store name override. Nothing here reaches the customer’s page.'
+OPT_VIS['PH-2'] = {'A': {'why': 'The list answers “who changed this price” and nothing else.'}, 'B': {'why': 'Longer list; a stock answer or a note edit reads beside a price change.'}, 'C': {'why': 'The record keeps accruing; the screen waits for a real ask.'}, 'D': {'why': 'No new screen — but every price edit becomes a note in the RO’s thread, and a ten-part line makes ten notes.'}}
+
+# ================= Dashboards =================
+GALLERY['D3-1'] = [('Today — filters on', OF.toolbar(False), ''), ('The fix', OF.toolbar(True), '')]
+CONTEXT['D3-1'] = 'Desktop admin dashboard, all four filters on. Today the switch is the first thing to give up width, so “List” clips to “Li”. The fix keeps the switch whole and lets the filter boxes shrink first (they already show “…”).'
+OPT_VIS['D3-1'] = {'C': {'why': 'The switch keeps clipping whenever a filter is on.'}}
 CONTEXT['SA-7b-1'] = 'Your question: ⟦“a part waiting on the store”⟧ is a part the counter adds to an INTERNAL (store-pay) line after the advisor already authorized that line. The add withdraws the store’s OK, and the advisor approves or declines the part on the RO page, where it reads “Needs store OK” (below). The dashboard badge lumps those with parts waiting on a customer, so it can only say “Needs approval”.'
 GALLERY['SA-7b-1'] = [('The situation — the advisor’s ledger on an internal line', OF.ledger_store_ok(), ''), ('Today — the dashboard badge', OF.dash_badge(['Needs approval']), '')]
 OPT_VIS['SA-7b-1'] = {
  'A': {'frame': OF.dash_badge(['Needs customer OK','Needs store OK']), 'why': 'Each RO stores the two counts separately, so the badge can name the family — one badge per family when both apply.'},
  'B': {'frame': OF.dash_badge(['Needs customer OK']), 'why': 'One stored count, as today, labelled “Needs customer OK” again — wrong whenever only the store is waiting.'},
+ 'C': {'frame': OF.dash_badge([]), 'why': 'No badge at all; the row color and the LINES column are what the advisor scans.'},
 }
 OPT_VIS['SA-7b-2'] = {'A': {'why': 'The dashboard uses the words the RO page already uses for the same part.'}, 'B': {'why': 'Say the wording below.'}}
-# ----- D3 -----
-GALLERY['D3-1'] = [('Today — filters on', OF.toolbar(False), ''), ('The fix', OF.toolbar(True), '')]
-CONTEXT['D3-1'] = 'Desktop admin dashboard, all four filters on. Today the switch is the first thing to give up width, so “List” clips to “Li”. The fix keeps the switch whole and lets the filter boxes shrink first (they already show “…”).'
-# ----- X -----
 GALLERY['X-1'] = [('Today', OF.booked(), '')]
 CONTEXT['X-1'] = 'The “+N TBD” row still exists in the cell, but it counts lines with no total — and since 8/27 every line has one, so it is always 0 and never shows.'
 OPT_VIS['X-1'] = {'A': {'frame': OF.booked('+2 price gaps'), 'why': 'The same amber row, counting what the RO header counts: labor hours missing or 0, a part row blank or $0. One new number sent to the dashboard.'}, 'B': {'frame': OF.booked(), 'why': 'The cell stays as it looks today; the dashboard keeps showing no gaps while the RO page and parts page do.'}}
 OPT_VIS['X-2'] = {'A': {'frame': OF.booked_hover(True), 'why': 'The existing Booked hover gains a “Price gaps” section: each line and what its gap is.'}, 'B': {'frame': OF.booked_hover(False), 'why': 'The hover stays as today; the count alone points to the RO page.'}}
-# ----- D1 -----
 OPT_VIS['D1-1'] = {'A': {'frame': OF.money_row('Total'), 'why': 'Every money row reads “Total”. Same number, same color, nothing else moves.'}, 'B': {'frame': OF.money_row('Total Booked'), 'why': 'Keep “Total Booked”.'}}
 CONTEXT['D1-2'] = 'Checked in the code on 9/8: the customer’s page never uses “booked” anywhere — the word is staff-only. So this ruling changes nothing either way.'
-# ----- SA-20b -----
-CONTEXT['SA-20b-1'] = 'Re-open = after the customer has answered a line, the advisor can take it back: the customer’s decision is withdrawn, the line returns to pricing, and the customer is asked again once it is re-sent. The button lives on the advisor’s RO page, on a decided line (first frame). Checked in the code on 9/8: the recorded delivery state is not shown on any screen — every “In stock” / “Not in stock” chip is drawn from the Yes/No/? answer itself, and the parts queue only asks “pulled or not”. The single reader is the advisor’s re-open / start-over warning.'
-GALLERY['SA-20b-1'] = [('Where re-open lives — the advisor’s RO page, on a decided line', OF.frozen_line_banner(), ''), ('The counter answers Yes while pricing', stock_answer_row(), ''), ('Today — the advisor re-opens the line later', OF.reopen_dialog(True), '')]
-OPT_VIS['SA-20b-1'] = {'A': {'frame': OF.reopen_dialog(False), 'why': 'The answer is just an answer. The re-open dialog no longer says “already on order”, because nothing records an order any more.'}, 'B': {'frame': OF.reopen_dialog(True), 'why': 'Nothing changes; the “No” answer keeps standing in for “on order” in that one warning.'}, 'C': {'why': 'Revisit when an actual order step exists for the counter to take.'}}
 
-TRIAGE_MOCK = {
- "Q": dict(html=parts_card_tall(), caption="Today — the parts counter, on one line with two parts: the card runs past the bottom of the phone (≈ 830 px), so the counter scrolls constantly."),
- "SA-20b": dict(html=stock_answer_row(), caption="Today — the parts counter answers “In stock? Yes” while pricing, and the part is recorded as in stock for delivery before anyone has pulled it. Proposed: the answer stays an answer; delivery is recorded when the counter pulls or orders."),
-}
+# ================= Store settings =================
+OPT_VIS['T-1'] = {'A': {'why': 'Each approved line remembers the labor rate it was agreed at. Hours and parts keep re-deriving; a later rate change leaves the line alone.'}, 'B': {'why': 'The line remembers rate, hours and parts as agreed, as one frozen snapshot. Any later edit is visibly a change from the agreed figures — more to store, simpler to reason about.'}, 'C': {'why': 'Five places keep their own “never re-figure a frozen line” rule; the next new money path has to remember it too.'}}
+OPT_VIS['T-2'] = {'A': {'why': 'A one-time cleanup you run: every already-approved line gets a rate worked back from its stored total and hours. Lines with no hours can’t be worked back and stay on the total.'}, 'B': {'why': 'Old approved lines keep their stored total and the “never re-figure a frozen line” special case until they close; only lines approved after the build carry a rate.'}}
+
+# ================= Platform & tooling =================
+CONTEXT['EH-1'] = 'The writer fix ships either way: a save that carries the story through unchanged is no longer recorded as an edit. This decides the rows already written. Seen on McGrath RO 832799 (two phantom edits, 17:24 and 20:03) and RO 833321 — the stored text was never touched.'
+OPT_VIS['EH-1'] = {'A': {'why': 'The statistics read true for the whole era; one script, run once.'}, 'B': {'why': 'History keeps the rows; every reader of the trail has to know to skip them.'}, 'C': {'why': 'The counts stay inflated for everything before the fix.'}, 'D': {'why': 'Nothing to clean, and one fewer thing to maintain — if the numbers have no reader.'}}
+CONTEXT['Y3-1'] = ('The eight, each with the recommendation:\n'
+ '1 · A 1.5-second automatic re-grade after a story edit that nothing on the page can reach (the Re-Grade button is the live one) — delete it. '
+ '\n2 · Typing in a line’s Cause sends one save per keystroke to the RO (94 saves for 93 characters); the one-second wait is not working — fix it so it saves once after you stop typing. '
+ '\n3 · Three permission checks named by the 9/11 sweep (the labor-rate sweep decides a stage from a captured mapping; assignment fields ride the close write with no check; Re-open passes none) — fix as defects in one mirrored PR. '
+ '\n4 · Two money paths judge a store-approval withdrawal on a setting captured before the write — read it inside the write, and refuse the write if the store cannot be read. '
+ '\n5 · A cleanup script can leave a stale “declined at close” mark — clear it the next time the script is touched. '
+ '\n6 · Two older CI checks still carry their own copy of the diff reader — move them onto the shared one, own PR, when no build is in flight. '
+ '\n7 · The store-scoping check is blind to a select taken outside a transaction whose record is then read inside one — teach it that shape, with a fixture that must flag and one that must pass. '
+ '\n8 · Pin the version of the review bot the CI installs (exact, bumped by the bot) and comment on any PR whose squash deletes test files — comment, not block.')
+OPT_VIS['Y3-1'] = {'A': {'why': 'Eight small PRs in the next run; the permission one gets the pre-push mirror.'}, 'B': {'why': 'Name the number(s) to hold below; the rest ship.'}, 'C': {'why': 'Nothing ships; the keystroke storm and the three permission gaps stay.'}}
+OPT_VIS['Y2-1'] = {'A': {'why': 'The three recommendations in the table ship as one small PR.'}, 'B': {'why': 'Name the one to hold below; the other two ship.'}, 'C': {'why': 'Nothing ships.'}}
+OPT_VIS['Y-1'] = {'A': {'why': 'The seven recommendations in the table ship as one small PR.'}, 'B': {'why': 'Name the one(s) to hold below; the rest ship.'}, 'C': {'why': 'Nothing ships.'}}
+OPT_VIS['Z-1'] = {'A': {'why': 'A build session that tries to take a worktree another session holds is stopped with a message, instead of proceeding and wiping the other’s work.'}, 'B': {'why': 'The claim stays a convention; a session that ignores it can still wipe a sibling’s build.'}}
+OPT_VIS['Z-2'] = {'A': {'why': 'One copy of the env-seeding script, outside the repo. Nothing to keep in sync.'}, 'B': {'why': 'A second copy inside the repo; every change has to be made twice or the two drift.'}}
+OPT_VIS['EX5-1'] = {'A': {'why': 'Nothing changes now. The bot stops proposing the major bump; the move is picked up when the current version reaches end of life or an advisory reaches this app.'}, 'B': {'why': 'A medium build now: three catch-all routes rewritten, the error-forwarding change across ~200 handlers, and a live pass on every request path before it ships.'}}
+OPT_VIS['EX5-2'] = {'A': {'why': 'Routes and types move first under the current version — reviewable on its own — then a small flip PR.'}, 'B': {'why': 'One large PR; Codex rounds scale with size, and a live regression is harder to pin to a cause.'}}
+
+TRIAGE_MOCK = {}
 data_cards=[]
 for c in cards:
     decs=[]
@@ -172,26 +192,21 @@ for c in cards:
         bk = BAKED.get(did)
         decs.append(dict(id=did, n=i, q=q, options=[dict(l=l,t=t,rec=r, frame=ov.get(l,{}).get('frame'), why=ov.get(l,{}).get('why')) for l,t,r in opts], text=(len(opts)==0), context=CONTEXT.get(did), gallery=[dict(label=a,html=b,note=n) for a,b,n in GALLERY.get(did,[])], galleryWide=(did in GALLERY_WIDE), galleryFull=(did in GALLERY_FULL), optsFull=(did in OPTS_FULL), baked=(dict(choice=bk[0], note=bk[1]) if bk else None)))
     fr=frames_for(c['key'])
-    NO_BLOCKS = {'W','SA-7b','D3','X','D1','SA-20b','Q','P'}
+    NO_BLOCKS = {'SA-7b','D3','X','D1'}
     blocks=''.join(c['blocks']) if (fr['kind']=='none' and c['key'] not in NO_BLOCKS) else ''
     visual = any(d['gallery'] or any(o.get('frame') for o in d['options']) for d in decs)
     data_cards.append(dict(key=c['key'], section=c['section'], title=c['title'], sub=c['sub'], dims=c['dims'], pop=c['pop'], ruled=c['ruled'], blocks=blocks, frames=fr, decisions=decs, stage=STAGE.get(c['key'],'groomed'), hold=HOLD.get(c['key']), triageMock=TRIAGE_MOCK.get(c['key']), visual=visual))
 
-# ruled / queued items for the dashboard (from the live board)
+# ruled / queued items for the dashboard (ruled in chat, filed in BACKLOG, not yet built)
 ruled_items=[
- ("MPI & Video","OL","Dictation: “no leaks” leaves Oil and/or Fluid Leaks Pending — the one row whose all-clear is a negation","ruled 7 Sep"),
- ("MPI & Video","FC","Dictation: “All brake lights are good” puts four brake-pad rows on the review sheet and leaves the lights Pending","ruled 7 Sep"),
- ("MPI & Video","VG","Video: “All the belts look good” greens Drive Belts from a video, while the same words by dictation go through the new fixed list","ruled 7 Sep"),
- ("MPI & Video","UW","Dictation: the battery check stands down when the AI reader’s note uses a defect word it has never heard of","ruled 7 Sep"),
- ("MPI & Video","VR","Video review sheet: the copy Dave marked up on the 7 Sep sheet, and the split of matched and unmatched items into two steps","ruled 7–8 Sep"),
- ("MPI & Video","CT","Video: a “Couldn’t place” row can be titled “There is a rattle coming from” — a clipped fragment","ruled 8 Sep"),
- ("MPI & Video","SQ","Video: a stitched quote can refuse the tech’s own “brake pads” sentence","ruled 8 Sep"),
- ("MPI & Video","VC","Video cue cards: have the AI reader hand back the tech’s own sentences","ruled 7 Sep — back to the drawing board"),
- ("Store settings — labor rates & money","SA-19","Saving a new labor rate re-prices every open RO in the store — with no question asked","ruled 30 Aug"),
+ ("Parts page & queue","—","Reject the retired “in stock” / “on order” values on a part’s pulled record","ruled 11 Sep · queued for the run after the next republish"),
+ ("RO page — advisor, admin, tech","—","Internal-line labor hours: a tech edits them in every stage until the line is authorized or the RO closes","ruled 11 Sep · queued"),
+ ("RO page — advisor, admin, tech","—","A tech cannot delete a line that was in the sent estimate","ruled 11 Sep · queued"),
+ ("Store settings — labor rates & money","SA-19","Saving a new labor rate re-prices every open RO in the store — with no question asked","ruled 30 Aug · waits on T"),
 ]
 
 LEGACY=json.load(open(O+'/legacy_blocks.json')) if os.path.exists(O+'/legacy_blocks.json') else {}
-DATA=dict(legacy={k: dict(title={'risk':'Risk grid','icebox':'Icebox','archive':'Archive'}[k], html=v) for k,v in LEGACY.items()}, sections=SECTION_ORDER, cards=data_cards, ruled=[dict(section=s,key=k,title=t,status=st) for s,k,t,st in ruled_items], icebox="Waiting on something specific", archive="Archive — 56 items shipped since the 29 Aug board", built=__import__("datetime").date.today().strftime("%-d %b %Y"))
+DATA=dict(legacy={k: dict(title={'risk':'Risk grid','icebox':'Icebox','archive':'Archive'}[k], html=v) for k,v in LEGACY.items()}, sections=SECTION_ORDER, cards=data_cards, ruled=[dict(section=s,key=k,title=t,status=st) for s,k,t,st in ruled_items], icebox="Waiting on something specific", archive="Archive — 77 items shipped since the 29 Aug board", built=__import__("datetime").date.today().strftime("%-d %b %Y"))
 
 PAGE_CSS = """
 /* ---------- phone board: type scale (Dave 9/8: bigger) ---------- */
@@ -220,7 +235,7 @@ PAGE_CSS = """
 .m-bakedans{font-size:14px;color:var(--teal);padding-left:34px;line-height:1.4}
 .m-bakednote{color:var(--muted)}
 /* ---------- clarifiers ---------- */
-.m-ctx{font-size:15px;color:var(--ink-2);line-height:1.45}
+.m-ctx{font-size:15px;color:var(--ink-2);line-height:1.45;white-space:pre-line}
 .m-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:4px 0 2px}
 .m-gal{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
 .m-gal figcaption{display:flex;flex-direction:column;gap:1px;font-size:12.5px;line-height:1.3;color:var(--ink)}
