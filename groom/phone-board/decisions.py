@@ -137,6 +137,15 @@ STAGE_NOTE = {}
 # Add here at every sweep, after the doc PR lands and BEFORE deleting the store docs.
 BAKED = {
  "D1-2": ("A", "phone board, 8 Sep · filed #1934 — the customer page never says “booked”, so nothing changes"),
+ # 12 Sep evening taps, swept 13 Sep · filed #1996 · building in the 13 Sep overnight run
+ "BG-1": ("A", "board, 12 Sep · filed #1996 — “Technicians can mark all remaining items green”, an on/off switch · queued"),
+ "BG-2": ("A", "board, 12 Sep · filed #1996 — OFF + “all other items green”: nothing, the rest stay pending · queued"),
+ "BG-3": ("A", "board, 12 Sep · filed #1996 — every bulk button goes · queued"),
+ "BG-4": ("A", "board, 12 Sep · filed #1996 — one setting, every reader (video too) · queued"),
+ "NG-1": ("A", "board, 12 Sep · filed #1996 — don’t / don’t / dont read as one word before matching · queued"),
+ "NG-2": ("A", "board, 12 Sep · filed #1996 — the green off “No cracked belts” stands; pinned, no build"),
+ "NG-3": ("A", "board, 12 Sep · filed #1996 — the “do not” governs the whole sentence · queued"),
+ "VRC-1": ("B", "board, 12 Sep, his words ⟦Step 1: N matched items / Step 2: N unmatched items⟧ → chat 13 Sep ⟦N recognized items⟧ / ⟦N unrecognized items⟧ (“step 1” / “step 2” are not part of the headers) · filed #1996 · queued"),
 }
 
 # Items whose every decision is BAKED but which are NOT queued — Dave held them for a conversation.
