@@ -15,8 +15,8 @@ console.log('phone tap', await p.evaluate(()=>({rl: document.getElementById('rl-
 await p.fill('[data-note="X"]', 'hover works for me'); await p.waitForTimeout(900);
 console.log('phone note', await p.evaluate(()=>document.querySelector('[data-note-hint="X"]').textContent));
 await p.click('button[data-flip="today"]').catch(()=>{}); 
-await p.goto('file://'+S+'/local.html#/item/BG'); await p.waitForTimeout(300); await p.click('button[data-flip="today"]'); await p.waitForTimeout(200);
-console.log('phone flip today', await p.evaluate(()=>document.querySelector('.m-flipbody .app').textContent.includes('All Green')));
+await p.goto('file://'+S+'/local.html#/item/VC7'); await p.waitForTimeout(300); /* no Flip card left on the board after 13 Sep — flip check retired */
+console.log('phone item open', await p.evaluate(()=>!!document.querySelector('.m-dec')));
 await p.screenshot({path:S+'/p9-X.png', fullPage:false});
 // ---- desktop ----
 const d = await (await b.newContext({viewport:{width:1280,height:900},deviceScaleFactor:1})).newPage(); d.on('pageerror', e=>errors.push('desk '+e));
@@ -37,10 +37,10 @@ for (const k of ['BM','SA-7b','X','D3','T','Y','Z','EX5']) { if (openId) break; 
 await d.click('[data-dec="'+openId+'"][data-choose="A"]'); await d.waitForTimeout(200);
 console.log('desk tap', openId, await d.evaluate((id)=>({rl: document.getElementById('rl-'+id).textContent, y: window.scrollY}), openId), 'y1', y1);
 // hash deep link expands on desktop
-await d.goto('file://'+S+'/local.html#/item/BG'); await d.waitForTimeout(600);
-console.log('desk BG link', await d.evaluate(()=>({open: !!document.querySelector('.m-deskinner[data-item="BG"]'), both: document.querySelectorAll('.m-deskinner[data-item="BG"] .m-both').length, opts: document.querySelectorAll('.m-deskinner[data-item="BG"] .m-opts .m-btn').length, w: document.documentElement.scrollWidth})));
-await d.evaluate(()=>document.querySelector('[data-expand="BG"]').scrollIntoView()); await d.evaluate(()=>window.scrollBy(0,300));
-await d.screenshot({path:S+'/d9-BG.png', fullPage:false});
+await d.goto('file://'+S+'/local.html#/item/VC7'); await d.waitForTimeout(600);
+console.log('desk BG link', await d.evaluate(()=>({open: !!document.querySelector('.m-deskinner[data-item="VC7"]'), both: document.querySelectorAll('.m-deskinner[data-item="VC7"] .m-both').length, opts: document.querySelectorAll('.m-deskinner[data-item="VC7"] .m-opts .m-btn').length, w: document.documentElement.scrollWidth})));
+await d.evaluate(()=>document.querySelector('[data-expand="VC7"]').scrollIntoView()); await d.evaluate(()=>window.scrollBy(0,300));
+await d.screenshot({path:S+'/d9-VC7.png', fullPage:false});
 // legacy sections exist
 console.log('desk legacy', await d.evaluate(()=>[...document.querySelectorAll('.m-sec[data-sec="risk"], .m-sec[data-sec="icebox"], .m-sec[data-sec="archive"]')].map(e=>e.getAttribute('data-sec'))));
 await d.click('.m-sec[data-sec="risk"] .m-sechead'); await d.waitForTimeout(200); await d.evaluate(()=>document.querySelector('.m-sec[data-sec="risk"]').scrollIntoView()); await d.screenshot({path:S+'/d9-risk.png', fullPage:false});

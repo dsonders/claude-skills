@@ -199,14 +199,13 @@ for c in cards:
 
 # ruled / queued items for the dashboard (ruled in chat, filed in BACKLOG, not yet built)
 ruled_items=[
- ("Parts page & queue","—","Reject the retired “in stock” / “on order” values on a part’s pulled record","ruled 11 Sep · queued for the run after the next republish"),
- ("RO page — advisor, admin, tech","—","Internal-line labor hours: a tech edits them in every stage until the line is authorized or the RO closes","ruled 11 Sep · queued"),
- ("RO page — advisor, admin, tech","—","A tech cannot delete a line that was in the sent estimate","ruled 11 Sep · queued"),
+ ("RO page — advisor, admin, tech","—","Internal-line labor hours: a tech edits them in every stage until the line is authorized or the RO closes","built #2001 · parked 13 Sep on your relabelled-line call"),
+ ("RO page — advisor, admin, tech","—","A tech cannot delete a line that was in the sent estimate","built #2002 · parked 13 Sep on the same call"),
  ("Store settings — labor rates & money","SA-19","Saving a new labor rate re-prices every open RO in the store — with no question asked","ruled 30 Aug · waits on T"),
 ]
 
 LEGACY=json.load(open(O+'/legacy_blocks.json')) if os.path.exists(O+'/legacy_blocks.json') else {}
-DATA=dict(legacy={k: dict(title={'risk':'Risk grid','icebox':'Icebox','archive':'Archive'}[k], html=v) for k,v in LEGACY.items()}, sections=SECTION_ORDER, cards=data_cards, ruled=[dict(section=s,key=k,title=t,status=st) for s,k,t,st in ruled_items], icebox="Waiting on something specific", archive="Archive — 77 items shipped since the 29 Aug board", built=__import__("datetime").date.today().strftime("%-d %b %Y"))
+DATA=dict(legacy={k: dict(title={'risk':'Risk grid','icebox':'Icebox','archive':'Archive'}[k], html=v) for k,v in LEGACY.items()}, sections=SECTION_ORDER, cards=data_cards, ruled=[dict(section=s,key=k,title=t,status=st) for s,k,t,st in ruled_items], icebox="Waiting on something specific", archive="Archive — 81 items shipped since the 29 Aug board", built=__import__("datetime").date.today().strftime("%-d %b %Y"))
 
 PAGE_CSS = """
 /* ---------- phone board: type scale (Dave 9/8: bigger) ---------- */

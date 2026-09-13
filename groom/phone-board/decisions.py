@@ -2,45 +2,6 @@
 # Every ballot carries a do-nothing / delete option and one off-pattern option (⛔ Dave 2026-09-11).
 DEC = {
  # ----- MPI & Video -----
- "BG": [
-  ("The words on the admin Settings card — which?", [
-    ("A","“Technicians can mark all remaining items green” — an on/off switch",True),
-    ("B","“Bulk ‘All Green’ for technicians” — an on/off switch",False),
-    ("C","“Marking the rest green” — a menu: Allowed / Not allowed, like the card above it",False),
-    ("D","Other words — say them below",False),
-    ("E","Don’t build a setting — bulk green stays on for everyone",False),
-    ("F","No setting: remove bulk green for every store instead",False)]),
-  ("The setting is OFF and a voice note ends “all other items green” — what does the tech see?", [
-    ("A","Nothing — the rest of the items simply stay pending",False),
-    ("B","The sentence lands on the review sheet’s “1 note needs review” card, so he sees it did not apply",True),
-    ("C","Parked, plus one line under it: “Bulk green is off for this store.”",False)]),
-  ("Does OFF also remove “Mark the Rest Green” — the button once some items are touched?", [
-    ("A","Yes — every bulk button goes",True),
-    ("B","No — only the untouched-inspection “All Green” goes",False)]),
-  ("Does the video reader’s “everything else is good” obey the same switch?", [
-    ("A","Yes — one setting, every reader",True),
-    ("B","No — video keeps bulk green",False)]),
- ],
- "NG": [
-  ("“All the belts don’t look good.” — today the app reads it as an all-clear and greens the belts. Fix it?", [
-    ("A","Yes — read don’t / don’t / dont as one word before matching, so it is caught like “do not”",True),
-    ("B","Leave it",False),
-    ("C","Go wider: refuse any bulk all-clear when a “no” or “not” appears anywhere in the note (would also refuse “no leaks, everything else fine”)",False)]),
-  ("“No cracked belts.” — the AI reader greens Drive Belts from it today. Wanted?", [
-    ("A","Keep it — he said they are fine",True),
-    ("B","Refuse it like the collective phrases: the row stays pending and the sentence goes to the review sheet",False),
-    ("C","Keep it, but mark the row “set from a ‘no’” so the tech can see why it went green",False)]),
-  ("“I do not recommend a flush or suggest any service.” — reads as a recommendation because of the “or”. Fix it?", [
-    ("A","Yes — the “do not” governs the whole sentence",True),
-    ("B","Accept it — add the sentence to the test set as known behaviour",False),
-    ("C","Refuse to read any sentence with both a “not” and an “or” — send it to the review sheet instead",False)]),
- ],
- "VRC": [
-  ("The three choices, on the real sheet — as built?", [
-    ("A","Yes — all three stand",True),
-    ("B","Change one — say which below",False),
-    ("C","Put one total back above the two steps: “N items to review”",False)]),
- ],
  "VC7": [
   ("How should the missing corners get onto the card?", [
     ("A","Add a tires example beside the brakes one in the writer’s rule — measured on the test set first",True),

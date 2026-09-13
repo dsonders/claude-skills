@@ -1,60 +1,6 @@
 [
  {
   "section": "MPI & Video",
-  "key": "BG",
-  "title": "A store can switch OFF technicians’ bulk “All Green” in the MPI",
-  "sub": "One admin setting. OFF removes the All Green / Mark the Rest Green buttons and stops an “all other items green” voice note from greening the rest — the tech marks each item.",
-  "dims": [
-   "UX High — you asked for it 9 Sep",
-   "Size M",
-   "Codex 2–3 (setting + server + client, plus a full dictation test run)",
-   "Reversible: code only — an unset store stays ON",
-   "Population: every store that turns it on; every tech there, every inspection"
-  ],
-  "pop": "Admins who want techs to look at every item; the techs at those stores, on every inspection.",
-  "styles": [],
-  "blocks": [],
-  "questions": [],
-  "ruled": []
- },
- {
-  "section": "MPI & Video",
-  "key": "NG",
-  "title": "Three ways dictation reads a “no”",
-  "sub": "“All the belts don’t look good” is read as an all-clear. “No cracked belts” greens the belts. “I do not recommend a flush or suggest any service” reads as a recommendation.",
-  "dims": [
-   "⚡ Reliability Med–High",
-   "Size S each",
-   "Codex 0–1 each (the first needs the full dictation test run)",
-   "Reversible: code only",
-   "Population: every dictated inspection with a negation — everyday speech"
-  ],
-  "pop": "A tech whose app records the opposite of what he said.",
-  "styles": [],
-  "blocks": [],
-  "questions": [],
-  "ruled": []
- },
- {
-  "section": "MPI & Video",
-  "key": "VRC",
-  "title": "Video review sheet: three choices the build made — see them",
-  "sub": "The step header is the top header; “Apply Selected” stays when rows are unticked; “Dismiss All” stops at the first refusal. Real screens.",
-  "dims": [
-   "UX Med",
-   "Size S — only if you change one",
-   "Codex 0–1",
-   "Reversible: code only",
-   "Population: every tech reviewing what a video read"
-  ],
-  "pop": "A tech on the review sheet after a video read.",
-  "styles": [],
-  "blocks": [],
-  "questions": [],
-  "ruled": []
- },
- {
-  "section": "MPI & Video",
   "key": "VC7",
   "title": "Cue card: the other corners of a grouped item get dropped",
   "sub": "The writer is handed LF 7/32″ · RF 7/32″ (green) with a red rear-tires shot and leaves them out about half the time — measured on the test set.",
