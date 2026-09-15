@@ -20,8 +20,7 @@ not the merge button. First validated 2026-08-25 (P1 batch: 8 PRs, #1555–#1564
 - Ungroomed work — grooming (interview → locked rulings) is a PREREQUISITE, done in normal
   conversation first. An overnight run without rulings guesses, and guessing is the failure
   mode this skill exists to prevent.
-- A single daytime PR (just build it), iterative refinement (`/lab`), or a single verifiable
-  objective (`/goal`).
+- A single daytime PR (just build it) or iterative refinement (`/lab`).
 
 ## Core Principles
 
