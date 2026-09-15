@@ -1,6 +1,6 @@
 ---
 name: pre-push-mirror
-description: Pre-push mirror review for RO-bot app PRs that touch AUTH/LOGIN or ORG-ISOLATION/tenancy — run BEFORE the first push of those PRs only (Dave, 2026-09-04; scoped down from all blocking domains after the 9/5 audit found no round reduction from the mirror on size-matched PRs). Runs /code-review high on the unpushed diff, triages findings by the mirror rules (fix correctness + whole class; defer behavior-preserving refactors; meta-probe fail-open guards), fixes, then pushes ONCE. Use when about to push an auth or org-isolation PR, or when the user says "pre-push mirror", "mirror review", or "run the mirror". RO-bot app only (/ro-bot/app/).
+description: Internal /code-review mirror run BEFORE the first push of a RO-bot app PR that touches auth/login or organization_id tenancy, so the paid Codex gate passes in one round.
 argument-hint: [none — operates on the current branch's unpushed diff]
 ---
 

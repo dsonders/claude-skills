@@ -1,6 +1,6 @@
 ---
 name: codex-fix
-description: Recover a RO-bot app PR that FAILED the Codex review gate — in ONE round. Gathers every Codex finding, runs a thorough multi-agent internal review that mirrors Codex's own rubric across the FULL diff, fixes the WHOLE CLASS (not just the flagged line), self-reviews, runs local gates, then re-pushes. Use when a PR gets a Codex BLOCK / "CODEX_REVIEW_VERDICT: BLOCK", a red "Codex Review" check, or the user says a PR failed Codex / Codex review / code review and wants it fixed and re-pushed. RO-bot app only (/ro-bot/app/).
+description: Recover a RO-bot app PR that FAILED the Codex review gate in one round: fix the whole class behind every finding, self-review, run local gates, re-push.
 argument-hint: [PR number]
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: groom
-description: Interactive triage + grooming session for the RO-bot backlog on a visual board — prioritize items, present each with standard dimensions and visual-first explanations, ballot UX decisions with mockups, and write Dave's rulings verbatim into docs/overnight/BACKLOG.md for the overnight-build run. Use when Dave says "groom", "let's groom the backlog", "triage these", "grooming board", "update the board", or wants follow-ups presented for decisions. Designed 2026-08-25 with Dave; the format rules below are his.
+description: Interactive grooming of the RO-bot backlog on the visual board: ballot UX decisions with mockups and write Dave's rulings verbatim into docs/overnight/BACKLOG.md. Use when Dave says "groom", "triage these", or "update the board".
 ---
 
 # Groom: the grooming board and the rulings pipeline

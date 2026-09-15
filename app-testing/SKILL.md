@@ -32,34 +32,29 @@ This skill provides a systematic approach to creating and managing automated tes
 4. **Mobile-First Testing:** iOS Safari is the primary user environment
 5. **Layered Testing:** Use the right test type for each scenario
 
-## Testing Layers Overview
+## Where things are (the rulebook owns the details)
 
-| Layer | Tool | When to Use | RO-bot Focus |
-|-------|------|-------------|--------------|
-| **Unit** | Jest | Pure logic, data transformations | AI inference modes, warranty processing |
-| **API** | Jest + Supertest | Endpoint validation | organization_id filtering, auth |
-| **E2E** | Playwright | Full user workflows | Video upload, voice recording |
-| **Visual** | Playwright MCP | UI debugging, screenshots | iOS Safari issues |
+The command table (what runs where, `test:safe` for the web sandbox, the live `test:workflow` suite) lives in `AGENTS.md` under **Testing**; the web-vs-terminal matrix and troubleshooting live in `docs/testing-procedures-summary.md`. Don't restate them here.
 
-## Test Directory Structure
+Real layout (verified 2026-09-15):
 
 ```
 __tests__/
-├── unit/                    # Jest unit tests
-│   ├── services/            # Server service tests
-│   └── lib/                 # Shared library tests
-├── api/                     # API endpoint tests (Jest + Supertest)
-│   ├── helpers/
-│   │   └── test-setup.ts    # Auth mocking, test org setup
-│   └── [endpoint].test.ts
-├── e2e/                     # Playwright E2E tests
-│   ├── flows/
-│   │   └── [flow].spec.ts
-│   └── helpers/
-│       └── e2e-setup.ts     # Login, mobile gestures
-└── fixtures/                # Shared test data
-    └── mock-data.ts
+├── unit/          # Jest unit tests, flat *.test.ts files
+├── api/           # Jest + Supertest endpoint tests; helpers/test-setup.ts
+├── e2e/           # Playwright: *.spec.ts at the top level, permissions/, manual-flows/; helpers/e2e-setup.ts
+├── workflow/      # Live API E2E against deployed Replit (opt-in via .env.test)
+├── eval/          # MPI matching accuracy eval (real model; npm run eval:mpi)
+├── fixtures/      # mock-data.ts
+└── helpers/
 ```
+
+| Layer | Tool | RO-bot focus |
+|-------|------|--------------|
+| **Unit** | Jest | AI inference modes, warranty processing, pure logic |
+| **API** | Jest + Supertest | organization_id filtering, auth, role gates |
+| **E2E** | Playwright | Video upload, voice recording, permission gates |
+| **Visual** | Playwright MCP | iOS Safari debugging, screenshots |
 
 ## Workflow
 
@@ -255,7 +250,7 @@ describe('GET /api/repair-orders', () => {
 
 ### Step 5: Write E2E Tests (If Applicable)
 
-**File Location:** `__tests__/e2e/flows/[flow].spec.ts`
+**File Location:** `__tests__/e2e/[flow].spec.ts` (permission flows under `__tests__/e2e/permissions/`)
 
 **Pattern for RO-bot User Flows:**
 
@@ -417,7 +412,7 @@ After creating tests, document what's covered:
 ## Test Coverage: [Feature Name]
 
 ### Unit Tests
-- `__tests__/unit/services/[feature].test.ts`
+- `__tests__/unit/[feature].test.ts`
   - ✅ [Test case 1]
   - ✅ [Test case 2]
 
@@ -428,7 +423,7 @@ After creating tests, document what's covered:
   - ✅ [Endpoint behavior]
 
 ### E2E Tests
-- `__tests__/e2e/flows/[flow].spec.ts`
+- `__tests__/e2e/[flow].spec.ts`
   - ✅ Desktop Chrome
   - ✅ Mobile Safari (iOS)
   - ✅ Mobile Chrome (Android)
@@ -600,13 +595,14 @@ MOCK_VIDEO_SIZES.SMALL_30_SECONDS
 
 ## Slash Commands for Manual Testing
 
-Use these commands to manually trigger test runs:
+These wrap the npm scripts in `AGENTS.md`'s Testing table:
 
-- `/test` - Run all tests
-- `/test:unit` - Run unit tests only
-- `/test:api` - Run API tests only
-- `/test:e2e` - Run E2E tests
-- `/test:mobile` - Run mobile-specific E2E tests
+- `/test:safe` - Unit + API, the only set that runs in the Claude Code web sandbox (Playwright hangs there)
+- `/test:unit`, `/test:api`, `/test:coverage` - subsets of the above
+- `/test:e2e`, `/test:mobile` - Playwright desktop / mobile browsers (terminal only)
+- `/test:visual` - Playwright MCP, see the browser (terminal only)
+- `/test:all` - Jest + Playwright
+- `/ios-verify` - real WebKit / iOS Simulator check, never headless Chromium
 
 ## Success Criteria
 

@@ -1,6 +1,6 @@
 ---
 name: overnight-build
-description: Run an autonomous overnight (or unattended) build of groomed backlog items in the RO-bot app — durable brief → parallel Opus build agents in worktrees → green=merge policy → morning ledger for pre-republish review. Use when Dave says "run overnight-build", "build these overnight / while I sleep", "start the overnight run", or asks to execute a set of groomed cards unattended. Requires every item to be GROOMED (all decisions ruled) first; grooming itself happens in normal conversation before invoking this skill.
+description: Autonomous overnight build of GROOMED RO-bot backlog cards: durable brief, parallel Opus agents in worktrees, green-means-merge, morning ledger. Use when Dave says "run overnight-build" or "build these overnight".
 ---
 
 # Overnight Build: Unattended Multi-PR Run from a Groomed Brief

@@ -80,7 +80,7 @@ Search for existing skills that might solve the problem or inform the design.
    ```
 
 3. **Project Skills:**
-   Review existing skills in `.claude/skills/` for patterns and integration points.
+   Review existing skills in `~/.claude/skills/` (the clone of `dsonders/claude-skills`) for patterns and integration points.
 
 **Evaluation Criteria:**
 
@@ -315,9 +315,11 @@ compound → (documents learnings from creation)
 
 **Commit the skill:**
 
+Skills live in `~/.claude/skills/`, a clone of `dsonders/claude-skills`, not inside a project repo. Commit there; the Stop hook pushes automatically, or run `/sync-skills` to push now:
+
 ```bash
-git add .claude/skills/[skill-name]/
-git commit -m "feat: add /[skill-name] skill for [purpose]
+git -C ~/.claude/skills add [skill-name]/
+git -C ~/.claude/skills commit -m "feat: add /[skill-name] skill for [purpose]
 
 - [Key feature 1]
 - [Key feature 2]

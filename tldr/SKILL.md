@@ -1,6 +1,6 @@
 ---
 name: tldr
-description: Distill Claude's most recent work report into a CEO-facing executive brief — a one-line TL;DR, the decisions and actions that need the user, what happened in plain language, and risks to watch. Use after a long, technical Claude Code run when the user (a product leader, not an engineer) wants to cut through the wall of text and see only what matters to them and what they must decide or do. Primarily invoked explicitly via /tldr; do not auto-run it unless the user asks.
+description: Rewrite Claude's last work report as a one-screen executive brief for Dave (TL;DR, what needs him, what happened, risks); invoked via /tldr only.
 allowed-tools: Read, Grep, Glob
 ---
 

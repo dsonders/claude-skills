@@ -1,6 +1,6 @@
 ---
 name: visual
-description: Re-render Claude's previous message in a more visual, scannable form — tables, grouped bullets, hierarchy, whitespace, and consistent status markers — keeping all the content but cutting the mental effort to digest it. Use when the last message was a dense wall of text, a long list, or a comparison that's hard to scan, and the user wants the same information laid out so it's easy to take in at a glance. Primarily invoked via /visual; do not auto-run it unless the user asks.
+description: Re-render Claude's previous message in a scannable layout (tables, grouped bullets, status markers) with every fact kept; invoked via /visual only.
 allowed-tools: Read, Grep, Glob
 ---
 

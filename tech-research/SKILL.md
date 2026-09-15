@@ -417,7 +417,7 @@ If user approves, create a detailed implementation plan:
 ### Efficient Web Research
 
 1. **Start with official sources** (documentation, GitHub)
-2. **Look for recent content** (2024-2025 for current best practices)
+2. **Look for recent content** (check the publish date; prefer the last 12 months for best practices)
 3. **Cross-reference multiple sources** (don't trust single articles)
 4. **Check for mobile-specific information** (critical for RO-bot)
 5. **Verify license compatibility** (MIT, Apache preferred)

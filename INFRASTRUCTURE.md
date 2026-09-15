@@ -1,6 +1,6 @@
 # Skills Infrastructure: How It Works
 
-**Last Updated:** February 15, 2026
+**Last Updated:** September 15, 2026
 
 This document explains how skills are fetched, synced, and made available across all Claude Code environments.
 
@@ -27,9 +27,9 @@ Skills live in a single GitHub repo (`dsonders/claude-skills`) and are cloned in
 
 | Environment | Fetch trigger | Push trigger | Auth method |
 |---|---|---|---|
-| **Terminal** | Global `~/.claude/settings.json` SessionStart hook | Global Stop hook | PAT from `~/.claude/secrets/skills-pat` |
+| **Terminal** | Global `~/.claude/settings.json` SessionStart hook | Global Stop hook | SSH key registered with GitHub (no token, no secret file) |
 | **Mac Desktop App** | Same as terminal (shares `~/.claude/`) | Same as terminal | Same as terminal |
-| **Web (per-repo)** | Per-project `.claude/settings.json` SessionStart hook | Per-project Stop hook (web-only) | `CLAUDE_SKILLS_PAT` env var, written to secrets file by `session-start.sh` |
+| **Web (per-repo)** | Per-project `.claude/settings.json` SessionStart hook | Per-project Stop hook (web-only) | `CLAUDE_SKILLS_PAT` env var, written to the secrets file by `session-start.sh`, handed to git through a credential helper. The remote URL never contains it. |
 
 ---
 
@@ -95,77 +95,16 @@ cd "$CLAUDE_PROJECT_DIR"
 npm install
 ```
 
-### 2. `.claude/hooks/fetch-global-skills.sh`
+### 2. `.claude/hooks/fetch-global-skills.sh` and 3. `.claude/hooks/push-global-skills.sh`
+
+Copy them byte-for-byte from `ro-bot/app/.claude/hooks/` (the `website/` copies are identical). Both are web-only (`CLAUDE_CODE_REMOTE` guard), keep the remote at the plain `https://github.com/dsonders/claude-skills.git`, and authenticate with:
 
 ```bash
-#!/bin/bash
-# Fetch global skills from dsonders/claude-skills on SessionStart
-
-set -euo pipefail
-
-SECRETS_FILE="$HOME/.claude/secrets/skills-pat"
-if [ -n "${CLAUDE_SKILLS_PAT:-}" ]; then
-  GITHUB_PAT="$CLAUDE_SKILLS_PAT"
-elif [ -f "$SECRETS_FILE" ]; then
-  GITHUB_PAT="$(tr -d '[:space:]' < "$SECRETS_FILE")"
-else
-  echo "Warning: No PAT found. Set CLAUDE_SKILLS_PAT or create $SECRETS_FILE" >&2
-  exit 0
-fi
-
-SKILLS_REPO="https://${GITHUB_PAT}@github.com/dsonders/claude-skills.git"
-SKILLS_DIR="$HOME/.claude/skills"
-
-mkdir -p "$HOME/.claude"
-
-if [ -d "$SKILLS_DIR/.git" ]; then
-  cd "$SKILLS_DIR"
-  git remote set-url origin "$SKILLS_REPO" 2>/dev/null || true
-  if ! git pull --rebase origin main >/dev/null 2>&1; then
-    cd "$HOME/.claude"
-    rm -rf "$SKILLS_DIR"
-    git clone --quiet "$SKILLS_REPO" "$SKILLS_DIR" 2>&1 || echo "Warning: Skills clone failed" >&2
-  fi
-elif [ -d "$SKILLS_DIR" ]; then
-  rm -rf "$SKILLS_DIR"
-  git clone --quiet "$SKILLS_REPO" "$SKILLS_DIR" 2>&1 || echo "Warning: Skills clone failed" >&2
-else
-  git clone --quiet "$SKILLS_REPO" "$SKILLS_DIR" 2>&1 || echo "Warning: Skills clone failed" >&2
-fi
+CRED_HELPER='!f() { printf "username=x-access-token\npassword=%s\n" "$GIT_SKILLS_PAT"; }; f'
+git_auth() { git -c credential.helper= -c "credential.helper=$CRED_HELPER" "$@"; }
 ```
 
-### 3. `.claude/hooks/push-global-skills.sh`
-
-```bash
-#!/bin/bash
-# Push skill changes back on session end (web-only)
-
-if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
-  exit 0
-fi
-
-SKILLS_DIR="$HOME/.claude/skills"
-[ -d "$SKILLS_DIR/.git" ] || exit 0
-
-SECRETS_FILE="$HOME/.claude/secrets/skills-pat"
-if [ -n "${CLAUDE_SKILLS_PAT:-}" ]; then
-  GITHUB_PAT="$CLAUDE_SKILLS_PAT"
-elif [ -f "$SECRETS_FILE" ]; then
-  GITHUB_PAT="$(tr -d '[:space:]' < "$SECRETS_FILE")"
-else
-  exit 0
-fi
-
-cd "$SKILLS_DIR"
-git remote set-url origin "https://${GITHUB_PAT}@github.com/dsonders/claude-skills.git" 2>/dev/null || true
-git config user.email "claude-code-web@dsonders.dev" 2>/dev/null || true
-git config user.name "Claude Code Web" 2>/dev/null || true
-
-git add -A
-git diff --cached --quiet && exit 0
-git commit -m "Auto-sync from web: $(date +%Y-%m-%d\ %H:%M)" >/dev/null 2>&1
-git push origin main >/dev/null 2>&1 || echo "Warning: Skills push failed" >&2
-```
+git asks the helper for credentials and the helper answers from the exported env var, so the token is never in the URL, `.git/config`, the command line, or `ps`. A pull failure warns and keeps the local clone; it never deletes one.
 
 ### 4. `.claude/settings.json`
 
@@ -224,11 +163,11 @@ PATs committed to repos get rotated, diverge across branches, and are a security
 ### 2. Never use `async: true` in fetch hooks
 Async hooks run in the background. Skills won't be loaded when the session starts, causing "skill not found" errors. Always run fetch synchronously.
 
-### 3. Always use HTTPS+PAT, never SSH
-SSH keys aren't available in web containers. HTTPS+PAT works everywhere: terminal, Mac app, and web.
+### 3. The token never goes in the remote URL
+An `https://PAT@github.com/...` remote leaks the token to `git remote -v`, to `.git/config`, and to every later session that opens the clone. That is how the PAT was exposed on 2026-07-02, and the per-project web hooks kept re-embedding it until 2026-09-15. Terminal and Mac app use SSH; web (no SSH key in the container) feeds the token to git through a credential helper. Both keep the URL clean.
 
 ### 4. Always `git remote set-url` before pull/push
-The clone URL includes the PAT. If the PAT was rotated, the stored remote URL has the old PAT. Setting the URL on every run ensures the current PAT is always used.
+Each environment's hook sets the URL it needs (SSH on terminal, plain https on web) on every run, so a clone left in the other state by a different environment is corrected before use.
 
 ### 5. Per-project push hooks must guard with `CLAUDE_CODE_REMOTE`
 Terminal sessions use the global push hook from `~/.claude/hooks/`. If the per-project push hook also runs, you get duplicate commits. Guard with `if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then exit 0; fi`.
@@ -257,14 +196,14 @@ Hook and settings changes on feature branches won't be available in other branch
 ## Troubleshooting
 
 **Skills not loading in a session:**
-1. Check `~/.claude/secrets/skills-pat` exists and has content
+1. Terminal: `ssh -T git@github.com` authenticates. Web: `~/.claude/secrets/skills-pat` exists and has content
 2. Run `~/.claude/hooks/fetch-global-skills.sh` manually
 3. Check `ls ~/.claude/skills/` for populated directories
 
 **Skills stale (not updating):**
 1. Check if `async: true` is in the fetch hook (remove it)
 2. Run `cd ~/.claude/skills && git pull --rebase origin main` manually
-3. Check if remote URL has expired PAT: `cd ~/.claude/skills && git remote -v`
+3. `cd ~/.claude/skills && git remote -v` must show `git@github.com:` (terminal) or a plain `https://github.com/` URL (web). A token in the URL means an old hook ran; fix the hook, then `git remote set-url origin git@github.com:dsonders/claude-skills.git`
 
 **Push failing silently:**
 1. Check PAT has write access to `dsonders/claude-skills`

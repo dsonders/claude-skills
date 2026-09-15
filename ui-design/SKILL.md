@@ -40,30 +40,7 @@ This skill provides a systematic approach to UI design and refinement for the RO
 
 ## Codebase Reference
 
-Before making UI changes, know where things live:
-
-| What | Location |
-|------|----------|
-| UI Primitives | `client/src/components/ui/` (47 shadcn/ui components) |
-| Design Tokens | `client/src/index.css` (lines 209-263) |
-| cn utility | `client/src/lib/utils.ts` |
-| iOS Safari fixes | `client/src/index.css` (lines 1-130) |
-| Layout/Safe Areas | `client/src/components/layout.tsx` |
-| MPI Components | `client/src/components/mpi/` (good pattern examples) |
-
-**Design Token Colors:**
-```
-Brand:   brand-teal (#2A9D8F), brand-orange (#FB923C), brand-blue (#3B82F6)
-Status:  success (green), warning (amber), error (red), info (sky)
-```
-
-**Z-Index Scale (established):**
-```
-50      Dialog overlays, fixed headers
-999     Full-screen modals
-1000+   Voice/chat overlays
-9999    PWA standalone background
-```
+`design.md` at the app root is auto-loaded and is the source of truth for color tokens, typography, iconography, layout, state conventions, and toast rules. Do not restate or override it here. Tokens are defined in `client/src/index.css` and mapped in `tailwind.config.ts`; primitives live in `client/src/components/ui/`; `cn` is in `client/src/lib/utils.ts`; safe-area layout is `client/src/components/layout.tsx`. UI bug mechanisms (Radix on iOS, `position:fixed` traps, shadcn sizing) are in `docs/pitfalls.md`.
 
 ---
 
@@ -395,34 +372,6 @@ className="overscroll-behavior-none"
 
 ---
 
-## Status Color System
-
-RO-bot uses a consistent green/yellow/red status system:
-
-```tsx
-// Background colors (use for rows, cards)
-function getStatusBgClass(status: 'green' | 'yellow' | 'red' | 'none') {
-  switch (status) {
-    case 'green': return 'bg-green-50 hover:bg-green-100';
-    case 'yellow': return 'bg-orange-50 hover:bg-orange-100';
-    case 'red': return 'bg-red-50 hover:bg-red-100';
-    default: return 'hover:bg-gray-50';
-  }
-}
-
-// Value/badge colors (use for indicators)
-function getStatusValueClass(status: 'green' | 'yellow' | 'red' | 'none') {
-  switch (status) {
-    case 'green': return 'bg-green-500 text-white';
-    case 'yellow': return 'bg-orange-500 text-white';
-    case 'red': return 'bg-red-500 text-white';
-    default: return 'bg-gray-200 text-gray-500';
-  }
-}
-```
-
----
-
 ## Workflow
 
 ### For UI Refinement (polishing existing UI)
@@ -622,9 +571,10 @@ UI work is complete when:
 
 ## References
 
-- [MPI Mobile UX Polish](../../docs/lessons-learned/mpi-mobile-ux-polish.md) - Example refinement session
-- [iOS Safe Area Patterns](../../docs/bug-reports/ios-safe-area-patterns.md) - Safe area solutions
-- [iOS Media Permission Patterns](../../docs/bug-reports/ios-media-permission-patterns.md) - iOS-specific fixes
-- [Shadcn/ui Components](https://ui.shadcn.com/docs/components) - Component documentation
-- [Radix Primitives](https://www.radix-ui.com/primitives) - Underlying primitive docs
-- [Vercel React Best Practices](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices) - Source for React/JS optimization patterns (adapted for non-Next.js stack)
+- `/ro-bot/app/design.md` - principles, color, typography, state conventions (auto-loaded)
+- `/ro-bot/app/docs/pitfalls.md` - iOS / Radix / shadcn / layout bug mechanisms
+- `/ro-bot/app/docs/lessons-learned/mpi-mobile-ux-polish.md` - example refinement session
+- `/ro-bot/app/docs/bug-reports/ios-safe-area-patterns.md` - safe area solutions
+- `/ro-bot/app/docs/bug-reports/ios-media-permission-patterns.md` - iOS media permission fixes
+- [shadcn/ui components](https://ui.shadcn.com/docs/components) and [Radix Primitives](https://www.radix-ui.com/primitives)
+- [Vercel React best practices](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices) - source for the React optimization rules
