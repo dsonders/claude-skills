@@ -4,11 +4,11 @@ DEC = {
  # ----- MPI & Video -----
  "NEG": [
   ("“Didn’t see any leaks” — what should the app do with the word “leaks”?", [
-    ("A","The app can’t colour a row from a damage word the tech said inside a “no”.",False),
+    ("A","The app can’t colour a row from a damage word the tech said inside a “no”.",True),
     ("B","Leave it — a damage word colours the row even inside a “no”.",False),
     ("C","A sentence with both a “no” and a damage word goes to the review sheet for the tech to decide.",False)]),
   ("Should the app read can’t, won’t, couldn’t, shouldn’t, wouldn’t, mustn’t, needn’t and cannot as a “no”?", [
-    ("A","Yes — all eight read as a “no”, with the full dictation test set run before it ships.",False),
+    ("A","Yes — all eight read as a “no”, with the full dictation test set run before it ships.",True),
     ("B","Leave it — those eight words are not read as a “no”.",False),
     ("C","A sentence with one of those words goes to the review sheet for the tech to decide.",False)]),
   ("“It’s not green, it’s yellow” — should the app still file green?", [
@@ -77,7 +77,7 @@ DEC = {
     ("B","Other wording — say it below.",False)]),
  ],
  "X": [
-  ("Bring the count back as “price gaps”, counting what the RO page counts — labor hours missing or zero, a part with no price or $0?", [
+  ("Bring the count back as “price gaps” — labor hours missing or zero, a part with no price or $0?", [
     ("A","Yes — the cell shows “N price gaps”.",True),
     ("B","No — drop the count; there is nothing left for the old rule to find.",False)]),
   ("Should hovering the cell list the lines and what each one is missing?", [

@@ -362,9 +362,7 @@
   ],
   "pop": "Nobody using the product — this is my own build machinery.",
   "styles": [],
-  "blocks": [
-   "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>The proposal, in one line</span></figcaption>\n        <div class=\"as-body\">\n          <div class=\"as-toast ok\">\n            <svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" style=\"flex:none; color:#059669;\"><path d=\"M12 22s7-4.2 7-10V5.6L12 3 5 5.6V12c0 5.8 7 10 7 10z\"/><path d=\"M9.2 12.2l2 2 3.6-3.8\"/></svg>\n            <span><b>Proposed:</b> the worktree guard refuses a reset on a claimed tree.</span>\n          </div>\n        </div>\n      </figure>"
-  ],
+  "blocks": [],
   "questions": [
    [
     "check",

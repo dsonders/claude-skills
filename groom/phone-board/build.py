@@ -88,18 +88,13 @@ CONTEXT['VRC-1'] = 'Three calls the 8 Sep build made on your copy (card VR) that
 OPT_VIS['VRC-1'] = {'A': {'why': 'Nothing to build.'}, 'B': {'why': 'Say which of the three below; it becomes its own small build.'}, 'C': {'why': 'A second number above the step header — the shape you called busy on 7 Sep.'}}
 
 # ----- NEG: three more places a spoken "no" is ignored (non-UX: no frames) -----
-CONTEXT['NEG-1'] = ('The damage words the app listens for — crack, leak, grinding — colour a row on their own, with '
- 'nothing checking whether the tech said them inside a “no”. Neither direction is obviously safe: refusing means a '
- 'stated defect is never lost, allowing means his “no” is honoured.')
+CONTEXT['NEG-1'] = ('The damage words the app listens for — crack, leak, grinding — colour a row on their own, without checking whether the tech said them inside a “no”.')
 OPT_VIS['NEG-1'] = {
  'A': {'why': 'A tech who says “didn’t see any leaks” stops getting a red row — and a defect he phrased oddly could be missed.'},
  'B': {'why': 'A stated defect is never lost, and “didn’t see any leaks” keeps turning the row red.'},
  'C': {'why': 'Nothing is decided for him — one more row on the review sheet every time he says it.'},
 }
-CONTEXT['NEG-2'] = ('The words the app already reads as a “no” do not include can’t, won’t, couldn’t, '
- 'shouldn’t, wouldn’t, mustn’t, needn’t or cannot, and widening the list moves three features that already '
- 'ship, so the full dictation test set runs first. One widening already shipped: dropping “or” means a recommendation '
- 'said after an “or” is now read together with what came before it, and no sentence has turned up where that matters.')
+CONTEXT['NEG-2'] = ('The words the app already reads as a “no” do not include these eight. Widening the list touches three features that already ship, so the full dictation test set runs first.')
 OPT_VIS['NEG-2'] = {
  'A': {'why': 'A tech who says “couldn’t find any leaks” gets the reading he meant.'},
  'B': {'why': 'A tech who says “couldn’t find any leaks” keeps getting a reading he did not give.'},
@@ -222,7 +217,7 @@ CONTEXT['X-1'] = ('The cell still carries its old count, but it looks for lines 
  'so it is always zero.')
 OPT_VIS['X-1'] = {
  'A': {'frame': OF.booked('+2 price gaps'), 'why': 'The admin sees on the dashboard what the RO page already shows.'},
- 'B': {'frame': OF.booked(), 'why': 'The dashboard keeps showing no gaps while the RO page and the parts page show them.'},
+ 'B': {'why': 'The dashboard keeps showing no gaps while the RO page and the parts page show them.'},
 }
 OPT_VIS['X-2'] = {
  'A': {'frame': OF.booked_hover(True), 'why': 'The admin sees which lines are missing a price without opening the RO.'},
