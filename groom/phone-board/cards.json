@@ -1,17 +1,35 @@
 [
  {
   "section": "MPI & Video",
+  "key": "NEG",
+  "title": "Three more places where dictation ignores a “no”",
+  "sub": "A tech says a part is fine and the app files a problem — or reads a problem he did not state.",
+  "dims": [
+   "UX Med ⚡",
+   "Size S each",
+   "Codex 0–1 each",
+   "Reversible: code only, with the full dictation test set run before it ships",
+   "Population: every dictated note, at every store"
+  ],
+  "pop": "The tech whose spoken “no” is read as a yes — and the customer who gets the result.",
+  "styles": [],
+  "blocks": [],
+  "questions": [],
+  "ruled": []
+ },
+ {
+  "section": "MPI & Video",
   "key": "VC7",
-  "title": "Cue card: the other corners of a grouped item get dropped",
-  "sub": "The writer is handed LF 7/32″ · RF 7/32″ (green) with a red rear-tires shot and leaves them out about half the time — measured on the test set.",
+  "title": "A cue card about one axle often leaves out the good readings from the other corners",
+  "sub": "The customer hears the bad news about the rears without hearing that the fronts are fine.",
   "dims": [
    "UX Med",
    "Size S",
    "Codex 0–1",
-   "Reversible: prompt only",
-   "Population: every grouped finding on a video (tires, brakes) with greens beside a red"
+   "Reversible: the writer’s rule only",
+   "Population: every video finding where one axle is red and the others are green"
   ],
-  "pop": "A tech delivering bad news on the rears wants the good fronts on the same card — your rule of 7 Sep.",
+  "pop": "The customer watching the video — and the tech who read the good corners out loud.",
   "styles": [],
   "blocks": [],
   "questions": [],
@@ -20,14 +38,14 @@
  {
   "section": "MPI & Video",
   "key": "VC8",
-  "title": "Cue card: may a GREEN good-news shot mention the red axle?",
-  "sub": "Green shots get no sibling corners on purpose today, so a green front-tires card never says the rears are at 2/32″.",
+  "title": "A good-news cue card never mentions the corners that failed",
+  "sub": "The customer sees a card that says the fronts are fine and says nothing about the rears.",
   "dims": [
    "UX Low",
    "Size S",
    "Codex 0–1",
    "Reversible: one line",
-   "Population: techs who opt a green shot into a video — rare"
+   "Population: techs who add a good-news shot to a video — rare"
   ],
   "pop": "A tech reassuring the customer on a good-news shot.",
   "styles": [],
@@ -36,18 +54,36 @@
   "ruled": []
  },
  {
-  "section": "Parts page & queue",
-  "key": "SO",
-  "title": "Send to advisor: the inline hint and the dialog say the customer sentence two ways",
-  "sub": "Hint: “2 parts have no price — their lines will be quoted with those parts counted as $0.00.” Dialog: “2 parts still need pricing. Those lines will be quoted to the customer with the unpriced parts counted as $0.00 — and the customer can approve them at that price.”",
+  "section": "MPI & Video",
+  "key": "BGO",
+  "title": "With bulk green off, a note that only says “everything else is good” shows as a pink bubble",
+  "sub": "The tech’s last sentence is marked as a note that applied nothing, with nothing saying why.",
   "dims": [
    "UX Low",
    "Size S",
    "Codex 0–1",
-   "Reversible: copy only",
-   "Population: every parts user sending a customer-pay RO with an unpriced part"
+   "Reversible: display only",
+   "Population: techs at a store that turns bulk green off — no store has yet"
   ],
-  "pop": "The parts counter, reading two versions of the same warning ten seconds apart.",
+  "pop": "A tech ending his dictation with “everything else is good” at a store with bulk green off.",
+  "styles": [],
+  "blocks": [],
+  "questions": [],
+  "ruled": []
+ },
+ {
+  "section": "Parts page & queue",
+  "key": "SO",
+  "title": "Sending to the advisor warns about unpriced parts twice, in two different wordings",
+  "sub": "The parts user has to work out whether the second warning says something new.",
+  "dims": [
+   "UX Low",
+   "Size S",
+   "Codex 0–1",
+   "Reversible: wording only",
+   "Population: every parts user sending a customer pay RO with an unpriced part"
+  ],
+  "pop": "The parts user sending a customer pay RO with a part that has no price.",
   "styles": [],
   "blocks": [],
   "questions": [],
@@ -56,16 +92,16 @@
  {
   "section": "RO page — advisor, admin, tech",
   "key": "BM",
-  "title": "Bulk move at 1440: the advisor can’t see the rewrite question, and can’t click Internal",
-  "sub": "With the Customer-link panel open the bar gets about 490 px: the question line measures 0 px and the Internal pill sits under the panel. The tech’s bar (no panel) is fine.",
+  "title": "Moving several lines at once: the advisor can’t see the question and can’t click Internal",
+  "sub": "He answers a question he never sees, and one of the four pay types can’t be clicked at all.",
   "dims": [
    "UX Med ⚡",
    "Size S",
    "Codex 0–1",
    "Reversible: layout only",
-   "Population: advisors bulk-moving lines on a 1440 monitor"
+   "Population: advisors moving several lines at once on a desktop monitor"
   ],
-  "pop": "An advisor at McGrath moving several lines at once on a 1440 screen.",
+  "pop": "An advisor moving several lines at once with the customer link panel open.",
   "styles": [],
   "blocks": [],
   "questions": [],
@@ -74,12 +110,12 @@
  {
   "section": "RO page — advisor, admin, tech",
   "key": "PH",
-  "title": "A “Changes” list on the line: who changed a price, and when",
-  "sub": "Every price, quantity, stock answer, note and labor change has been recorded with who made it since June; nothing on screen shows it yet.",
+  "title": "Nothing on a line shows who changed a price",
+  "sub": "The app has recorded every change and who made it; no screen shows any of it.",
   "dims": [
    "UX Med",
    "Size M",
-   "Codex 2–3 (a new read for the RO, store-scoped)",
+   "Codex 2–3",
    "Reversible: a read-only screen",
    "Population: advisors and admins on any line whose money moved"
   ],
@@ -92,13 +128,13 @@
  {
   "section": "Dashboards",
   "key": "D3",
-  "title": "Admin dashboard: the Pipeline / List switch gets squashed to “Li” when a filter is on",
-  "sub": "Turn on any filter and the toolbar runs out of room — “List” becomes “Li”.",
+  "title": "The dashboard’s “List” button reads “Li” whenever a filter is on",
+  "sub": "The toolbar runs out of room and the switch is the first thing to give.",
   "dims": [
    "UX Med",
    "Size S",
    "Codex 0–1",
-   "Reversible: code only",
+   "Reversible: layout only",
    "Population: every admin, every filtered view"
   ],
   "pop": "Any admin who filters the dashboard — that’s most sessions.",
@@ -117,15 +153,16 @@
  {
   "section": "Dashboards",
   "key": "SA-7b",
-  "title": "The dashboard badge went vague: “Needs approval” on every RO, customer-pay ones included",
-  "sub": "The badge used to read “Needs customer OK”. Since per-part store approvals shipped, the one number it reads can include parts waiting on the store , so it was widened to “Needs approval” for everyone — and parked for you.",
+  "title": "The dashboard badge says “Needs approval” without saying who has to approve",
+  "sub": "The advisor can’t tell from the dashboard whether the customer or the store is holding the RO.",
   "dims": [
    "UX Med",
    "Size S–M",
    "Codex 2–3",
-   "Population: every admin and advisor scanning the dashboard — most ROs are customer-pay"
+   "Touches data: one new stored count on each RO",
+   "Population: every admin and advisor scanning the dashboard — most ROs are customer pay"
   ],
-  "pop": "The advisor who used to read “Needs customer OK” and now gets a badge that doesn’t say who.",
+  "pop": "The advisor scanning the dashboard to see what is waiting on whom.",
   "styles": [],
   "blocks": [
    "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>What the badge says</span><span class=\"hint\">scroll &rarr;</span></figcaption>\n        <div class=\"scroller\">\n          <table class=\"plain\">\n            <thead>\n              <tr><th scope=\"col\">What&rsquo;s waiting</th><th scope=\"col\">Badge today</th><th scope=\"col\">Proposed</th></tr>\n            </thead>\n            <tbody>\n              <tr>\n                <td class=\"surface-name\">Two lines waiting on the customer</td>\n                <td>2 need approval</td>\n                <td>2 need customer OK</td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">One part waiting on the store</td>\n                <td>Needs approval</td>\n                <td>Needs store OK</td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">Both</td>\n                <td>3 need approval</td>\n                <td>Two badges, one each</td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n      </figure>"
@@ -145,16 +182,16 @@
  {
   "section": "Dashboards",
   "key": "X",
-  "title": "Admin dashboard “Booked” cell lost its “N TBD” count",
-  "sub": "Since every line carries a number, the cell that counted un-priced lines always shows nothing — the RO page and parts page show price gaps, the dashboard doesn’t.",
+  "title": "The dashboard never shows how much work still has no price",
+  "sub": "The RO page and the parts page both point out unpriced work; the dashboard’s Booked cell shows nothing.",
   "dims": [
    "Reliability Med",
    "Size S–M",
    "Codex 0–1",
-   "Reversible: code only (one new number sent to the dashboard)",
+   "Reversible: code only",
    "Population: admins scanning for unpriced work"
   ],
-  "pop": "Admins scanning the dashboard for work that still has no price on it.",
+  "pop": "Admins scanning the dashboard for work with no price on it.",
   "styles": [],
   "blocks": [
    "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>The Booked cell &mdash; today vs proposed</span><span class=\"hint\">screens scroll &rarr;</span></figcaption>\n        <div class=\"screens\">\n          <div class=\"screen-col\">\n            <div class=\"app-screen\">\n              <div class=\"as-body\">\n                <div class=\"as-tile\"><span class=\"tk\">Booked</span><span class=\"tv\">$ total</span></div>\n              </div>\n            </div>\n            <p class=\"scap\"><b>Today</b> &mdash; nothing about the two lines with no price.</p>\n          </div>\n          <div class=\"screen-col\">\n            <div class=\"app-screen\">\n              <div class=\"as-body\">\n                <div class=\"as-tile\">\n                  <span class=\"tk\">Booked</span>\n                  <span class=\"tv\">$ total <span class=\"as-gapchip\">2 price gaps</span></span>\n                </div>\n              </div>\n            </div>\n            <p class=\"scap\"><b>Proposed</b> &mdash; the same rule the RO band already uses.</p>\n          </div>\n        </div>\n      </figure>"
@@ -174,8 +211,8 @@
  {
   "section": "Dashboards",
   "key": "D1",
-  "title": "Money row: “Total booked” → “Total”",
-  "sub": "Every place the money row says Total booked should just say Total. Same number.",
+  "title": "The money row says “Total Booked” where it should just say “Total”",
+  "sub": "The number never moves — only the word changes.",
   "dims": [
    "UX Low",
    "Size S",
@@ -183,7 +220,7 @@
    "Reversible: label only",
    "Population: everyone who sees a money row"
   ],
-  "pop": "Everyone who reads a money row — the word is the only thing changing.",
+  "pop": "Everyone who reads a money row.",
   "styles": [],
   "blocks": [
    "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>The money row &mdash; label only</span><span class=\"hint\">screens scroll &rarr;</span></figcaption>\n        <div class=\"screens\">\n          <div class=\"screen-col\">\n            <div class=\"app-screen\">\n              <div class=\"as-body\">\n                <div class=\"as-tile\"><span class=\"tk\">Total booked</span><span class=\"tv\">same figure</span></div>\n              </div>\n            </div>\n            <p class=\"scap\"><b>Today</b></p>\n          </div>\n          <div class=\"screen-col\">\n            <div class=\"app-screen\">\n              <div class=\"as-body\">\n                <div class=\"as-tile\"><span class=\"tk\">Total</span><span class=\"tv\">same figure</span></div>\n              </div>\n            </div>\n            <p class=\"scap\"><b>Proposed</b> &mdash; the number never moves.</p>\n          </div>\n        </div>\n      </figure>"
@@ -203,8 +240,8 @@
  {
   "section": "Store settings — labor rates & money",
   "key": "T",
-  "title": "Remember the labor rate each line was agreed at",
-  "sub": "A line stores its agreed total but not the rate behind it, so every part of the app that touches money has to special-case “never re-figure a frozen line” — five places already, and the last miss put $600 on a line the customer approved at $500.",
+  "title": "A customer approved a line at $500 and the app later re-figured it to $600",
+  "sub": "A line does not remember the rate it was agreed at, so a rate change can move a price the customer already said yes to.",
   "dims": [
    "Reliability High",
    "Size L",
@@ -232,14 +269,14 @@
  {
   "section": "Platform & tooling",
   "key": "EH",
-  "title": "The edit history counts a pricing save as a hand edit that erased the story",
-  "sub": "A parts user pricing a part, or a manager declining the line, is recorded as an edit that deleted the Cause and Correction — the text never changed. Your edit statistics count them as advisor rewrites.",
+  "title": "Pricing a part is recorded as someone deleting the line’s story",
+  "sub": "Your edit statistics count those saves as advisor rewrites, and the text never changed.",
   "dims": [
-   "⚡ Reliability Med — a staff metric, no user screen",
+   "⚡ Reliability Med — your statistics, no user screen",
    "Size S, plus a one-time cleanup you run",
    "Codex 0–1",
-   "Touches data: the cleanup deletes the phantom rows",
-   "Population: every McGrath pricing / decision save since the recorder shipped"
+   "Touches data: the cleanup deletes the false records",
+   "Population: every pricing or decision save at McGrath"
   ],
   "pop": "You, reading the edit statistics.",
   "styles": [],
@@ -250,15 +287,15 @@
  {
   "section": "Platform & tooling",
   "key": "Y3",
-  "title": "Loose ends from the 9/10–9/11 runs",
-  "sub": "Eight things the build agents flagged instead of guessing, each with a recommendation. None blocks anything shipped.",
+  "title": "Eight loose ends from the recent overnight runs",
+  "sub": "Each carries a recommendation; nothing here blocks anything that shipped.",
   "dims": [
    "Reliability Low–Med",
    "Size S each",
-   "Codex 0–1 each (one mirrored PR for the permission checks)",
+   "Codex 0–1 each",
    "Reversible: code only"
   ],
-  "pop": "Nobody on screen yet — my build machinery and a few server checks.",
+  "pop": "Nobody on screen — the build machinery and a few permission checks.",
   "styles": [],
   "blocks": [],
   "questions": [],
@@ -267,14 +304,15 @@
  {
   "section": "Platform & tooling",
   "key": "Y2",
-  "title": "Loose ends from the 8/30 overnight run",
-  "sub": "Three things the build agents flagged instead of guessing. None blocks anything shipped.",
+  "title": "Three loose ends: a repeated read, a missing time, and code nothing uses",
+  "sub": "Each carries a recommendation; nothing here blocks anything that shipped.",
   "dims": [
    "Reliability Low–Med",
    "Size S each",
-   "Codex 0–1 each"
+   "Codex 0–1 each",
+   "Touches data: one of the three needs a one-time cleanup you run"
   ],
-  "pop": "Nobody on screen yet — three things the build agents flagged instead of guessing.",
+  "pop": "Advisors’ screens, a restored line’s note, and some code nothing uses.",
   "styles": [],
   "blocks": [
    "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>Three small calls</span><span class=\"hint\">scroll &rarr;</span></figcaption>\n        <div class=\"scroller\">\n          <table class=\"plain\">\n            <thead>\n              <tr><th scope=\"col\">Loose end</th><th scope=\"col\">Recommendation</th></tr>\n            </thead>\n            <tbody>\n              <tr>\n                <td class=\"surface-name\">Every advisor screen re-reads every customer question ever asked &mdash; answered ones included &mdash; every 15 seconds, and picks out the open ones afterwards. Fine today; the cost grows with every question a store ever asks. Narrowing it to open questions needs a one-time cleanup you run on the older questions.</td>\n                <td><span class=\"gate good\">fix now, while the cleanup is small</span></td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">A restored line&rsquo;s note can&rsquo;t say who decided or when &mdash; the app keeps one answer time per RO, overwritten by each reply, not one per line. The per-part verbal OK on the parts page records no customer time at all.</td>\n                <td><span class=\"gate warn\">later &mdash; only the restore note wants it</span></td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">Since the one-card redo of video uploads, nothing on screen uses the older &ldquo;an earlier video failed &mdash; Retry / Discard&rdquo; pieces; they live on only in tests. The written rules for a safe discard already live in the lessons doc.</td>\n                <td><span class=\"gate good\">delete them; the written rules stay</span></td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n      </figure>"
@@ -290,15 +328,15 @@
  {
   "section": "Platform & tooling",
   "key": "Y",
-  "title": "Loose ends from the 8/27 overnight runs",
-  "sub": "Questions the build agents flagged instead of guessing. None blocks anything shipped.",
+  "title": "Seven loose ends on staff screens",
+  "sub": "Each carries a recommendation; nothing here blocks anything that shipped.",
   "dims": [
    "Reliability Low",
    "Size S each",
    "Codex 0–1",
    "Reversible: code only"
   ],
-  "pop": "Small edges, spread across staff screens — each one decided on its own line below.",
+  "pop": "Staff screens — a mis-recorded customer view, a toast, and two paste gaps.",
   "styles": [],
   "blocks": [
    "<figure class=\"viz\">\n        <figcaption class=\"viz-cap\"><span>Seven small calls</span><span class=\"hint\">scroll &rarr;</span></figcaption>\n        <div class=\"scroller\">\n          <table class=\"plain\">\n            <thead>\n              <tr><th scope=\"col\">Loose end</th><th scope=\"col\">Recommendation</th></tr>\n            </thead>\n            <tbody>\n              <tr>\n                <td class=\"surface-name\">Staff opening the raw customer link is recorded as &ldquo;Customer moved this RO to Customer Viewed&rdquo; &mdash; fix how staff previews are detected.</td>\n                <td><span class=\"gate good\">fix</span></td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">The &ldquo;moved&rdquo; toast also fires on the admin list / pipeline drag where the change is already visible.</td>\n                <td><span class=\"gate warn\">keep (harmless)</span></td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">Off-roster movers (platform owner cross-org, DMS import) read &ldquo;A teammate&rdquo;.</td>\n                <td><span class=\"gate warn\">leave</span></td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">&ldquo;Paste image&rdquo; right-click item exists only on the parts line card; Ctrl/Cmd+V and drop work everywhere on desktop &mdash; extend the menu item to the RO page tab / MPI / scan?</td>\n                <td><span class=\"gate warn\">later</span></td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">New-RO &ldquo;Scan paper RO&rdquo; accepts paste but has no drop target.</td>\n                <td><span class=\"gate warn\">later</span></td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">Cart-rail 44&times;30 preview and post-capture routing review get no photo card (deliberate).</td>\n                <td><span class=\"gate warn\">leave</span></td>\n              </tr>\n              <tr>\n                <td class=\"surface-name\">Hybrid touch+trackpad laptops untested for the MPI photo tap gate.</td>\n                <td><span class=\"gate good\">check once</span></td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n      </figure>"
@@ -314,10 +352,10 @@
  {
   "section": "Platform & tooling",
   "key": "Z",
-  "title": "Process: a sibling session wiped a build worktree another agent had claimed",
-  "sub": "The pool worktree’s claim lock only works if every session honors it; one didn’t (commit recovered).",
+  "title": "One build session wiped a build workspace another session had claimed",
+  "sub": "The claim is a convention — a session that ignores it can delete another’s work.",
   "dims": [
-   "Reliability Med (agent-side, not product)",
+   "Reliability Med — build machinery, not the product",
    "Size S",
    "Codex 0",
    "Reversible: tooling only"
@@ -342,14 +380,14 @@
  {
   "section": "Platform & tooling",
   "key": "EX5",
-  "title": "Move the server to the next major version of its web framework (Express 5)",
-  "sub": "Not a version bump — three “page not found” catch-alls must be rewritten, errors thrown inside a request are forwarded by the framework itself instead of each handler catching its own (about 200 handlers to watch live), an error’s status must be a whole number, and a pinned query-string package gets unpinned.",
+  "title": "Move the server to the next major version of its web framework",
+  "sub": "Nothing forces the move today, and every request goes through the part that changes.",
   "dims": [
    "Reliability Low",
    "Size M",
-   "Codex 2–3 — every request goes through it, so it needs a live pass, not just green tests",
+   "Codex 2–3 — every request goes through it",
    "Reversible: code only",
-   "Population: nobody today — the current version is still maintained, and the two published advisories don’t reach this app"
+   "Population: nobody today"
   ],
   "pop": "No one, until the current version reaches end of life or an advisory that actually applies appears.",
   "styles": [],

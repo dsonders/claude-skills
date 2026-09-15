@@ -359,3 +359,102 @@ def review_sheet(variant):
   <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 76px;
               background: linear-gradient(rgba(243,244,246,0), #f3f4f6 84%);"></div>
 </div>"""
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 5 · Card BGO — a STANDALONE "everything else is good" note at a store that has
+#     switched bulk green OFF. Drawn from the real component, read 2026-09-15:
+#
+#   · client/src/components/mpi/MPINotes.tsx  L433-600 — the card
+#     (`rounded-lg border border-gray-200 bg-white shadow-sm`), the header
+#     (`px-4 py-3`, MessageSquare `text-teal-600` + "MPI Notes", the unmatched
+#     badge `bg-pink-100 text-pink-700 border-pink-300 h-5 px-2` with an
+#     AlertCircle, the teal count badge `bg-teal-600 text-white min-w-[20px]
+#     h-5`, the ChevronRight rotated 90° while expanded), the body
+#     (`border-t border-gray-100 px-3 py-3`), the meta line (`text-[10px]
+#     text-gray-500`, Mic `w-3 h-3 text-gray-400`, and `· unmatched` in
+#     `text-pink-600 font-medium`) and the bubble itself:
+#         matched   → `rounded-2xl px-3 py-2 max-w-[85%] bg-gray-100 text-gray-900`
+#         unmatched → `… bg-pink-50 text-pink-900 border border-pink-300`
+#     NOTE: the MPI notepad does NOT use `.notepad-bubble` (sky-100) — that is
+#     the RO page's notepad. The MPI bubble is grey when it applied something
+#     and pink when it did not.
+#   · The surrounding step is the same MPILocationStep card as `tech_step`, with
+#     its rows drawn by `_mpi_item_row` and no bottom action area (bulk green
+#     is OFF, so the "All Green" button is gone).
+# ══════════════════════════════════════════════════════════════════════════════
+
+MESSAGE_SQ = ('<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0d9488" '
+              'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none">'
+              '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>')
+MIC_SM = ('<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" '
+          'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none">'
+          '<rect x="9" y="2" width="6" height="11" rx="3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/>'
+          '<path d="M12 19v3"/></svg>')
+ALERT_CIRCLE_SM = ('<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+                   'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none">'
+                   '<circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>')
+CHEVRON_DOWN_GRAY = ('<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" '
+                     'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none">'
+                     '<path d="m6 9 6 6 6-6"/></svg>')
+
+_BGO_NOTE = 'Everything else is good.'
+
+
+def notepad_standalone(variant, step=True):
+    """The tech's MPI notepad holding ONE standalone "everything else is good"
+    note at a store with bulk green OFF.
+
+    variant='today'  — the note applied nothing, so it takes the pink style and
+                       the header carries the pink count (what ships today).
+    variant='plain'  — the same note in the ordinary grey bubble.
+    variant='reason' — the ordinary grey bubble with one line under it.
+    step=False drops the inspection step below it (the per-option frames, where only
+    the bubble differs).
+    """
+    unmatched = (variant == 'today')
+    badge = ('<span style="display: inline-flex; align-items: center; gap: 4px; padding: 0 8px; '
+             'height: 20px; border-radius: 999px; background: #fce7f3; color: #be185d; '
+             'border: 1px solid #f9a8d4; font-size: 12px; font-weight: 600; box-sizing: border-box;">'
+             + ALERT_CIRCLE_SM + '1</span>') if unmatched else ''
+    meta_tail = ('<span style="margin-left: 4px; color: #db2777; font-weight: 500;">· unmatched</span>'
+                 if unmatched else '')
+    if unmatched:
+        bubble_style = 'background: #fdf2f8; color: #831843; border: 1px solid #f9a8d4;'
+    else:
+        bubble_style = 'background: #f3f4f6; color: #111827;'
+    reason = ('<div style="margin-top: 4px; padding: 0 4px; font-size: 11px; color: #6b7280;">'
+              'Bulk green is off for this store</div>') if variant == 'reason' else ''
+    rows = ''.join(_mpi_item_row(l) for l in [
+        'Belts / Tensioners',
+        'Engine Air Filter',
+    ])
+    step_card = (f'<div style="border-radius: 12px; border: 1px solid #e5e7eb; background: #fff; '
+                 f'overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,.05);">'
+                 f'<div style="background: {TEAL}; padding: 12px 16px;">'
+                 f'<div style="font-size: 18px; font-weight: 600; color: #fff; line-height: 1.3;">Under Hood</div></div>'
+                 f'<div style="padding: 16px; display: flex; flex-direction: column; gap: 8px;">{rows}</div>'
+                 f'</div>') if step else ''
+    return f"""
+<div class="app" style="background: #f3f4f6; padding: 10px;">
+  <div style="border-radius: 8px; border: 1px solid #e5e7eb; background: #fff;
+              box-shadow: 0 1px 2px rgba(0,0,0,.05); margin-bottom: 16px; overflow: hidden;">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;">
+      <span style="display: flex; align-items: center; gap: 8px;">{MESSAGE_SQ}
+        <span style="font-size: 15px; font-weight: 600; color: #1f2937;">MPI Notes</span></span>
+      <span style="display: flex; align-items: center; gap: 8px;">{badge}
+        <span style="display: inline-flex; align-items: center; justify-content: center; min-width: 20px;
+                     height: 20px; padding: 0 6px; border-radius: 999px; background: #0d9488; color: #fff;
+                     font-size: 12px; font-weight: 600; box-sizing: border-box;">1</span>
+        {CHEVRON_DOWN_GRAY}</span>
+    </div>
+    <div style="border-top: 1px solid #f3f4f6; padding: 12px;">
+      <div style="display: flex; align-items: center; gap: 6px; padding: 0 4px; font-size: 10px;
+                  color: #6b7280;">{MIC_SM}<span>just now</span>{meta_tail}</div>
+      <div style="margin-top: 4px; max-width: 85%; border-radius: 16px; padding: 8px 12px;
+                  font-size: 14px; line-height: 1.4; {bubble_style}">{_BGO_NOTE}</div>
+      {reason}
+    </div>
+  </div>
+  {step_card}
+</div>"""

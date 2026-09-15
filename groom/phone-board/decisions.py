@@ -2,89 +2,138 @@
 # Every ballot carries a do-nothing / delete option and one off-pattern option (⛔ Dave 2026-09-11).
 DEC = {
  # ----- MPI & Video -----
+ "NEG": [
+  ("“Didn’t see any leaks” — what should the app do with the word “leaks”?", [
+    ("A","The app can’t colour a row from a damage word the tech said inside a “no”.",False),
+    ("B","Leave it — a damage word colours the row even inside a “no”.",False),
+    ("C","A sentence with both a “no” and a damage word goes to the review sheet for the tech to decide.",False)]),
+  ("Should the app read can’t, won’t, couldn’t, shouldn’t, wouldn’t, mustn’t, needn’t and cannot as a “no”?", [
+    ("A","Yes — all eight read as a “no”, with the full dictation test set run before it ships.",False),
+    ("B","Leave it — those eight words are not read as a “no”.",False),
+    ("C","A sentence with one of those words goes to the review sheet for the tech to decide.",False)]),
+  ("“It’s not green, it’s yellow” — should the app still file green?", [
+    ("A","The app can’t file a colour the tech said inside a “no”.",True),
+    ("B","Leave it — “it’s not green” can still file green.",False),
+    ("C","A sentence that names a colour inside a “no” goes to the review sheet for the tech to decide.",False)]),
+ ],
  "VC7": [
-  ("How should the missing corners get onto the card?", [
-    ("A","Add a tires example beside the brakes one in the writer’s rule — measured on the test set first",True),
-    ("B","Move the related readings above the finding’s own notes, so the corners are read first — measure",False),
-    ("C","Leave it — the tech can add the fronts on camera",False),
-    ("D","Don’t ask the writer: the app appends the corners line itself under the card (LF 7/32″ · RF 7/32″), always there",False)]),
+  ("How should the good readings from the other corners get onto the card?", [
+    ("A","Show the writer an example with tires, beside the one it already has with brakes.",True),
+    ("B","Hand the writer the other corners before the finding’s own notes, so it reads them first.",False),
+    ("C","Leave it — the tech says the good fronts out loud on camera.",False),
+    ("D","The app adds the other corners in its own line under the card, every time — the writer is not asked.",False)]),
  ],
  "VC8": [
-  ("A green good-news shot and the red axle:", [
-    ("A","Green cards stay corner-blind — the red axle has its own red card in the same deck",True),
-    ("B","Green cards carry siblings only when they are also green (“all four tires 7/32″”)",False),
-    ("C","Full corners on green cards too, reds included",False),
-    ("D","Take green shots out of the deck — the red card already carries the good corners",False)]),
+  ("Should a good-news card mention the corners that failed?", [
+    ("A","A good-news card shows only its own good readings; the failed corners have their own card.",True),
+    ("B","A good-news card adds the other corners only when they are good too.",False),
+    ("C","A good-news card shows every corner, the failed ones included.",False),
+    ("D","Drop good-news shots from the video — the card about the failed corners already carries the good readings.",False)]),
+ ],
+ "BGO": [
+  ("What should the tech see when a note only says “everything else is good” and bulk green is off?", [
+    ("A","Leave it — the note reads as one that applied nothing.",True),
+    ("B","The note reads like any other note.",False),
+    ("C","The note reads like any other note, with one line under it: “Bulk green is off for this store”.",False)]),
  ],
  # ----- Parts page & queue -----
  "SO": [
-  ("One customer sentence on both surfaces — which?", [
-    ("A","The hint’s: “2 parts have no price — their lines will be quoted with those parts counted as $0.00.”",True),
-    ("B","The dialog’s: “2 parts still need pricing. Those lines will be quoted to the customer with the unpriced parts counted as $0.00 — and the customer can approve them at that price.”",False),
-    ("C","Leave both as they are",False),
-    ("D","Drop the inline hint — the dialog is the gate, one warning is enough",False)]),
+  ("Which wording should both warnings use?", [
+    ("A","“2 parts have no price — their lines will be quoted with those parts counted as $0.00.”",True),
+    ("B","“2 parts still need pricing. Those lines will be quoted to the customer with the unpriced parts counted as $0.00 — and the customer can approve them at that price.”",False),
+    ("C","Leave both as they are.",False),
+    ("D","Drop the warning under the button — the dialog is the gate.",False)]),
  ],
  # ----- RO page -----
  "BM": [
-  ("Which fix?", [
-    ("A","The bar wraps to two rows when it is narrow — the question on its own line, the pills wrap",True),
-    ("B","Hide the Customer-link panel while the bar is up — the bar takes the full width, like the tech’s",False),
-    ("C","Leave it — the buttons work; advisors rarely bulk-move at 1440 with the panel open",False),
-    ("D","On the advisor’s desktop, open bulk move as the phone’s bottom sheet instead of a bar",False)]),
+  ("How should the bar fit?", [
+    ("A","The bar wraps onto more rows when it is narrow, so the question gets its own line and every pill is reachable.",True),
+    ("B","The customer link panel steps aside while the bar is up, so the bar gets the full width.",False),
+    ("C","Leave it — the move still lands, and the advisor works around it.",False),
+    ("D","On the desktop, move several lines in the phone’s bottom sheet instead of the bar.",False)]),
  ],
  "PH": [
-  ("Before anything is drawn: how should this feel? Where would you look for it on the line, and what would you expect it to show?", []),
-  ("Scope:", [
-    ("A","Money changes only — price, quantity, labor hours and rate",True),
-    ("B","Every recorded change — stock answer and note too",False),
-    ("C","Not now — wait until an advisor asks who changed a price",False),
-    ("D","No screen: put the changes in the RO’s internal notes as they happen, one note per change",False)]),
+  ("Before anything is drawn — how would you want this to feel, and where on the line would you look for it?", []),
+  ("What should the list show?", [
+    ("A","Price, quantity, labor hours and rate — money only.",True),
+    ("B","Every change, the stock answer and notes included.",False),
+    ("C","Not now — wait until an advisor actually asks who changed a price.",False),
+    ("D","No new screen — each change lands in the RO’s internal notes as it happens.",False)]),
  ],
  # ----- Dashboards -----
  "D3": [
-  ("Ship the fix as drawn — the switch keeps its full labels and the filter boxes give up the room instead?", [("A","Yes — ship it as drawn",True),("B","No — say what should give way instead, below",False),("C","Leave it — “Li” stays",False)]),
+  ("Keep the switch whole and let the filter boxes give up the room instead?", [
+    ("A","Yes — the switch keeps both words and the filter boxes shrink.",True),
+    ("B","No — say below what should give way instead.",False),
+    ("C","Leave it — “Li” stays.",False)]),
  ],
  "SA-7b": [
-  ("Store one new piece of information on each RO so the two families can be told apart — build it as part of this?", [("A","Yes",True),("B","No — go back to “Needs customer OK” and accept it is wrong when only the store is waiting",False),("C","Drop the badge — the row colors and the LINES column already carry it",False)]),
-  ("Wording per family — “Needs customer OK” / “Needs store OK”, the words the RO page’s band already uses?", [("A","Yes",True),("B","Other wording — say it below",False)]),
+  ("Store a separate count for the customer and for the store, so the badge can say which?", [
+    ("A","Yes — the badge names who is waiting.",True),
+    ("B","No — go back to “Needs customer OK”, and accept it is wrong when only the store is waiting.",False),
+    ("C","Drop the badge — the row colours and the LINES column already carry it.",False)]),
+  ("Use the words the RO page already uses — “Needs customer OK” and “Needs store OK”?", [
+    ("A","Yes",True),
+    ("B","Other wording — say it below.",False)]),
  ],
  "X": [
-  ("Bring the count back as “price gaps” — the RO header’s rule (labor hours missing or 0, a part row blank or $0)? “Only blanks” can no longer count anything: since 8/27 every line carries a total.", [("A","Yes — “N price gaps”, the RO header’s rule",True),("B","No — drop the row; nothing is left for it to count",False)]),
-  ("Hover lists the lines with a gap, and what the gap is?", [("A","Yes",True),("B","No — the count only",False)]),
+  ("Bring the count back as “price gaps”, counting what the RO page counts — labor hours missing or zero, a part with no price or $0?", [
+    ("A","Yes — the cell shows “N price gaps”.",True),
+    ("B","No — drop the count; there is nothing left for the old rule to find.",False)]),
+  ("Should hovering the cell list the lines and what each one is missing?", [
+    ("A","Yes",True),
+    ("B","No — the count only.",False)]),
  ],
  "D1": [
-  ("Label only — one change, no behavior?", [("A","Yes",True),("B","No",False)]),
-  ("If the customer page carries the word anywhere, change it there too? (Checked 9/8: it never does — the word is staff-only.)", [("A","Yes — change it there too",False),("B","No — customer page untouched",False)]),
+  ("Change the word everywhere the money row shows it?", [
+    ("A","Yes — every money row reads “Total”.",True),
+    ("B","No — keep “Total Booked”.",False)]),
+  ("Change it on the customer page too, if it ever says the word?", [
+    ("A","Yes — change it there too.",False),
+    ("B","No — the customer page is untouched.",False)]),
  ],
  # ----- Store settings -----
  "T": [
-  ("Store the rate only, or the whole agreed snapshot (rate, hours, parts)?", [("A","The rate only",False),("B","The whole snapshot",False),("C","Do nothing — keep the five special cases; they hold today",False)]),
-  ("Old approved lines: work the rate back from the stored total, or leave them on the total?", [("A","Work it back",False),("B","Leave them on the total",False)]),
+  ("What should an approved line remember?", [
+    ("A","The labor rate it was agreed at.",False),
+    ("B","The rate, the hours and the parts it was agreed at.",False),
+    ("C","Do nothing — keep the five separate “don’t re-figure this line” rules.",False)]),
+  ("What happens to lines the customer already approved?", [
+    ("A","Work each old line’s rate back from its stored total and hours.",False),
+    ("B","Leave old lines on their stored total.",False)]),
  ],
  # ----- Platform & tooling -----
  "EH": [
-  ("The phantom rows already written — about two per pricing or decision save at McGrath since the recorder shipped:", [
-    ("A","A one-time cleanup you run deletes them",True),
-    ("B","Leave the rows; the statistics learn to skip an unchanged field with an empty after-text",False),
-    ("C","Do nothing — the writer fix stops new ones; the old era stays inflated",False),
-    ("D","Retire the edit statistics — if nobody reads them, there is nothing to fix",False)]),
+  ("What happens to the false records already written?", [
+    ("A","A one-time cleanup you run deletes them.",True),
+    ("B","Leave them, and teach the statistics to skip a record where nothing actually changed.",False),
+    ("C","Do nothing — the fix alone stops new ones.",False),
+    ("D","Retire the edit statistics — if nobody reads them, there is nothing to fix.",False)]),
  ],
  "Y3": [
-  ("Take the eight recommendations as a block, or pull any one out?", [("A","All eight, as a block",True),("B","Pull one out — say which below",False),("C","Drop all eight",False)]),
+  ("Take the eight recommendations as a block, or pull any one out?", [("A","All eight, as a block",True),("B","Pull one out — say which below.",False),("C","Drop all eight.",False)]),
  ],
  "Y2": [
-  ("Take the three recommendations as a block, or pull any one out?", [("A","All three, as a block",False),("B","Pull one out — say which below",False),("C","Drop all three",False)]),
+  ("Take the three recommendations as a block, or pull any one out?", [("A","All three, as a block",False),("B","Pull one out — say which below.",False),("C","Drop all three.",False)]),
  ],
  "Y": [
-  ("Take the seven recommendations as a block, or pull any one out?", [("A","All seven, as a block",False),("B","Pull one out — say which below",False),("C","Drop all seven",False)]),
+  ("Take the seven recommendations as a block, or pull any one out?", [("A","All seven, as a block",False),("B","Pull one out — say which below.",False),("C","Drop all seven.",False)]),
  ],
  "Z": [
-  ("Make the guard refuse?", [("A","Yes",True),("B","No",False)]),
-  ("Also vendor the env-seeding script into the repo?", [("A","No — two copies drift",True),("B","Yes",False)]),
+  ("Should the guard refuse to take a workspace another session has claimed?", [
+    ("A","Yes — a session that tries is stopped with a message.",True),
+    ("B","No — the claim stays a convention.",False)]),
+  ("Also keep a second copy of the setup script inside the project?", [
+    ("A","No — two copies drift.",True),
+    ("B","Yes",False)]),
  ],
  "EX5": [
-  ("Do it at all now?", [("A","Icebox — trigger: the current version’s end of life, or an advisory that reaches us",True),("B","Do it now",False)]),
-  ("If yes later: two PRs — routes and types first under the current version, then the flip?", [("A","Two PRs",True),("B","One PR",False)]),
+  ("Do it now, or wait?", [
+    ("A","Wait — pick it up when the current version reaches end of life, or an advisory reaches this app.",True),
+    ("B","Do it now.",False)]),
+  ("When it does happen — split it in two, or do it in one go?", [
+    ("A","Two steps — the routes first under the current version, then the switch.",True),
+    ("B","One step.",False)]),
  ],
 }
 
