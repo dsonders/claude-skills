@@ -99,6 +99,24 @@ file — its README is the how-to (files, store layout, build lessons); this fil
     labels); the page renders it amber, and the words he types on the board are amber too. Paraphrase is not his
     words — only what he actually said gets the marker.
 
+18. **No provenance in a label** (⛔ Dave, 2026-09-14). "Today" is enough — never "On main since 10 Sep". Dates, branch
+    names and PR numbers are not part of a heading or a caption; they live in the BACKLOG and the PR.
+19. **A rule is a sentence: actor · can / can't · action · condition, in the app's words** (⛔ Dave, 2026-09-14). "Tech
+    can't change labor hours when status is Advisor Review, Sent, or Holding." Never "hours lock in Advisor Review,
+    Sent, Holding — for every line." One sentence per rule; the heading of an option IS that sentence.
+20. **Two of something means a difference** (⛔ Dave, 2026-09-14: "If there are two of something, I assume there's an
+    important difference I need to understand … makes me work 2x as hard"). Cases that behave the same get ONE frame
+    and a merged caption ("Internal lines written before sending, or added after sending"). Draw one frame per
+    DISTINCT behaviour, never one per population.
+21. **One name per thing, everywhere on the page** (⛔ Dave, 2026-09-14: "Customer Pay Line" on one frame and
+    "Customer Line" on another "make me slow down to ponder why they are different"). Before publishing, grep the page
+    for its nouns; each appears in exactly one spelling.
+22. **Nothing under a frame repeats what the frame shows, and no colour he has to decode** (⛔ Dave, 2026-09-14: the
+    red / green / amber verdict pills under the line frames were "not helpful … 'delete allowed' is yellow … 'delete'
+    is green. I genuinely have no idea what these mean"). The frame carries the state (a greyed input, a locked
+    control, the app's own refusal line). If a one-word summary is still needed it is a word with one meaning
+    (Allowed / Locked) and a colour means one thing on the whole page.
+
 **Never on a card:** file names, function/field names, predicates, `code` chips, provenance strips, "sensitivity"
 banners in engineering terms, counts like "4 to vote", status IDs (use the label the app shows: "Waiting for Parts",
 never `waiting_for_parts`), or the words denorm/flag/predicate/backfill (say "stored information", "a one-time cleanup
