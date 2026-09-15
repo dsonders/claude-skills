@@ -24,7 +24,8 @@ Non-negotiables (also in the brief header — they bind you):
   code); squash via `rebase -i`/`--amend`; in the SAME Bash call as every push: `git fetch origin && git diff
   origin/main...HEAD --stat` and confirm only your files. COMMIT before any script that touches git.
 - Runtime: long silent commands (eval, full sweeps, probe loops) trip a 10-min watchdog — `run_in_background` or tee +
-  poll. Scratchpad is shared — unique filenames (`<item>-pr-body.md`); re-read before `--body-file`. Jest in a
+  poll. **So does one huge Write / Edit / heredoc** (five stalls on 2026-09-15, each right before a large file write):
+  cap a single Write, Edit or heredoc at ~120 lines and split big files into several Edits; commit after each unit. Scratchpad is shared — unique filenames (`<item>-pr-body.md`); re-read before `--body-file`. Jest in a
   `.claude` tree: `npm --prefix <tree> run test -- --runTestsByPath … --testPathIgnorePatterns=…` (else it tests the
   primary). Minted tree: symlink `.env` + `node_modules` (`cp .env` is denied).
 
