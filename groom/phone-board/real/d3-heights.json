@@ -1,0 +1,363 @@
+{
+ "captured": "2026-09-15",
+ "surface": "/admin/dashboard (admin role, test org, multi_player)",
+ "filtersApplied": "Status = Parts Pricing, Technician = Cam Drummond, Advisor = PJ Macklin (list keeps 9 rows); search empty; Age = All Age",
+ "note": "deviceScaleFactor 2; all widths are CSS px. \"band\" = the full toolbar block (every row the design uses).",
+ "options": {
+  "today@1440": {
+   "option": "Today (shipped)",
+   "viewportWidth": 1440,
+   "toolbarBandHeight": 40,
+   "toolbarRowsUsed": 2,
+   "toggleWidth": 124,
+   "listLabelFits": true,
+   "listLabelTextWidth": 23.2,
+   "listLabelSpace": 23,
+   "toggleClipped": false,
+   "controls": {
+    "searchInput": 293,
+    "statusSelect": 140,
+    "technicianSelect": 140,
+    "advisorSelect": 140,
+    "ageSelect": 140,
+    "clearButton": 87,
+    "viewToggle": 124,
+    "newRoButton": 121
+   }
+  },
+  "a@1440": {
+   "option": "A \u2014 toggle whole, filters shrink (no wrap)",
+   "viewportWidth": 1440,
+   "toolbarBandHeight": 40,
+   "toolbarRowsUsed": 2,
+   "toggleWidth": 124,
+   "listLabelFits": true,
+   "listLabelTextWidth": 23.2,
+   "listLabelSpace": 23,
+   "toggleClipped": false,
+   "controls": {
+    "searchInput": 293,
+    "statusSelect": 140,
+    "technicianSelect": 140,
+    "advisorSelect": 140,
+    "ageSelect": 140,
+    "clearButton": 87,
+    "viewToggle": 124,
+    "newRoButton": 121
+   }
+  },
+  "b@1440": {
+   "option": "B \u2014 two rows",
+   "viewportWidth": 1440,
+   "toolbarBandHeight": 84,
+   "toolbarRowsUsed": 3,
+   "toggleWidth": 124,
+   "listLabelFits": true,
+   "listLabelTextWidth": 23.2,
+   "listLabelSpace": 23,
+   "toggleClipped": false,
+   "controls": {
+    "searchInput": 413,
+    "statusSelect": 140,
+    "technicianSelect": 140,
+    "advisorSelect": 140,
+    "ageSelect": 140,
+    "clearButton": 87,
+    "viewToggle": 124,
+    "newRoButton": 121
+   }
+  },
+  "c@1440": {
+   "option": "C \u2014 icon-only toggle",
+   "viewportWidth": 1440,
+   "toolbarBandHeight": 42,
+   "toolbarRowsUsed": 2,
+   "toggleWidth": 90,
+   "listLabelFits": true,
+   "listLabelTextWidth": 18,
+   "listLabelSpace": 44,
+   "toggleClipped": false,
+   "controls": {
+    "searchInput": 293,
+    "statusSelect": 140,
+    "technicianSelect": 140,
+    "advisorSelect": 140,
+    "ageSelect": 140,
+    "clearButton": 87,
+    "viewToggle": 90,
+    "newRoButton": 121
+   }
+  },
+  "d@1440": {
+   "option": "D \u2014 one Filters button (closed)",
+   "viewportWidth": 1440,
+   "toolbarBandHeight": 40,
+   "toolbarRowsUsed": 3,
+   "toggleWidth": 124,
+   "listLabelFits": true,
+   "listLabelTextWidth": 23.2,
+   "listLabelSpace": 23,
+   "toggleClipped": false,
+   "controls": {
+    "searchInput": 293,
+    "statusSelect": 0,
+    "technicianSelect": 0,
+    "advisorSelect": 0,
+    "ageSelect": 0,
+    "clearButton": null,
+    "viewToggle": 124,
+    "newRoButton": 121
+   }
+  },
+  "d-open@1440": {
+   "option": "D \u2014 Filters popover open",
+   "viewportWidth": 1440,
+   "toolbarBandHeight": 383,
+   "toolbarRowsUsed": 3,
+   "toggleWidth": 124,
+   "listLabelFits": true,
+   "listLabelTextWidth": 23.2,
+   "listLabelSpace": 23,
+   "toggleClipped": false,
+   "controls": {
+    "searchInput": 293,
+    "statusSelect": 254,
+    "technicianSelect": 254,
+    "advisorSelect": 254,
+    "ageSelect": 254,
+    "clearButton": 87,
+    "viewToggle": 124,
+    "newRoButton": 121
+   }
+  },
+  "e@1440": {
+   "option": "E \u2014 toggle in the page-title row",
+   "viewportWidth": 1440,
+   "toolbarBandHeight": 88,
+   "toolbarRowsUsed": 3,
+   "toggleWidth": 124,
+   "listLabelFits": true,
+   "listLabelTextWidth": 23.2,
+   "listLabelSpace": 23,
+   "toggleClipped": false,
+   "controls": {
+    "searchInput": 293,
+    "statusSelect": 140,
+    "technicianSelect": 140,
+    "advisorSelect": 140,
+    "ageSelect": 140,
+    "clearButton": 87,
+    "viewToggle": 124,
+    "newRoButton": 121
+   }
+  },
+  "f@1440": {
+   "option": "F \u2014 per-filter x, no Clear button",
+   "viewportWidth": 1440,
+   "toolbarBandHeight": 40,
+   "toolbarRowsUsed": 2,
+   "toggleWidth": 124,
+   "listLabelFits": true,
+   "listLabelTextWidth": 23.2,
+   "listLabelSpace": 23,
+   "toggleClipped": false,
+   "controls": {
+    "searchInput": 293,
+    "statusSelect": 140,
+    "technicianSelect": 140,
+    "advisorSelect": 140,
+    "ageSelect": 140,
+    "clearButton": null,
+    "viewToggle": 124,
+    "newRoButton": 121
+   }
+  },
+  "today@1120": {
+   "option": "Today (shipped)",
+   "viewportWidth": 1120,
+   "toolbarBandHeight": 86,
+   "toolbarRowsUsed": 2,
+   "toggleWidth": 124,
+   "listLabelFits": true,
+   "listLabelTextWidth": 23.2,
+   "listLabelSpace": 23,
+   "toggleClipped": false,
+   "controls": {
+    "searchInput": 293,
+    "statusSelect": 140,
+    "technicianSelect": 140,
+    "advisorSelect": 140,
+    "ageSelect": 140,
+    "clearButton": 87,
+    "viewToggle": 124,
+    "newRoButton": 121
+   }
+  },
+  "a@1120": {
+   "option": "A \u2014 toggle whole, filters shrink (no wrap)",
+   "viewportWidth": 1120,
+   "toolbarBandHeight": 40,
+   "toolbarRowsUsed": 1,
+   "toggleWidth": 124,
+   "listLabelFits": true,
+   "listLabelTextWidth": 23.2,
+   "listLabelSpace": 23,
+   "toggleClipped": false,
+   "controls": {
+    "searchInput": 102,
+    "statusSelect": 127,
+    "technicianSelect": 127,
+    "advisorSelect": 127,
+    "ageSelect": 127,
+    "clearButton": 87,
+    "viewToggle": 124,
+    "newRoButton": 121
+   }
+  },
+  "b@1120": {
+   "option": "B \u2014 two rows",
+   "viewportWidth": 1120,
+   "toolbarBandHeight": 84,
+   "toolbarRowsUsed": 2,
+   "toggleWidth": 124,
+   "listLabelFits": true,
+   "listLabelTextWidth": 23.2,
+   "listLabelSpace": 23,
+   "toggleClipped": false,
+   "controls": {
+    "searchInput": 413,
+    "statusSelect": 140,
+    "technicianSelect": 140,
+    "advisorSelect": 140,
+    "ageSelect": 140,
+    "clearButton": 87,
+    "viewToggle": 124,
+    "newRoButton": 121
+   }
+  },
+  "c@1120": {
+   "option": "C \u2014 icon-only toggle",
+   "viewportWidth": 1120,
+   "toolbarBandHeight": 90,
+   "toolbarRowsUsed": 2,
+   "toggleWidth": 90,
+   "listLabelFits": true,
+   "listLabelTextWidth": 18,
+   "listLabelSpace": 44,
+   "toggleClipped": false,
+   "controls": {
+    "searchInput": 293,
+    "statusSelect": 140,
+    "technicianSelect": 140,
+    "advisorSelect": 140,
+    "ageSelect": 140,
+    "clearButton": 87,
+    "viewToggle": 90,
+    "newRoButton": 121
+   }
+  },
+  "d@1120": {
+   "option": "D \u2014 one Filters button (closed)",
+   "viewportWidth": 1120,
+   "toolbarBandHeight": 40,
+   "toolbarRowsUsed": 2,
+   "toggleWidth": 124,
+   "listLabelFits": true,
+   "listLabelTextWidth": 23.2,
+   "listLabelSpace": 23,
+   "toggleClipped": false,
+   "controls": {
+    "searchInput": 293,
+    "statusSelect": 0,
+    "technicianSelect": 0,
+    "advisorSelect": 0,
+    "ageSelect": 0,
+    "clearButton": null,
+    "viewToggle": 124,
+    "newRoButton": 121
+   }
+  },
+  "d-open@1120": {
+   "option": "D \u2014 Filters popover open",
+   "viewportWidth": 1120,
+   "toolbarBandHeight": 383,
+   "toolbarRowsUsed": 2,
+   "toggleWidth": 124,
+   "listLabelFits": true,
+   "listLabelTextWidth": 23.2,
+   "listLabelSpace": 23,
+   "toggleClipped": false,
+   "controls": {
+    "searchInput": 293,
+    "statusSelect": 254,
+    "technicianSelect": 254,
+    "advisorSelect": 254,
+    "ageSelect": 254,
+    "clearButton": 87,
+    "viewToggle": 124,
+    "newRoButton": 121
+   }
+  },
+  "e@1120": {
+   "option": "E \u2014 toggle in the page-title row",
+   "viewportWidth": 1120,
+   "toolbarBandHeight": 88,
+   "toolbarRowsUsed": 2,
+   "toggleWidth": 124,
+   "listLabelFits": true,
+   "listLabelTextWidth": 23.2,
+   "listLabelSpace": 23,
+   "toggleClipped": false,
+   "controls": {
+    "searchInput": 165,
+    "statusSelect": 140,
+    "technicianSelect": 140,
+    "advisorSelect": 140,
+    "ageSelect": 140,
+    "clearButton": 87,
+    "viewToggle": 124,
+    "newRoButton": 121
+   }
+  },
+  "f@1120": {
+   "option": "F \u2014 per-filter x, no Clear button",
+   "viewportWidth": 1120,
+   "toolbarBandHeight": 40,
+   "toolbarRowsUsed": 1,
+   "toggleWidth": 124,
+   "listLabelFits": true,
+   "listLabelTextWidth": 23.2,
+   "listLabelSpace": 23,
+   "toggleClipped": false,
+   "controls": {
+    "searchInput": 128,
+    "statusSelect": 140,
+    "technicianSelect": 140,
+    "advisorSelect": 140,
+    "ageSelect": 140,
+    "clearButton": null,
+    "viewToggle": 124,
+    "newRoButton": 121
+   }
+  }
+ },
+ "todayWrapThreshold": {
+  "measured": "today, same filters",
+  "oneRowAtOrAbove": 1180,
+  "wrapsAtOrBelow": 1160,
+  "probes": {
+   "1024": 86,
+   "1120": 86,
+   "1152": 86,
+   "1160": 86,
+   "1180": 40,
+   "1200": 40,
+   "1220": 40,
+   "1260": 40,
+   "1280": 40,
+   "1440": 40
+  },
+  "meaning": "band height in px; 40 = one row, 86 = the toggle + New RO dropped to a second row"
+ },
+ "clippingFinding": "The reported clipping (\"List\" -> \"Li\") did NOT reproduce at any of the 18 widths tested between 820 and 1440 px. The toggle held 124 px and its List label had 23.2 px of text in 23.0 px of box at every one of them; under pressure the toggle + New RO group WRAPS to a second row instead of shrinking (md:shrink-0 + md:flex-wrap, shipped 2026-08-19 in #1475)."
+}

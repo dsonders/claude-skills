@@ -1,0 +1,50 @@
+{
+ "capture": {
+  "date": "2026-09-15",
+  "surface": "advisor RO page, https://app.tenthgear.ai/repair-order/6672",
+  "viewport": "1440x900, dpr 2 (desktop advisor)",
+  "note": "every frame is the LIVE page with a DOM override built from this RO's real ro_change_events rows; no drawn mockups",
+  "fixture_ro": 6672,
+  "fixture_ro_dealer_number": "E2E-PH-2026-09-16T02-44-47-715Z",
+  "org": "TD1 (E2E test dealership)"
+ },
+ "events": {
+  "total": 37,
+  "line_1_fuel_gauge": 13,
+  "line_2_brakes": 21,
+  "ro_level": 3,
+  "human_internal_notes": 2,
+  "thread_items_if_merged": 39
+ },
+ "frames": {
+  "ph-today-notes-collapsed.jpg": { "what": "TODAY — the RO header dock row, internal notes collapsed (2 notes)", "w": 1280, "h": 50 },
+  "ph-today-notes-open.jpg": { "what": "TODAY — dock row, notes drawer open with the 2 real human notes", "w": 1280, "h": 303 },
+  "ph-today-notes-thread.jpg": { "what": "TODAY — the notes half alone, open", "w": 624, "h": 303 },
+  "ph-today-parts-card.jpg": { "what": "TODAY — line 1 Parts & Labor card", "w": 492, "h": 357 },
+
+  "ph-a-collapsed.jpg": { "what": "A — collapsed bar: badge 39, preview is now the newest EVENT", "w": 1280, "h": 50 },
+  "ph-a-thread-full.jpg": { "what": "A — thread at FULL length: all 37 events + 2 notes, one row each", "w": 624, "h": 2125 },
+  "ph-a-dock-full.jpg": { "what": "A — the same, showing what it does to the whole header dock row", "w": 1280, "h": 2125 },
+
+  "ph-a2-thread-collapsed.jpg": { "what": "A2 — bursts folded: 15 thread items (2 notes + 11 single events + 2 group rows), all groups closed", "w": 624, "h": 936 },
+  "ph-a2-thread-group-open.jpg": { "what": "A2 — the Line 2 / Parts 18-change group expanded in place", "w": 624, "h": 1301 },
+
+  "ph-b-card-link.jpg": { "what": "B — line 1 Parts & Labor card with the 'Changes · 13' link in its header", "w": 492, "h": 359 },
+  "ph-b-line1-open.jpg": { "what": "B — line 1 panel open under the card (13 events)", "w": 492, "h": 1075, "panel_h": 716 },
+  "ph-b-line2-open.jpg": { "what": "B — line 2 panel open under the card (21 events, the worst shape)", "w": 492, "h": 1541, "panel_h": 1182 },
+
+  "ph-c-control.jpg": { "what": "C — the 'Changes · 37' control in the RO header, beside Internal notes", "w": 1280, "h": 50 },
+  "ph-c-open.jpg": { "what": "C — one RO log open over the page, grouped by line, full length", "w": 1280, "h": 2254, "panel_w": 680, "panel_h": 1998 },
+
+  "ph-d-hover.jpg": { "what": "D — hover a part price: last change inline ($179.95 · was $184.20 · Dan Roberts · 10:50 PM)", "w": 492, "h": 357, "chip_h": 34 }
+ },
+ "height_comparison": {
+  "notes_today_open": 303,
+  "notes_with_every_event_A": 2125,
+  "notes_with_grouped_events_A2_closed": 936,
+  "notes_with_grouped_events_A2_one_open": 1301,
+  "line_panel_B_line1": 716,
+  "line_panel_B_line2": 1182,
+  "ro_log_C": 1998
+ }
+}

@@ -54,24 +54,6 @@
   "ruled": []
  },
  {
-  "section": "MPI & Video",
-  "key": "BGO",
-  "title": "With bulk green off, a note that only says “everything else is good” shows as a pink bubble",
-  "sub": "The tech’s last sentence is marked as a note that applied nothing, with nothing saying why.",
-  "dims": [
-   "UX Low",
-   "Size S",
-   "Codex 0–1",
-   "Reversible: display only",
-   "Population: techs at a store that turns bulk green off — no store has yet"
-  ],
-  "pop": "A tech ending his dictation with “everything else is good” at a store with bulk green off.",
-  "styles": [],
-  "blocks": [],
-  "questions": [],
-  "ruled": []
- },
- {
   "section": "Parts page & queue",
   "key": "SO",
   "title": "Sending to the advisor warns about unpriced parts twice, in two different wordings",

@@ -29,6 +29,11 @@ DEC = {
     ("B","A good-news card adds the other corners only when they are good too.",False),
     ("C","A good-news card shows every corner, the failed ones included.",False),
     ("D","Drop good-news shots from the video — the card about the failed corners already carries the good readings.",False)]),
+  ("A good-news card now names a failed corner too. What happens to its “Looks good — reassure the customer” line?", [
+    ("A","The line prints only when every corner on the card is good; a card naming a failed corner ends without it.",True),
+    ("B","Keep the line on every good-news card, failed corner or not — the card is about the shot the tech chose.",False),
+    ("C","Drop the line from every good-news card; the readings speak for themselves.",False),
+    ("D","Leave the failed corners off good-news cards after all (undo VC8-1).",False)]),
  ],
  "BGO": [
   ("What should the tech see when a note only says “everything else is good” and bulk green is off?", [
@@ -59,6 +64,15 @@ DEC = {
     ("B","Every change, the stock answer and notes included.",False),
     ("C","Not now — wait until an advisor actually asks who changed a price.",False),
     ("D","No new screen — each change lands in the RO’s internal notes as it happens.",False)]),
+  ("Real screens — where should a line’s changes live?", [
+    ("A","In Internal notes: every change is a note as it happens (your D above).",False),
+    ("B","In Internal notes, but a run of changes on one line by one person folds into one note that opens in place.",False),
+    ("C","On the line: a “Changes · N” link on the Parts & Labor card opens the list under the card.",True),
+    ("D","One log for the whole RO, opened from the header beside Internal notes, grouped by line.",False),
+    ("E","Nothing yet — keep recording, build the screen when an advisor asks.",False)]),
+  ("Also show a price’s last change when the mouse rests on it?", [
+    ("A","Yes — “$179.95 · was $184.20 · who · when” under the figure.",True),
+    ("B","No — the list is enough.",False)]),
  ],
  # ----- Dashboards -----
  "D3": [
@@ -155,8 +169,26 @@ BAKED = {
  "NG-1": ("A", "board, 12 Sep · filed #1996 — don’t / don’t / dont read as one word before matching · queued"),
  "NG-2": ("A", "board, 12 Sep · filed #1996 — the green off “No cracked belts” stands; pinned, no build"),
  "NG-3": ("A", "board, 12 Sep · filed #1996 — the “do not” governs the whole sentence · queued"),
+ # 15 Sep evening taps (20:54–21:56Z), swept 15 Sep ~22:00Z · filed #2015
+ "NEG-1": ("A", "board, 15 Sep · filed #2015 — a damage word inside a “no” can’t colour a row · held for the model bake-off you asked for"),
+ "NEG-2": ("A", "board, 15 Sep · filed #2015 — all eight words read as a “no” · held for the bake-off (the file the card named holds no list — the builder finds the real one)"),
+ "NEG-3": ("A", "board, 15 Sep · filed #2015 — a colour said inside a “no” is not filed · held for the bake-off"),
+ "VC7-1": ("A", "board, 15 Sep, your note ⟦When measurements for all 4 tires exist on the RO and the tech chooses a tire shot from the shot list Yupicker, the cue card should always include all 4 tire measurements. Same rule for brakes.⟧ → chat ⟦build my rule as a guarantee, with the app filling in any corner the writer drops⟧ · filed #2015 · builds with VC8 once VC8-2 is ruled"),
+ "VC8-1": ("C", "board, 15 Sep, your words ⟦Same rule as vc7: When measurements for all 4 tires exist on the RO and the tech chooses a tire shot from the shot list Yupicker, the cue card should always include all 4 tire measurements. Same rule for brakes.⟧ · filed #2015 · one open call left: VC8-2"),
+ "BGO-1": ("A", "board, 15 Sep · filed #2015 — leave it; closed, nothing to build"),
+ "SO-1": ("A", "board, 15 Sep · filed #2015 — the short sentence in both places · queued"),
+ "BM-1": ("A", "board, 15 Sep · filed #2015 — the bar wraps · queued"),
+ "PH-1": ("—", "board, 15 Sep, your note ⟦I think we can record these events in “internal notes” but I need to see some mockups before we build. It might get too noisy in there with events from all lines flowing in. We should also mock up a couple options that either live on the line tab, or a centralized log that clearly separates actions on different lines.⟧ · filed #2015 → the real screens are PH-3"),
+ "PH-2": ("D", "board, 15 Sep · filed #2015 — held by your note: rule on the real screens in PH-3 first"),
+ "D3-1": ("—", "board, 15 Sep, your words ⟦Mock up 4 other ways to design this part of the page without clipping the pipeline / list toggle.⟧ · filed #2015 → the real screens are D3-2"),
+ "SA-7b-1": ("A", "board, 15 Sep, your words ⟦Instead of “needs store ok” the badge should state the ROLE of the person who needs to ok it: “Needs advisor Ok”. We don’t need to state “advisor or admin ok” bc admins can do anything. This can be a general rule too: when an approval is needed, the UI should say who the approval is waiting on (role, not person’s name).⟧ · filed #2015 · queued"),
+ "SA-7b-2": ("—", "board, 15 Sep ⟦See my above free response.⟧ → “Needs customer OK” / “Needs advisor OK”, and the RO page’s “store OK” labels read “advisor OK” too · filed #2015 · queued"),
  "VRC-1": ("B", "board, 12 Sep, his words ⟦Step 1: N matched items / Step 2: N unmatched items⟧ → chat 13 Sep ⟦N recognized items⟧ / ⟦N unrecognized items⟧ (“step 1” / “step 2” are not part of the headers) · filed #1996 · queued"),
 }
 
 # Items whose every decision is BAKED but which are NOT queued — Dave held them for a conversation.
-HOLD = {}
+HOLD = {}HOLD = {
+ "NEG": "Ruled A · A · A — held for the model bake-off you asked for on this card (running 15 Sep evening); the three guards build only after you read the table",
+ "VC7": "Ruled — builds together with VC8 as a guarantee (the app fills any corner the writer drops) once VC8-2 is answered",
+ "BGO": "Ruled — leave it. Closed, nothing to build",
+}

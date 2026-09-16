@@ -127,6 +127,14 @@ OPT_VIS['VC8-1'] = {
  'D': {'why': 'The tech loses the good-news shot he chose to add.'},
 }
 
+CONTEXT['VC8-2'] = ('A good-news card exists only because the item was green on the MPI and the tech added the shot from the green section of the '
+ 'shot picker; the app ends it with “Looks good — reassure the customer”. Under your VC8 rule a “Front Tires” card now also carries the rears at 2/32″.')
+OPT_VIS['VC8-2'] = {
+ 'A': {'why': 'The card never reassures over a failed reading; the failed corner’s own red card still carries the reassurance for nothing.'},
+ 'B': {'why': '“Rear tires 2/32″” and “Looks good” on one card.'},
+ 'C': {'why': 'The tech’s chosen good-news shot loses the one line that said so.'},
+ 'D': {'why': 'Back to VC8-1 option A — the good news stays good news.'},
+}
 # ----- BGO: a standalone "everything else is good" note at a store with bulk green off -----
 CONTEXT['BGO-1'] = ('With bulk green off, a note that only says “everything else is good” finds nothing to apply, so '
  'the app gives it the look it gives any note that applied nothing. Nothing about it reaches the review sheet.')
@@ -189,6 +197,27 @@ OPT_VIS['PH-2'] = {
  'B': {'why': 'A longer list — a stock answer or a note edit reads beside a price change.'},
  'C': {'why': 'The record keeps building; the screen waits for a real ask.'},
  'D': {'why': 'Every price edit becomes a note in the thread, and a ten-part line makes ten.'},
+}
+# ----- PH-3 / PH-4: real screens, advisor @1440, TD1 fixture RO 6672 (closed after) — every datum a recorded change -----
+CONTEXT['PH-3'] = ('Real screens of the advisor’s RO page. A fixture RO with two lines — the second the worst shape, six parts each priced then '
+ 're-priced — made 37 recorded changes and 2 real notes; every name, time and figure on these frames was written by the app’s own recorder. '
+ 'Your note: ⟦I think we can record these events in “internal notes” but I need to see some mockups before we build. It might get too noisy in there '
+ 'with events from all lines flowing in. We should also mock up a couple options that either live on the line tab, or a centralized log that clearly '
+ 'separates actions on different lines.⟧ Not recorded today, so never shown: the cause / correction text, and what a change did to the line total.')
+GALLERY['PH-3'] = [('Today — Internal notes in the header dock, 2 notes', real_img('ph-today-notes-open','Internal notes today'), '303 px tall'),
+                   ('Today — the Parts & Labor card', real_img('ph-today-parts-card','Parts and Labor card today'), '')]
+GALLERY_FULL.add('PH-3'); OPTS_FULL.add('PH-3')
+OPT_VIS['PH-3'] = {
+ 'A': {'frame': _join(real_img('ph-a-collapsed','A collapsed bar'), real_img('ph-a-thread-full','A every change in the thread')), 'why': 'The thread grows from 303 px to 2 125 px; 39 rows, 2 of them things a person wrote — the advisor’s “customer is waiting in the lounge” sits under 22 price rows, and the collapsed bar’s preview stops being the last thing a human said.'},
+ 'B': {'frame': _join(real_img('ph-a2-thread-collapsed','B folded'), real_img('ph-a2-thread-group-open','B one group open')), 'why': '936 px closed, 1 301 px with the 18-change group open; both human notes stay in the top third. Two kinds of row to build, and the fold is a rule of thumb.'},
+ 'C': {'frame': _join(real_img('ph-b-card-link','C the link'), real_img('ph-b-line2-open','C line 2 open')), 'why': 'Who changed this price, where the price is; Internal notes stay human. The worst line’s panel runs 1 182 px, so it scrolls inside a cap. Nothing about the RO as a whole.'},
+ 'D': {'frame': real_img('ph-c-open','D one RO log'), 'why': 'One place for a 2-line RO and a 9-line RO, line headers keep it readable, the RO-level changes have a home; 1 998 px for 37 changes, so it scrolls inside a cap.'},
+ 'E': {'why': 'The record keeps building; nobody sees it.'},
+}
+CONTEXT['PH-4'] = 'Desktop only — a phone has no hover. Shows the most recent change of that one figure; not a substitute for the list.'
+OPT_VIS['PH-4'] = {
+ 'A': {'frame': real_img('ph-d-hover','Hover on a price'), 'why': 'The most common question answered without opening anything; 34 px.'},
+ 'B': {'why': 'One less thing on the card.'},
 }
 
 # ================= Dashboards =================
@@ -308,8 +337,9 @@ for c in cards:
 
 # ruled / queued items for the dashboard (ruled in chat, filed in BACKLOG, not yet built)
 ruled_items=[
- ("RO page — advisor, admin, tech","—","A tech can change the labor hours on an internal line until the line is approved or the RO closes","ruled · building"),
- ("RO page — advisor, admin, tech","—","A tech can’t delete a line that was in the estimate the customer was sent","ruled · building"),
+ ("MPI & Video","BGO","With bulk green off, a note that only says “everything else is good” shows as a pink bubble","ruled 15 Sep · leave it — closed"),
+ ("RO page — advisor, admin, tech","—","A tech can change the labor hours on an internal line until the line is approved or the RO closes","shipped 15 Sep · live 16 Sep"),
+ ("RO page — advisor, admin, tech","—","A tech can’t delete a line that was in the estimate the customer was sent","shipped 15 Sep · live 16 Sep"),
  ("Store settings — labor rates & money","SA-19","Saving a new labor rate re-prices every open RO in the store, with no question asked","ruled · waits on T"),
 ]
 
