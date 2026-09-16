@@ -187,7 +187,7 @@ BAKED = {
 }
 
 # Items whose every decision is BAKED but which are NOT queued — Dave held them for a conversation.
-HOLD = {}HOLD = {
+HOLD = {
  "NEG": "Ruled A · A · A — held for the model bake-off you asked for on this card (running 15 Sep evening); the three guards build only after you read the table",
  "VC7": "Ruled — builds together with VC8 as a guarantee (the app fills any corner the writer drops) once VC8-2 is answered",
  "BGO": "Ruled — leave it. Closed, nothing to build",
