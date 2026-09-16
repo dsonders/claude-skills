@@ -80,6 +80,12 @@ DEC = {
     ("A","Yes — the switch keeps both words and the filter boxes shrink.",True),
     ("B","No — say below what should give way instead.",False),
     ("C","Leave it — “Li” stays.",False)]),
+  ("Real screens — the clip is gone; under pressure the toggle drops to a second row. Which shape?", [
+    ("A","Leave it — one row at 1180 px and wider; narrower than that, the toggle and New RO drop to a second row.",True),
+    ("B","The filter boxes shrink so it never wraps — at 1120 px the search box is 102 px wide.",False),
+    ("C","Two rows always: search and the toggle above, the filters and Clear below.",False),
+    ("D","One “Filters · 4” button; the four values live in a panel that opens under it.",False),
+    ("E","The toggle leaves the toolbar for a page-title row above it.",False)]),
  ],
  "SA-7b": [
   ("Store a separate count for the customer and for the store, so the badge can say which?", [

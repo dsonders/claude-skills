@@ -228,6 +228,23 @@ OPT_VIS['D3-1'] = {
  'A': {'why': 'The admin reads “List” on every filtered view.'},
  'C': {'why': 'The switch keeps clipping whenever a filter is on.'},
 }
+# ----- D3-2: real screens, admin @1440 and @1120, every filter on (captured 15 Sep) -----
+CONTEXT['D3-2'] = ('Your words: ⟦Mock up 4 other ways to design this part of the page without clipping the pipeline / list toggle.⟧ '
+ 'Real screens, admin, every filter on. First the fact: “Li” does not happen on the live app at any width from 820 to 1440 — the switch '
+ 'holds 124 px and both words paint whole; the fix (the switch never shrinks, the row may wrap) has been on main since 19 Aug, eight days '
+ 'before the screenshot this card came from. What is left: at 1160 px and narrower the switch and New RO drop to a second row. '
+ 'Two shapes were tried and left out — an icon-only switch (34 px saved, it still wraps) and an × on each filter instead of Clear '
+ '(reverses your 8 Sep “× Clear” ruling).')
+GALLERY['D3-2'] = [('Today at 1440 — one row, the switch whole', real_img('d3-today','Toolbar today at 1440'), '40 px'),
+                   ('Today at 1120 — the switch and New RO on a second row', real_img('d3-today-1120','Toolbar today at 1120'), '86 px')]
+GALLERY_FULL.add('D3-2'); OPTS_FULL.add('D3-2')
+OPT_VIS['D3-2'] = {
+ 'A': {'why': 'Nothing to build. Admin screens are 1280 and wider; the second row appears only below 1180.'},
+ 'B': {'frame': real_img('d3-a-1120','Filters shrink, 1120'), 'why': 'One row at every width; the search box loses its placeholder and most of its room at 1120 (293 → 102 px).'},
+ 'C': {'frame': _join(real_img('d3-b','Two rows, 1440'), real_img('d3-b-1120','Two rows, 1120')), 'why': '84 px at every width — 44 px of table height gone for good, and the table’s scroll region has to be re-measured.'},
+ 'D': {'frame': _join(real_img('d3-d','Filters button'), real_img('d3-d-open','Filters panel open')), 'why': 'One row at every width; the four set values stop being visible on the toolbar — a count badge is a weaker tell than the values (your 8 Sep ring rule).'},
+ 'E': {'frame': _join(real_img('d3-e','Title row, 1440'), real_img('d3-e-1120','Title row, 1120')), 'why': '88 px — a new row the admin page does not have today; the toolbar itself stays one row.'},
+}
 CONTEXT['SA-7b-1'] = ('Your question — ⟦“a part waiting on the store”⟧ is a part the parts user adds to '
  'an internal line the advisor had already approved, which withdraws that approval until the advisor approves the part on the '
  'RO page. The dashboard counts those together with parts waiting on a customer, so the badge can only say “Needs '
