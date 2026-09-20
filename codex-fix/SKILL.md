@@ -18,7 +18,7 @@ When a PR fails the Codex review gate, the expensive failure mode is **fix the o
 **Don't use this skill for:**
 - A **proactive** pre-push review before a PR exists or before Codex has run → use `/pre-push-mirror` (which invokes `/code-review high` and triages by the mirror rules; this skill is the *reactive* complement).
 - CI failures that are NOT Codex: a red `Tests`/`TypeScript Check`/`Org-Scoping Guard` job → fix the test/types directly. A red `CodeQL` → triage as FP-or-fix per the CodeQL rule (`js/missing-rate-limiting` dismiss; `js/tainted-format-string` fix).
-- The marketing `website/` or `GTM/` repos (no Codex gate there).
+- The `GTM/` repo (no Codex gate there). `website/` HAS the gate since #103 (2026-09-19) but no test suite: its local gates are `npm run build`, `npx tsc --noEmit -p tsconfig.json`, and `scripts/leak-test-flow.mjs` (Playwright in `LT_MODE=mock`), and the Workflow tool only accepts a script under the working directory, so copy `codex-recovery-workflow.js` into `website/tmp/` (gitignored) first. Its reviewers' org_id/auth rubric does not apply there; seed `codexFindings` with a REPO NOTE saying so.
 - An **advisory-scope** PR (docs-only or secret-free `__tests__/{unit,api,eval,fixtures}`): Codex comments but does NOT block, so there's nothing to recover — address findings only if you agree.
 
 ## Core Principles
