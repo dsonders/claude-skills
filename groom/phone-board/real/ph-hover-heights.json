@@ -1,0 +1,74 @@
+{
+ "capture": {
+  "date": "2026-09-21",
+  "surface": "advisor RO page, https://app.tenthgear.ai/repair-order/6672",
+  "role": "advisor (E2E advisor account, PJ Macklin)",
+  "design_viewport": "1440x900, dpr 2",
+  "capture_viewport_note": "the page was rendered at 1440 wide with the viewport HEIGHT raised (1000-2200) only so a tall panel fits in one frame; width, layout and type sizes are the real 1440 ones. Every frame parks the card ~130-145px below the top of the viewport.",
+  "timezone": "America/New_York (reproduces the 10:44-10:50 PM stamps of the 15 Sep frames)",
+  "fixture_ro": 6672,
+  "fixture_ro_dealer_number": "E2E-PH-2026-09-16T02-44-47-715Z",
+  "org": "TD1 (E2E test dealership)",
+  "data": "every row is built from this RO's own ro_change_events docs; no invented datum. The RO was reopened for the capture (POST /reopen -> parts_pricing) and closed again at the end."
+ },
+ "events": {
+  "line_1_fuel_gauge": 13,
+  "line_2_brakes": 21,
+  "ro_level": 12,
+  "total_now": 46,
+  "note": "line counts are unchanged from 15 Sep (13 / 21) — the two frames' rows are identical to ph-b-line1-open.jpg / ph-b-line2-open.jpg. The RO-level count rose 3 -> 12 because each capture run's reopen/close pair is itself a recorded workflow_status event (and the reopen writes status too). No LINE row changed, so nothing in any frame moved."
+ },
+ "the_link": {
+  "text": "Changes · N",
+  "w": 73, "h": 18,
+  "x": 442, "card_right_edge": 588,
+  "rest": "text-gray-700, 1px underline, underline-offset 3 — identical to ph-b-card-link.jpg (re-captured and byte-for-byte the same shape; that frame still stands as TODAY)",
+  "hover": "text-gray-900, 2px underline"
+ },
+ "H1_hover_opens_the_whole_panel": {
+  "shape": "the same panel the click opens, under the card, over the page. Hover version has NO close × — the header's right slot carries a faint 'Click to keep open' instead.",
+  "panel_w": 492,
+  "panel_x": 96,
+  "aligned_to": "the card's left edge; panel width == card width (492)",
+  "gap_card_to_panel": 12,
+  "gap_link_bottom_to_panel_top": 340,
+  "line1": { "file": "ph-h1-line1.jpg", "rows": 13, "card_h": 359, "panel_h": 837, "card_plus_gap_plus_panel": 1208, "frame": [528, 1244] },
+  "line2": { "file": "ph-h1-line2.jpg", "rows": 21, "card_h": 443, "panel_h": 1292, "card_plus_gap_plus_panel": 1747, "frame": [528, 1783] },
+  "pinned": { "file": "ph-h1-pinned.jpg", "note": "line 1, clicked: same panel, close × in place of the hint", "frame": [528, 1244] },
+  "capped": { "file": "ph-h1-line2-capped.jpg", "body_max_height": 420, "panel_h": 469, "rows_visible": 7, "of": 21, "card_plus_gap_plus_panel": 924, "frame": [528, 960] },
+  "fold_arithmetic_at_1440x900": {
+   "with the card parked at the very top of the viewport": {
+    "line1_overflow_px": 308,
+    "line2_overflow_px": 847,
+    "capped_420_overflow_px": 24,
+    "cap_that_fits_a_900_viewport": 390
+   },
+   "in practice": "the Parts & Labor card sits ~850px down the real page, so an uncapped hover panel starts entirely below the fold. H1 needs BOTH a cap (~390-420) and a flip-above-the-card fallback."
+  }
+ },
+ "H2_compact_hover_card": {
+  "shape": "3 rows newest-first in the same row format + a footer line with the remaining count",
+  "w": 360,
+  "rows_shown": 3,
+  "footer": "and N more · click to see all",
+  "anchor_A_under_the_link": {
+   "x": 155, "computed_as": "link right edge - 360", "gap_link_bottom_to_card_top": 8,
+   "line1": { "file": "ph-h2-line1.jpg", "h": 279, "more": 10, "frame": [528, 395] },
+   "line2": { "file": "ph-h2-line2.jpg", "h": 261, "more": 18, "frame": [528, 479] },
+   "problem": "at 279px tall over a 359px card it covers Labor, Parts, Parts subtotal AND Line total — the numbers the advisor is hovering to reason about"
+  },
+  "anchor_B_right_of_the_card": {
+   "x": 602, "computed_as": "card right edge + 14", "y": "link top - 6",
+   "line1": { "file": "ph-h2-line1-right.jpg", "h": 279, "more": 10, "frame": [902, 395] },
+   "line2": { "file": "ph-h2-line2-right.jpg", "h": 261, "more": 18, "frame": [902, 479] },
+   "tradeoff": "clears the Parts & Labor card completely; lands on the Customer-link column to its right instead"
+  },
+  "height_is_flat": "279 / 261 for 13 and 21 events — H2 does not grow with the line. That is its whole argument."
+ },
+ "reference_frames_reused_unchanged": {
+  "ph-b-card-link.jpg": "TODAY — the card with the resting 'Changes · 13' link, no hover (re-verified 21 Sep: identical)",
+  "ph-b-line1-open.jpg": "the click-opened panel, 15 Sep build (panel 716 vs this run's 837 — same rows, slightly looser row padding here)",
+  "ph-b-line2-open.jpg": "the click-opened panel, line 2",
+  "ph-d-hover.jpg": "PH-4 — hovering the PART PRICE itself: '$179.95 · was $184.20 · Dan Roberts · 10:50 PM', 34px inline. Unchanged; the fixture prices are identical. A different hover from H1/H2 on the same card."
+ }
+}
