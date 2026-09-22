@@ -167,7 +167,11 @@ On each agent report / Codex block:
   (`__tests__/eval/mpi-matching/run.ts`) and `npm run eval:mpi` is the gate. What still
   blocks there: fabrication on the primary AI path, control-flow loss/dup, org-scoping, crashes.
 - **Real defect in groomed scope** → agent fixes the whole class, ONE re-push. Second block →
-  agent stops; manager triages. "Whole class" = a CENSUS of every consumer of the derivation
+  agent stops; manager triages. **One carve-out (2026-09-22, #2156):** when the second block is a
+  correctness defect the agent ITSELF introduced in round one, on a PR whose auto-merge is ARMED, the
+  agent fixes it and pushes once more — shipping a known bug or parking a PR over its own slip are both
+  worse — then a THIRD block disarms auto-merge and parks. Say so at the top of the PR comment and in
+  the report; anything else on a second block still stops. "Whole class" = a CENSUS of every consumer of the derivation
   (grep the field/flag + every `resolveStage(`/`isTerminalStage(` in touched files), listed in
   the PR body with a verdict per site — not "every site I edited". #1595 claimed "closed as a
   class" twice and Codex found the un-edited consumer both times (4 rounds, one class).
