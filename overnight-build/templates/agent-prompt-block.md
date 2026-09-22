@@ -31,8 +31,14 @@ Non-negotiables (also in the brief header — they bind you):
 
 - Copy + sentinels: a diff that renames or rewrites user-visible copy greps `__tests__/e2e` and `__tests__/workflow` for the OLD
   literal and updates those live-only pins in the same PR (CI never runs them; smoke:prod finds them after the republish). A diff
-  that changes bytes a QUEUED `--expect` in docs/release-verification.md names rewrites that row in the same PR (else
-  `check:release-rows` goes red at the next CI). Never write the bare `--expect` flag in prose — say "no bundle sentinel".
+  that changes bytes a QUEUED `--expect` names rewrites that row in the same PR (else `check:release-rows` goes red at
+  the next CI). Never write the bare `--expect` flag in prose — say "no bundle sentinel".
+
+- Release verification: your PR's live-check section goes in **its OWN file**, `docs/release-verification/awaiting/<YYYY-MM-DD>-<short-slug>.md`
+  (that directory's README.md is the template). NEVER add a `###` section under `docs/release-verification.md`'s
+  *Awaiting republish* heading — `check:awaiting-anchor` refuses it, and that anchor is exactly what used to make every
+  second same-day PR CONFLICTING, which runs NO `pull_request` checks at all. One file per PR never collides, so you do
+  NOT need to sequence your docs PR behind a sibling's.
 
 Kill every background watcher/log-tail you started BEFORE your final report (each one that exits later re-wakes you for nothing).
 Report: PR number(s) + URL(s), merge state, gates, probe table, prod-verify sentinel,

@@ -70,8 +70,10 @@ Make a todo list and work through it.
 - Spend headroom: warn Dave if a recent run hit the usage cap (agents die silently on it).
 - Keep the machine awake: `nohup caffeinate -dis >/dev/null 2>&1 & disown` (verify with `pgrep`) — `-i` alone does NOT stop lid/system sleep (2026-08-30: the machine slept 30 min in, killing all 4 agents mid-turn). Lid stays open. **Sleep recovery:** agents die with context INTACT — SendMessage each one "the machine slept; re-orient from disk (`git status`/`log` in your tree), continue" instead of respawning; all 4 resumed cleanly.
 - **`ListAgents` first — a BUSY sibling session on this machine is a collision, not background noise.** Message it before
-  writing the brief: which items and files it holds, which worktrees it has claimed, and who owns `BACKLOG.md` /
-  `release-verification.md` tonight (one docs PR per session, sequenced — the second rebases). 2026-09-11: the sibling had
+  writing the brief: which items and files it holds, which worktrees it has claimed, and who owns `BACKLOG.md`
+  tonight (one docs PR per session, sequenced — the second rebases). **Release verification no longer needs that
+  hand-off** (2026-09-22): each PR's live-check section is its own file in `docs/release-verification/awaiting/`, so
+  two sessions never touch the same hunk. 2026-09-11: the sibling had
   two PRs in flight, owned both docs files, and named its claimed pool trees; one message each way and nothing crossed.
 - Decide parallel vs serial NOW: parallel agents need an un-isolated manager (see Step 3);
   if this session already entered a worktree, plan one agent running workstreams in sequence.
@@ -227,6 +229,12 @@ Dave reads, reverts if needed, republishes.
 ### Step 6 — After republish
 - `npm run smoke:prod`; `npm run verify:deploy -- --expect "<sentinel>"` per PR (collect
   sentinels in the brief as you go — client-bundle strings only, never server-only literals).
+- **The queue is `docs/release-verification/awaiting/`, one file per merged PR** (2026-09-22; the old shared
+  `## Awaiting republish` anchor made every second same-day PR CONFLICTING, which runs NO `pull_request` checks at all —
+  `check:awaiting-anchor` now refuses a section written there). Hand each live-pass agent the absolute PATH to its
+  file(s) — no slicing sections out with `sed`. When a file's rows are all ticked, move its content into
+  `docs/release-verification.md` under that release's **Republish of …** heading in *Verified* and `git rm` the file; a
+  section with a failing row stays in its file with the finding written into it.
 - **A ruled COPY rename in the batch will turn a live-only smoke pin red** (2026-09-11: `ui-permission-gates` UI #6 asserted the
   label "Edit Labor Rate" that #1977 renamed; the permission assertions behind it never ran). Read the failing assertion before
   calling smoke red: a label pin on renamed copy = fix the test to pin what the click UNLOCKS (#1980), re-run that one test live,

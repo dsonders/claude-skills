@@ -42,6 +42,14 @@ already established (don't re-derive). Sensitivity notes. Out-of-scope lines.>
 
 ## Workstream B — ...
 
+## Standing (every workstream)
+Each merged PR's live-check section goes in **its own file**,
+`docs/release-verification/awaiting/<YYYY-MM-DD>-<short-slug>.md` (template: that directory's
+README.md). Never a `###` under `docs/release-verification.md`'s *Awaiting republish* heading —
+`check:awaiting-anchor` refuses it, and that shared anchor is what used to make every second
+same-day PR CONFLICTING (a CONFLICTING PR runs NO `pull_request` checks at all). One file per PR
+never collides, so no agent waits on a sibling's docs PR.
+
 ## Morning ledger (manager)
 Merged (one user-visible line + revert command each) / parked with question / hard-floor
 items awaiting execution / Codex rounds spent / prod-verify checklist / kanban + memory updates.
