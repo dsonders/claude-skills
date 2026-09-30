@@ -136,6 +136,15 @@ Make a todo list and work through it.
   the 10-min stream watchdog — background/tee; the scratchpad is SHARED — unique per-agent filenames
   (`pr-body.md` collision published the wrong PR body); jest in a `.claude` worktree tests the PRIMARY unless
   cwd is the tree (`npm --prefix <tree> run test -- …`); `cp` of `.env` into a minted tree is denied — symlink.
+- **Agent hygiene that bit 2026-09-29 (Grid run, 9 builders):** `EnterWorktree` was REFUSED inside every subagent
+  ("current working directory is the repository root") — brief builders to work in their claimed tree by absolute
+  path (`git -C`, `npm --prefix`); two UI builders wrote the SAME test account's saved preferences at once and each
+  "restored" the other's half-done state — give each parallel UI builder its own test account, or serialize any
+  browser pass that writes user-level settings; every capture of a dashboard WAITS for money with a retrying
+  assertion (a 2.5 s screenshot read $0 on all 131 rows and was reported as a bug); review fixes on a mid-stack
+  branch and retargets go as MERGE-FORWARD + a normal push, never a rebase (a force-push was denied; memory
+  `reference_stacked_pr_actions_gotchas`); when lane 1's first PR is review-gated, build the shared component its
+  later PRs import in ANOTHER lane first, so something merges while the gate is closed.
 - **Parallel is only possible if the MANAGER session is not worktree-isolated.** A session that
   entered a worktree (EnterWorktree / `.claude/worktrees/*` cwd) pins EVERY subagent's shell to that
   one tree — a second agent in build-2/build-3 fails every Bash call with "This session is isolated
@@ -209,6 +218,11 @@ On each agent report / Codex block:
 ### Step 5 — Morning ledger
 
 **Morning review protocol (Dave's preferred flow, 2026-08-31):** after delivering the ledger, walk the needs-Dave items ONE at a time — a succinct briefing (user-visible before/after table, review state, what's baked in that he hasn't ruled) ending in ONE call with a rec; EXECUTE each ruling (merge/retarget/fix) before briefing the next item. A call about what a USER SEES (row copy, what a tick does, a state label, where a note renders) gets its mockup WITH the briefing, on a DISPOSABLE artifact page built from real captures — never as ledger prose and never on the grooming board; the page obeys the groom skill's writing principles 18–22 (⛔ Dave 2026-09-14: no provenance in labels, a rule is an actor·can/can't·action·condition sentence, one frame per distinct behaviour, one name per thing, nothing under a frame repeats it) (2026-09-05: "This case needs a mockup so I can see the full flow"; 2026-09-11: call 3 went out as text and Dave had to ask "show me the case with mockups (new disposable HTML, not the grooming board)"; the case page cost one turn once built — build it BEFORE the ledger); Dave then edits copy inline on the frame — redraw, mark the decision on the frame, and ship the copy as a follow-up PR. Stacked children retarget via `git rebase --onto origin/main <ORIGINAL fork point>` — after the parent was itself rebased, its branch tip is NOT the child's upstream (memory `reference_stacked_pr_actions_gotchas`).
+
+**Every call in the ledger is self-contained and single** (2026-09-29: two of nine one-line calls drew "I need a clearer
+explanation" — one named a mechanism, one bundled three unrelated sub-items): what the thing is in the app's words,
+what a user sees today, each option as what the user would see, the rec; ONE decision per number (memory
+`feedback_full_issue_in_chat`).
 
 **The ledger leads with the interesting forks, not the approvals** (⛔ Dave, 2026-09-11, from Mollick's "interest"
 point — "if agents make every interesting decision and leave people with the approvals, the exceptions, and the

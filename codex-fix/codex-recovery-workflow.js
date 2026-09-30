@@ -10,7 +10,7 @@ export const meta = {
   ],
 }
 
-// args: { prNumber, baseRef, codexFindings, changedFiles }
+// args: { prNumber, baseRef, headRef?, codexFindings, changedFiles }
 //   prNumber     — the PR number (label/reporting only)
 //   baseRef      — git ref to diff against (default 'origin/main'); agents run `git diff <baseRef>...HEAD`
 //   codexFindings— the raw text of the Codex review comment (the P0/P1 lines). May be '' if not captured.
@@ -33,9 +33,10 @@ if (!rawFindings.trim()) {
   log('⚠ codexFindings NOT provided — reviewers are running WITHOUT the actual Codex finding text (Step 2 gathers it; pass it via args.codexFindings)')
 }
 const changedFiles = (a && a.changedFiles) || []
-const fileList = changedFiles.length ? changedFiles.join('\n') : '(file list not provided — derive it from `git diff --name-only ' + baseRef + '...HEAD`)'
+const fileList = changedFiles.length ? changedFiles.join('\n') : '(file list not provided — derive it from `git diff --name-only ' + baseRef + '...' + ((a && a.headRef) || 'HEAD') + '`)'
 
-const DIFF_CMD = 'git --no-pager diff ' + baseRef + '...HEAD'
+const HEAD_REF = (a && a.headRef) || 'HEAD' // pass headRef (e.g. the PR's local or origin branch) when the session is NOT on the PR branch
+const DIFF_CMD = 'git --no-pager diff ' + baseRef + '...' + HEAD_REF
 
 const groundingBlock = `
 ## Ground truth (read FIRST, before forming any opinion)
@@ -221,7 +222,7 @@ const DIMENSIONS = [
   },
   {
     key: 'stale-echo-monotonic',
-    focus: `**Stale-echo reversion of server-side progress (cost #1222 r1+r4).** Any client write that sends a WHOLE object/array rebuilt from its own cache can echo STALE values over fields the server (or another device) progressed AFTER that cache was taken — background-job outputs, another tab's flags, async stamps. For each client-editable field in a bulk write path ask: does anything server-side or cross-device advance this field, and does it only ever move ONE WAY (empty→filled, false→true)? One-way fields must LATCH at the server merge seam (client input can complete them, never revert them); also check whether any GATE/freeze/derivation reads the field — a stale echo that reverts it can dissolve the gate (an all-false echo un-froze #1222 r2's order lock until r4 latched it). And enforce structural freezes at the WRITE SITE on EVERY writer (PATCH and siblings like appends — an append that looks structurally safe still changes a completion DENOMINATOR any every-item predicate reads, #1222 r6).`,
+    focus: `**Stale-echo reversion of server-side progress (cost #1222 r1+r4; #2207 r1+r2).** A WHOLE-state save planned from a read that is not CURRENTLY trustworthy is the same class: a load failure answered as 200-with-defaults, OR a failed refetch over cached data — "stale but real" is NOT acceptable for a whole-list write (the internal review ruled it acceptable on #2207 and Codex blocked on exactly it); every such writer gates on ONE ready predicate (first load succeeded AND the latest fetch did not fail) and a failed save rolls its optimistic change back. Any client write that sends a WHOLE object/array rebuilt from its own cache can echo STALE values over fields the server (or another device) progressed AFTER that cache was taken — background-job outputs, another tab's flags, async stamps. For each client-editable field in a bulk write path ask: does anything server-side or cross-device advance this field, and does it only ever move ONE WAY (empty→filled, false→true)? One-way fields must LATCH at the server merge seam (client input can complete them, never revert them); also check whether any GATE/freeze/derivation reads the field — a stale echo that reverts it can dissolve the gate (an all-false echo un-froze #1222 r2's order lock until r4 latched it). And enforce structural freezes at the WRITE SITE on EVERY writer (PATCH and siblings like appends — an append that looks structurally safe still changes a completion DENOMINATOR any every-item predicate reads, #1222 r6).`,
   },
   {
     key: 'unattended-write-contract',

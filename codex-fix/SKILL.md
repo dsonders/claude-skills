@@ -81,6 +81,7 @@ Workflow({
   args: {
     prNumber: <PR>,
     baseRef: "origin/main",
+    headRef: "<branch>",                 // ONLY when this session is not on the PR branch (a manager in the primary checkout): the PR's local or origin branch; reviewers then read files with `git show <headRef>:<path>`
     codexFindings: "<the full text of the Codex comment from Step 2>",
     changedFiles: ["server/...", "client/..."]   // from `gh pr view --json files`
   }
@@ -175,7 +176,7 @@ The workflow's reviewer panel is lifted from `.github/codex/prompts/review.md` s
 | Field wiring & regressions | priority 1, 4 | data graveyards, write-allowlist no-ops, broken callers, sibling write paths |
 | AI output & customer surface | cardinal rules | removeMetaLanguage funnel, fabrication, pricing math, mobile-first |
 | Failure-path state machines | priority 1 (blind spot, #1222 r3) | every failure exit re-arms the UI; no advance/success before its write settles; optimistic writes roll back |
-| Stale-echo / monotonicity | priority 1 (blind spot, #1222 r1/r4/r6) | bulk client writes echoing stale cache over server-progressed fields; one-way fields latch at the merge seam; freezes enforced on EVERY writer |
+| Stale-echo / monotonicity | priority 1 (blind spot, #1222 r1/r4/r6) | bulk client writes echoing stale cache over server-progressed fields; one-way fields latch at the merge seam; freezes enforced on EVERY writer; a whole-state save planned from an UNTRUSTED read — load failure answered 200, or a failed refetch over cached data (#2207 r1/r2: "stale but real" is not acceptable for a whole-list write) |
 | Unattended-write contract | priorities 1–3 (blind spot, #1355 — 6 rounds, one clause each) | background/fire-and-forget writes: in-txn preconditions, full-write-set guards, funnel follow-ups (captured-value mirrors go IN the txn), input freshness, provenance stamps, genuinely-shared paid-call budget, in-progress flags cleared on every exit |
 | Population-render matrix + accepted holes | priorities 1, 5 (blind spot, #1324 r2/r3) | a widened membership predicate admits a population no render surface handles (generic titles, empty bodies, double-rendered fallbacks); a diff comment documenting an "accepted hole" is what the gate blocks on — close one-line holes, don't essay them |
 | Destructive cascade over a shared artifact + recombined select-then-write | priorities 1–2 (blind spot, #1718 r1–r3 — the Workflow itself prescribed the r2-blocked `db.batch()`) | a diff that RECOMBINES a pre-existing select-then-write (`docRef.delete()` after an org-scoped `.get()`) into a new cascade/batch makes that shape diff-introduced: every deleted ref must come from a `txn.get(query)` with the org predicate INSIDE the writing txn, and once the write is in a txn every route-level gate (closed lock, frozen line, access) is re-judged from the txn's own reads (#1553). Before deleting a shared artifact, ask what its referrers actually READ — if they hold denormalized copies, delete only the ROWS (no census, no object delete; a census can't be race-free without locking every sibling); "durable cleanup job with retries" is the wrong fix when the right one is to delete less |

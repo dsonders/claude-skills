@@ -2,7 +2,8 @@
 
 Manager: this session. <N> build agents (Opus), each in its own worktree per RULE #4
 (claim `.claude/worktrees/build-N` atomically via `mkdir .../.claim`, or mint fresh with
-`git worktree add`; EnterWorktree/cd FIRST, branch INSIDE off origin/main; verify parked +
+`git worktree add`; work in the tree by ABSOLUTE PATH (`git -C`, `npm --prefix` — `EnterWorktree` is refused inside
+subagents, 2026-09-29; never `cd`), branch INSIDE off origin/main; verify parked +
 `git fetch && git reset --hard origin/main`; release with `.claim` removed LAST).
 Repo: /Users/davidsonders/ro-bot/app.
 
