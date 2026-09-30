@@ -228,7 +228,7 @@ The step most compounding workflows skip. Before committing, actively look for d
 | **Delete** | Code/problem-domain gone, or fully redundant. Remove it. |
 
 Sweep:
-- [ ] **Rulebook size:** `wc -c AGENTS.md CLAUDE.md design.md`. Baseline after the 2026-09-06 prune (app): AGENTS.md ~12.5K, CLAUDE.md ~1.8K, design.md ~9.8K — every session loads all three. Over? Cut, or move rationale/spec into a linked doc (`docs/worktree-sop.md`, `docs/plans/...`), never into another auto-loaded file.
+- [ ] **Rulebook size:** `wc -c AGENTS.md CLAUDE.md design.md`. Baseline (app; Dave raised it 2026-09-30): AGENTS.md ~13.0K, CLAUDE.md ~1.8K, design.md ~10.0K — every session loads all three. Over? Cut, or move rationale/spec into a linked doc (`docs/worktree-sop.md`, `docs/plans/...`; design.md quotes and PR history go to `docs/plans/design-rulings.md`, one line per rule stays), never into another auto-loaded file.
 - [ ] **Rewriting a rulebook or doctrine file?** Read it from `origin/main` inside the worktree (never an earlier primary-checkout read — a 3-day-stale read silently dropped four rules, #1849), diff the rewrite against that same copy, and grep `__tests__/` for source pins (`read('design.md')`, literal doctrine phrases) before rewording anything (#1850 lost a CI round to one).
 - [ ] **Pattern Index rows** referencing deleted code, superseded approaches, or moderate-overlap pairs from Step 2.7 → Update/Consolidate/Delete.
 - [ ] **Lessons-learned docs** that overlap (drift silently) or reference code that no longer exists → Consolidate or Delete.
