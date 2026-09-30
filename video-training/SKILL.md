@@ -161,6 +161,8 @@ Copy the video, the PDF and `out/slides/` to `~/Desktop/<Title>/`. Keep earlier 
 | Anything that moves in the app should move in the video | Waveform, spinner, card opening |
 | Shop-floor words | RO, line, story, 3Cs, CP |
 
+Dave gives slide edits by PDF page number. Page 1 is the cover, so "pg 7" is step 6. Restate each edit by step name before applying it.
+
 ## Success criteria
 
 - [ ] Dave edited the storyboard canvas and his edits were harvested, not guessed
