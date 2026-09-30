@@ -181,6 +181,9 @@ Both are loaded. Use `settings.json` for hooks (they need to be consistent). Use
 ### 8. Commit infrastructure changes to main
 Hook and settings changes on feature branches won't be available in other branches or web sessions until merged. Always commit these directly to main.
 
+### 9. One copy of each hook per repo; another tool's hook dir wraps it
+`website/.codex/hooks/` held its own copies of the three hooks. The 2026-09-15 fix (rule 3) reached `.claude/hooks` only, so every Codex session on the Mac kept writing the token into the remote URL until 2026-09-30, and deleted the clone on a failed pull. A second hook directory (`.codex/hooks`, or any future tool's) holds two-line wrappers that `exec` the `.claude/hooks` file, never a copy. When fixing a hook, grep the whole repo for other copies: `grep -rl claude-skills . --include='*.sh'`.
+
 ---
 
 ## Repos with Skills Support
