@@ -136,6 +136,12 @@ Make a todo list and work through it.
   the 10-min stream watchdog — background/tee; the scratchpad is SHARED — unique per-agent filenames
   (`pr-body.md` collision published the wrong PR body); jest in a `.claude` worktree tests the PRIMARY unless
   cwd is the tree (`npm --prefix <tree> run test -- …`); `cp` of `.env` into a minted tree is denied — symlink.
+- **Agent hygiene that bit 2026-10-01 (DealerBuilt run):** a builder's LOCAL dev server booted with the prod `.env` runs the app's
+  scheduled jobs against prod Firestore (`daily-index-sync` wrote `cleaned: 15` to TD1; the DMS poll was off only because its flag is
+  unset locally) — brief UI builders to capture by DOM override on prod, or to start the server with the jobs disabled
+  (`docs/local-dev-setup.md`); and the auto-mode classifier denied a subagent's `gh pr create` that carried a wrong `-R` repo flag
+  ("Create Public Surface") — brief `gh pr create` with NO `-R`; a sibling session can take a pool tree between your check and the
+  launch, so re-check the claim in the launch call and mint a fresh tree (symlink `node_modules` + `.env`, no install) on failure.
 - **Agent hygiene that bit 2026-09-29 (Grid run, 9 builders):** `EnterWorktree` was REFUSED inside every subagent
   ("current working directory is the repository root") — brief builders to work in their claimed tree by absolute
   path (`git -C`, `npm --prefix`); two UI builders wrote the SAME test account's saved preferences at once and each
