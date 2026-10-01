@@ -27,8 +27,9 @@ Each entry cost at least one wasted run on 2026-09-29. Read the section for the 
 ## Narration
 
 - The Mac's built-in voices (`say`) were rejected as robotic. Only compact voices are installed.
-- `gpt-4o-mini-tts` takes a style instruction. Asking for "unhurried" made it slow; asking for "brisk" barely changed it. Pace is set by `speed` in the build, with pitch kept.
+- The style instruction (tested on `gpt-4o-mini-tts`; now passed as `gpt-audio-1.5`'s system prompt) is weak. Asking for "unhurried" made it slow; asking for "brisk" barely changed it. Pace is set by `speed` in the build, with pitch kept.
 - Each card is a separate request, so tone can drift a little between cards.
+- `gpt-audio-1.5` (10/1 test): about one in four takes mumbled a card's FIRST words ("Part one" heard as "AUT1") while its own transcript read clean, so narrate's word check can't see it. `check-audio.mjs` on the finished video does; delete that card's manifest entry to re-take.
 - A garbled line shows up in `check-audio.mjs`. Reword it rather than retrying: "say the service" came out as "and Cs"; "name the service out loud" was clean.
 - The transcriber writes "10th Gear" and "40,000". Those are not faults.
 

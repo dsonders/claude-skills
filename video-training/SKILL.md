@@ -123,7 +123,7 @@ cd /Users/davidsonders/ro-bot/app
 NODE_OPTIONS='-r dotenv/config' node ~/.claude/skills/video-training/scripts/narrate.mjs <project>
 ```
 
-Voice `ash`, model `gpt-4o-mini-tts`. Dave approved this voice and rejected the Mac's built-in voices as robotic. It uses the app's OpenAI key and costs a few cents a build: say so in the brief for each new video, so the spend is never a surprise. `DRY=1` lists what would be regenerated.
+Voice `ash`, model `gpt-audio-1.5` (moved from `gpt-4o-mini-tts`, which OpenAI shuts off 2027-01-06). A take whose transcript doesn't match the card's words is retried, then refused. Dave approved this voice and rejected the Mac's built-in voices as robotic. It uses the app's OpenAI key and costs a few cents a build: say so in the brief for each new video, so the spend is never a surprise. `DRY=1` lists what would be regenerated.
 
 Write narration for the ear: "R O", "three Cs", "tenthgear dot A I". Announce each part on its first card.
 
