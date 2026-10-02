@@ -75,6 +75,10 @@ Read the Codex comment in full. Note every `**[P0|P1]** file:line — problem �
 
 Invoke the bundled review workflow. It maps the diff, fans out reviewers across Codex's rubric, adversarially verifies each finding, sweeps the whole class repo-wide, and returns one ordered fix plan. Pass the gathered context as `args`:
 
+**In a worktree-isolated app session the Workflow tool refuses a `scriptPath` outside the worktree.** Copy the script in first — the claimed pool tree's untracked `.claim/` is the place (`mkdir -p .claim/wf && cp ~/.claude/skills/codex-fix/codex-recovery-workflow.js .claim/wf/`), since `tmp/` is NOT gitignored in `app/` — and pass that path. It goes when `.claim` is removed on release (#2266, 2026-10-02).
+
+**When the fix is a NEW model-driven flow** (a second model call, a continuation, a retry that depends on what the model returns), run it on the REAL model before this review, and print what came back: #2266's "continue from step 33" made the model count one off and drop a step — no reviewer reading the code could see that, and each review pass then found one more "silent terminal" until the silent terminal itself (a sheet that closed by itself) was deleted. If two passes in a row find another member of one class, stop adding guards and remove the state that needs guarding.
+
 ```
 Workflow({
   scriptPath: "/Users/davidsonders/.claude/skills/codex-fix/codex-recovery-workflow.js",

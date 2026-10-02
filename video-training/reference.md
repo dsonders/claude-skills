@@ -48,6 +48,17 @@ The checklist opens only when the note reads as scheduled maintenance. "Schedule
 - If the canvas spins or goes blank, open a canvas you have not touched. If that fails too, it is the service: publish the cards as a plain HTML page and carry on.
 - `storyboard-harvest.mjs` was proven against the generator's own markup and simulated edits. The editor may reshape markup when Dave retypes text. Anything it cannot read is listed under "check by hand": open that artboard and read it.
 - Notes Dave adds himself are instructions. The harvest prints them; it never merges them.
+- Dave also leaves COMMENTS on the canvas ("swap in the logo here"). They arrive as comment notifications; read them with the ArtifactComments tool, make the change, reply and resolve.
+- A revision adds cards, so board file names shift (`S11-pencil` becomes `S16-pencil`). Publish the renamed files and send the old names as `null`, or the old boards stay as stray frames. Do this ONLY before Dave has edited: once he has, never regenerate from `storyboard.json` without harvesting first.
+- Dave adds artboards of his own (an end page, 2026-10-02: `Main-qgwm.dc.html`). The harvest and the build scripts do not know them. Read them by hand and extend the build before production.
+- The logo: `/Users/davidsonders/ro-bot/shared/brand-assets/exports/png/horizontal-white-2400w.png` (white, for the black cards). Upload it as a canvas asset; the SVG export loses its fill on upload.
+
+## Capturing a photo flow
+
+- The camera button on the RO page is `button[aria-label="Add a photo to the notes"]`; its file input is the next sibling. `setInputFiles` on it opens the routing review (`photo-routing-review`, `photo-routing-story-notes`).
+- The "Add to story notes" sheet is `role=dialog` named "Add photo to story notes"; wait on the `/photos/<id>/interpret` response, never a sleep. A long document is read in parts: each save re-opens the sheet on the next part.
+- The RO page scrolls inside `<body>`: park a target with `document.body.scrollTop += box.y - <wanted y>`.
+- **When the capture shows the app doing less than the script says, stop and raise it as a product question** (memory `feedback_capture_gap_is_product_question`). The first TSB capture summarised the bulletin; that was a product gap, not a wording problem.
 
 ## Secrets
 
