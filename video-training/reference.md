@@ -22,6 +22,8 @@ Each entry cost at least one wasted run on 2026-09-29. Read the section for the 
 - **The browser's screencast and Playwright's `recordVideo` both capture at 1x** (390 px wide) whatever the device scale. Scaled into the phone frame it is blurry. `Page.captureScreenshot` with `clip: { ..., scale: 2 }` returns 780 x 1688 at about 30 frames a second. Without the `clip` it also returns 1x. `vt.recorder` does this and resamples to a steady 30 fps.
 - Frames are saved as `f00000.jpg` upward. `footage.runs` is a list of `[firstFrame, frameCount]`. Several runs are joined with hard cuts; a cut inside a waveform or a spinner is invisible.
 - The finger marker (`vt.touchOn`) is drawn into the page. Turn it off before a still.
+- **Never take a page screenshot while `vt.recorder` is running** (2026-10-03): the still comes out tiled and garbled while the clip frames stay clean. Shoot stills before `start()` or after `stop()`, or take the still from the clip: `ffmpeg -i footage/<clip>/f00160.jpg frames/<name>.png` (780 x 1688 is enough for the 670 px phone on a card), at a frame before the finger marker appears. The boxes the capture wrote stay valid (they are CSS px).
+- A recorded clip and its stills can share one run at dpr 3: the recorder's `clip.scale` is in CSS px, so it still returns 780 x 1688 at 30 fps. One run = one RO for both.
 - Footage cards lose their callouts: the card is drawn with the phone screen cut out and the clip plays underneath. If the narration points at something, keep it a still or add the pointer to the clip.
 
 ## Narration
@@ -50,13 +52,16 @@ The checklist opens only when the note reads as scheduled maintenance. "Schedule
 - Notes Dave adds himself are instructions. The harvest prints them; it never merges them.
 - Dave also leaves COMMENTS on the canvas ("swap in the logo here"). They arrive as comment notifications; read them with the ArtifactComments tool, make the change, reply and resolve.
 - A revision adds cards, so board file names shift (`S11-pencil` becomes `S16-pencil`). Publish the renamed files and send the old names as `null`, or the old boards stay as stray frames. Do this ONLY before Dave has edited: once he has, never regenerate from `storyboard.json` without harvesting first.
-- Dave adds artboards of his own (an end page, 2026-10-02: `Main-qgwm.dc.html`). The harvest and the build scripts do not know them. Read them by hand and extend the build before production.
+- Boards Dave DESIGNS himself (the cover, an end page) are kept verbatim: the harvest copies them into `<project>/storyboard/boards/` and records `cover.board` / `end.board`; build-slides renders that markup (canvas asset urls swapped for local files via `artifact.json` assets, the logo as `logo-white`), and the canvas generator sends it back unchanged. Register an end page once in storyboard.json as `"end": { "canvasFile": "<its .dc.html>", "voiceNote": "<its blue note id>" }`; it then gets narration, a video card and the audio check like any card.
+- Dave also hand-styles STEP boards (a bold body, a text width). The generator does not carry those, so a full regenerate wipes them: on a revision, patch his live boards (swap the `/_blob/` frame and the callout markup) and publish only those files plus the index. Diff each against the live copy before publishing.
+- The harvest reads only card words, callouts and blue notes. An orange clip note he edits is NOT read back: diff the live index's `fx-` notes before republishing.
 - The logo: `/Users/davidsonders/ro-bot/shared/brand-assets/exports/png/horizontal-white-2400w.png` (white, for the black cards). Upload it as a canvas asset; the SVG export loses its fill on upload.
 
 ## Capturing a photo flow
 
 - The camera button on the RO page is `button[aria-label="Add a photo to the notes"]`; its file input is the next sibling. `setInputFiles` on it opens the routing review (`photo-routing-review`, `photo-routing-story-notes`).
-- The "Add to story notes" sheet is `role=dialog` named "Add photo to story notes"; wait on the `/photos/<id>/interpret` response, never a sleep. A long document is read in parts: each save re-opens the sheet on the next part.
+- The "Add to story notes" sheet is `role=dialog` named "Add photo to story notes"; wait on the `/photos/<id>/interpret` response, never a sleep. A reading over one note (about 5,000 characters) is refused whole with a Crop photo offer (since 2026-10-02); it is never read in parts.
+- A full procedure note is taller than the phone screen, so Update Story sits below the fold: scroll to it inside the clip (`document.body.scrollTop` in small steps) before the tap, or the tap jumps the page and the finger marker lands off-screen.
 - The RO page scrolls inside `<body>`: park a target with `document.body.scrollTop += box.y - <wanted y>`.
 - **When the capture shows the app doing less than the script says, stop and raise it as a product question** (memory `feedback_capture_gap_is_product_question`). The first TSB capture summarised the bulletin; that was a product gap, not a wording problem.
 
