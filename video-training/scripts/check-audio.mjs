@@ -6,7 +6,7 @@
 //   NODE_OPTIONS='-r dotenv/config' node <skill>/scripts/check-audio.mjs <project-dir>
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { loadStoryboard, ffmpeg } from './lib.mjs';
+import { loadStoryboard, allCards, ffmpeg } from './lib.mjs';
 
 const DIR = resolve(process.argv[2] || '.');
 const sb = loadStoryboard(DIR);
@@ -22,7 +22,7 @@ const heard = (await r.json()).text;
 const norm = (t) => t.toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim().split(' ');
 const bag = new Set(norm(heard));
 let worst = 1;
-for (const c of [{ id: 'cover', narration: sb.cover.narration }, ...sb.steps]) {
+for (const c of allCards(sb)) {
   const words = norm(c.narration).filter((w) => w.length > 3);
   const missing = words.filter((w) => !bag.has(w));
   const score = words.length ? 1 - missing.length / words.length : 1;

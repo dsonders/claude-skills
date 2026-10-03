@@ -12,7 +12,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
-import { loadStoryboard, sleep } from './lib.mjs';
+import { loadStoryboard, allCards, sleep } from './lib.mjs';
 
 const DIR = resolve(process.argv[2] || '.');
 const sb = loadStoryboard(DIR);
@@ -54,7 +54,7 @@ async function speak(text, path) {
   }
 }
 
-const cards = [{ id: 'cover', narration: sb.cover.narration }, ...sb.steps];
+const cards = allCards(sb);
 let made = 0;
 for (const c of cards) {
   if (!c.narration) throw new Error(`card ${c.id} has no narration`);

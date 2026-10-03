@@ -25,10 +25,38 @@ export function loadStoryboard(dir) {
     if (!sb.parts[s.part - 1]) throw new Error(`storyboard: step ${s.id} names part ${s.part}, which does not exist`);
     if (!existsSync(`${dir}/frames/${s.img}.png`)) throw new Error(`storyboard: step ${s.id} key frame frames/${s.img}.png is missing`);
   }
+  for (const [k, b] of [['cover', sb.cover], ['end', sb.end]]) {
+    if (b?.board && !existsSync(`${dir}/${b.board}`)) throw new Error(`storyboard: ${k} board ${b.board} is missing (run storyboard-harvest.mjs --write)`);
+  }
   return sb;
 }
 export const saveStoryboard = (dir, sb) => writeFileSync(`${dir}/storyboard.json`, JSON.stringify(sb, null, 2) + '\n');
 
+/** Every card in play order: cover, the steps, then the end page if there is one. */
+export const allCards = (sb) => [{ id: 'cover', ...sb.cover }, ...sb.steps, ...(sb.end ? [{ id: 'end', ...sb.end }] : [])];
+
+// The white horizontal logo, for the black cards. On the canvas it is an uploaded
+// asset ("logo-white" in storyboard/artifact.json).
+export const LOGO_WHITE = '/Users/davidsonders/ro-bot/shared/brand-assets/exports/png/horizontal-white-2400w.png';
+
+/**
+ * A board Dave designed himself on the canvas (the cover, the end page), kept
+ * VERBATIM in <project>/storyboard/boards/ by the harvest. Returns the card's
+ * markup (the <x-dc> body without its <helmet>), with every canvas asset url
+ * swapped for the local file as a data URI so it renders off the canvas.
+ */
+export function boardBody(dir, file) {
+  const html = readFileSync(`${dir}/${file}`, 'utf8');
+  const m = /<x-dc>([\s\S]*?)<\/x-dc>/.exec(html);
+  if (!m) throw new Error(`board ${file}: no <x-dc> body`);
+  const assets = JSON.parse(readFileSync(`${dir}/storyboard/artifact.json`, 'utf8')).assets || {};
+  const local = Object.fromEntries(Object.entries(assets).map(([k, url]) => [url, k === 'logo-white' ? LOGO_WHITE : `${dir}/frames/${k}.png`]));
+  return m[1].replace(/<helmet>[\s\S]*?<\/helmet>/, '').replace(/\/_blob\/[0-9a-f]+/g, (url) => {
+    const f = local[url];
+    if (!f || !existsSync(f)) throw new Error(`board ${file}: asset ${url} has no local file (add it to storyboard/artifact.json assets)`);
+    return `data:image/png;base64,${readFileSync(f).toString('base64')}`;
+  });
+}
 /** Password for the login. Never printed. */
 export function password() {
   if (process.env.VT_PASSWORD) return process.env.VT_PASSWORD;

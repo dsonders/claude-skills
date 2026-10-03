@@ -91,7 +91,9 @@ ${c.items.map((p, i) => `<div style="display: flex; gap: 16px; align-items: cent
 
 // ── files ─────────────────────────────────────────────────────────────────────
 export const boardName = (s, i) => `S${String(i + 1).padStart(2, '0')}-${s.id}.dc.html`;
-writeFileSync(`${OUT}/Main.dc.html`, coverBoard);
+// A board Dave designed himself (harvested into storyboard/boards/) goes back verbatim.
+writeFileSync(`${OUT}/Main.dc.html`, c.board ? readFileSync(`${DIR}/${c.board}`, 'utf8') : coverBoard);
+if (sb.end?.board) writeFileSync(`${OUT}/${sb.end.canvasFile}`, readFileSync(`${DIR}/${sb.end.board}`, 'utf8'));
 sb.steps.forEach((s, i) => writeFileSync(`${OUT}/${boardName(s, i)}`, stepBoard(s, i)));
 
 // ── index: one row per part, the voice track on a sticky under each card ──────────────
@@ -117,6 +119,11 @@ sb.steps.forEach((s, i) => {
   else if (s.arrow) notes[`fx-${s.id}`] = { x, y: y + H + STICKY_DOWN + VO_H + 20, w: W, maxH: NOTE_H, text: 'In the video the arrow bounces on its target.', size: 's', color: 'orange' };
   col += 1;
 });
+if (sb.end?.board) {
+  const e = sb.end, at = e.at || { x: col * (W + GX), y: row * PITCH, title: 'End page' };
+  place(e.canvasFile, at.x, at.y, at.title);
+  notes[e.voiceNote] = { x: at.x, y: at.y + H + STICKY_DOWN, w: W, maxH: VO_H, text: e.narration, size: 'm', color: 'blue' };
+}
 notes.readme = {
   x: -700, y: 0, w: 600, maxH: 900, size: 'm', color: 'teal',
   text: `${sb.title}\nStoryboard\n\nHOW TO EDIT\n\n1. Words on a card: click the text and retype it. A white chip marks a button the viewer taps.\n\n2. Voice track: the BLUE note under each card is what the narrator says on that card. Retype it.\n\n3. Callouts (yellow outlines and arrows): drag or resize them, or write what you want on a note.\n\n4. Add, drop or reorder a card: write it on a note next to the card. A new card needs a new key frame.\n\n5. ORANGE notes mark cards that play a video clip or an animation.\n\nWhen you are done, say so in the terminal. Every change is read back from here.`,
@@ -127,7 +134,7 @@ if (liveAt > -1) {
   // Keep every key the editor owns; replace only the generated boards and notes,
   // and keep notes Dave added himself (any id that is not one of ours).
   const live = JSON.parse(readFileSync(resolve(process.argv[liveAt + 1]), 'utf8'));
-  const ours = (id) => /^(vo-|fx-|t-\d+$|readme$)/.test(id);
+  const ours = (id) => /^(vo-|fx-|t-\d+$|readme$)/.test(id) || id === sb.end?.voiceNote;
   const kept = Object.fromEntries(Object.entries(live.notes || {}).filter(([id]) => !ours(id)));
   index = { ...live, boards, order, notes: { ...kept, ...notes } };
 }

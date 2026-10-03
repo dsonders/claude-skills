@@ -7,7 +7,7 @@
 // Pull first with the Artifact tool: action "read", the canvas url, `paths` =
 // project/canvas.json plus every project/*.dc.html, and an `out_dir`.
 // Without --write this only prints what changed.
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadStoryboard, saveStoryboard } from './lib.mjs';
 
@@ -49,19 +49,51 @@ const set = (obj, key, val, label) => {
 const index = JSON.parse(readFileSync(`${LIVE}/project/canvas.json`, 'utf8'));
 const notes = index.notes || {};
 
+// Boards Dave designs himself (the cover, the end page) are kept VERBATIM in
+// storyboard/boards/, so the slides and video show his layout, not a template.
+// Their words are also read into storyboard.json, for the record and the voice.
+const keep = [];
+const keepBoard = (owner, file, label) => {
+  const src = `${LIVE}/project/${file}`, rel = `storyboard/boards/${file}`;
+  const now = readFileSync(src, 'utf8'), before = existsSync(`${DIR}/${rel}`) ? readFileSync(`${DIR}/${rel}`, 'utf8') : null;
+  if (now !== before) changes.push({ label: `${label} design`, from: before ? '(kept copy)' : '(none kept yet)', to: `${file} as drawn on the canvas` });
+  if (owner.board !== rel) owner.board = rel;
+  keep.push([src, rel, now]);
+};
+/** Text of every element carrying `cls`, its child blocks joined by a space. */
+const allWords = (h, cls) => { const out = []; let rest = h; for (let m; (m = new RegExp(`class="[^"]*\\b${cls}\\b`).exec(rest));) { const at = rest.lastIndexOf('<', m.index); out.push(words((inner(rest.slice(at), cls) || '').replace(/<\/div>/g, ' </div>'))); rest = rest.slice(m.index + 10); } return out; };
+
 // cover
 {
   const f = `${LIVE}/project/Main.dc.html`;
   if (existsSync(f)) {
     const h = readFileSync(f, 'utf8');
-    set(sb.cover, 'heading', words(inner(h, 'sb-cover-heading')), 'cover heading');
+    const heads = allWords(h, 'sb-cover-heading');
+    set(sb.cover, 'heading', heads[0] ?? null, 'cover heading');
+    if (heads[1] || sb.cover.subheading) set(sb.cover, 'subheading', heads[1] ?? '', 'cover subheading');
     set(sb.cover, 'sub', words(inner(h, 'sb-cover-sub')), 'cover subhead');
-    set(sb.cover, 'help', words(inner(h, 'sb-cover-help')), 'cover footer');
-    const items = []; let rest = h;
-    for (let m; (m = /class="[^"]*\bsb-cover-item\b/.exec(rest));) { const at = rest.lastIndexOf('<', m.index); items.push(words(inner(rest.slice(at), 'sb-cover-item'))); rest = rest.slice(m.index + 10); }
+    set(sb.cover, 'help', allWords(h, 'sb-cover-help')[0] ?? null, 'cover footer');
+    const items = allWords(h, 'sb-cover-item');
     if (items.length) set(sb.cover, 'items', items, 'cover list');
+    keepBoard(sb.cover, 'Main.dc.html', 'cover');
   } else problems.push('cover: Main.dc.html is gone from the canvas');
   if (notes['vo-cover']) set(sb.cover, 'narration', notes['vo-cover'].text.trim(), 'cover voice');
+}
+
+// end page: sb.end = { canvasFile, voiceNote, ... } names Dave's own artboard
+if (sb.end) {
+  const e = sb.end, f = `${LIVE}/project/${e.canvasFile}`;
+  if (existsSync(f)) {
+    const h = readFileSync(f, 'utf8');
+    set(e, 'heading', allWords(h, 'sb-cover-heading')[0] ?? null, 'end heading');
+    set(e, 'items', allWords(h, 'sb-cover-item'), 'end list');
+    set(e, 'help', allWords(h, 'sb-cover-help')[0] ?? null, 'end footer');
+    keepBoard(e, e.canvasFile, 'end page');
+    const b = index.boards?.[e.canvasFile];
+    if (b) { const at = { x: b.x, y: b.y, title: b.title }; if (JSON.stringify(e.at) !== JSON.stringify(at)) e.at = at; }
+  } else problems.push(`end page: ${e.canvasFile} is gone from the canvas`);
+  const vo = notes[e.voiceNote];
+  if (vo) set(e, 'narration', vo.text.trim(), 'end voice'); else problems.push(`end page: its voice note ${e.voiceNote} was deleted`);
 }
 
 // steps
@@ -92,14 +124,14 @@ const was = sb.steps.map((s) => s.id).filter((id) => posOrder.includes(id));
 if (JSON.stringify(posOrder) !== JSON.stringify(was)) problems.push(`cards were moved on the canvas. Order there now: ${posOrder.join(', ')}. Confirm with Dave before reordering steps.`);
 
 // Notes Dave wrote himself are instructions to act on, not data to merge.
-const ours = (id) => /^(vo-|fx-|t-\d+$|readme$)/.test(id);
+const ours = (id) => /^(vo-|fx-|t-\d+$|readme$)/.test(id) || id === sb.end?.voiceNote;
 const his = Object.entries(notes).filter(([id, n]) => !ours(id) && n.text && !['rect', 'oval', 'pen', 'line', 'arrow', 'image'].includes(n.kind));
-const strays = files.filter((f) => f !== 'Main.dc.html' && !sb.steps.some((s) => new RegExp(`^S\\d+-${s.id}\\.dc\\.html$`).test(f)));
+const strays = files.filter((f) => f !== 'Main.dc.html' && f !== sb.end?.canvasFile && !sb.steps.some((s) => new RegExp(`^S\\d+-${s.id}\\.dc\\.html$`).test(f)));
 
 console.log(`\n${changes.length} change(s) read off the canvas`);
 for (const c of changes) console.log(`\n  ${c.label}\n    was: ${JSON.stringify(c.from)}\n    now: ${JSON.stringify(c.to)}`);
 if (his.length) { console.log(`\n${his.length} note(s) Dave added. Read each one and act on it:`); for (const [id, n] of his) console.log(`\n  [${id}] near x=${Math.round(n.x)} y=${Math.round(n.y)}\n    ${n.text.replace(/\n/g, '\n    ')}`); }
-if (strays.length) console.log(`\nartboards Dave added: ${strays.join(', ')}. Open each and ask what it is for.`);
+if (strays.length) console.log(`\nartboards Dave added: ${strays.join(', ')}. Open each and ask what it is for. An end page: set storyboard.json "end": { "canvasFile": "<file>", "voiceNote": "<its voice note id>" } and rerun.`);
 if (problems.length) { console.log(`\n${problems.length} thing(s) to check by hand:`); for (const p of problems) console.log('  - ' + p); }
-if (WRITE && changes.length) { saveStoryboard(DIR, sb); console.log('\nstoryboard.json updated. Changed voice lines are re-narrated on the next narrate.mjs run; the rest keep their take.'); }
+if (WRITE && changes.length) { for (const [, rel, body] of keep) { mkdirSync(`${DIR}/storyboard/boards`, { recursive: true }); writeFileSync(`${DIR}/${rel}`, body); } saveStoryboard(DIR, sb); console.log('\nstoryboard.json updated. Changed voice lines are re-narrated on the next narrate.mjs run; the rest keep their take.'); }
 else if (changes.length) console.log('\n(dry run: pass --write to save these into storyboard.json)');

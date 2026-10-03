@@ -7,7 +7,7 @@
 // runs as long as the longer of the two.
 import { writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { loadStoryboard, seconds, ffmpeg } from './lib.mjs';
+import { loadStoryboard, allCards, seconds, ffmpeg } from './lib.mjs';
 
 const DIR = resolve(process.argv[2] || '.');
 const sb = loadStoryboard(DIR);
@@ -25,7 +25,7 @@ const A = ['-c:a', 'aac', '-b:a', '128k', '-ac', '2', '-ar', '48000'];
 const voice = (n) => `[${n}:a]aresample=48000,atempo=${SPEED},adelay=${Math.round(LEAD * 1000)}:all=1,apad[a]`;
 const still = ['-loop', '1', '-framerate', '30'];
 
-const cards = [{ id: 'cover' }, ...sb.steps];
+const cards = allCards(sb);
 const list = [];
 let total = 0;
 for (const [i, c] of cards.entries()) {

@@ -4,7 +4,7 @@
 //   node build-slides.mjs <project-dir>
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { APP, PHONE, loadStoryboard } from './lib.mjs';
+import { APP, PHONE, loadStoryboard, allCards, boardBody } from './lib.mjs';
 
 const DIR = resolve(process.argv[2] || '.');
 const sb = loadStoryboard(DIR);
@@ -69,24 +69,26 @@ const stepCard = (s, i) => `<section class="card" id="c-${s.id}">
 </section>`;
 
 const c = sb.cover;
-const cover = `<section class="card cover" id="c-cover">
+// A board Dave designed on the canvas renders verbatim; the template is the fallback.
+const designed = (id, b) => `<section class="card" id="c-${id}">${boardBody(DIR, b.board)}</section>`;
+const cover = c.board ? designed('cover', c) : `<section class="card cover" id="c-cover">
   <img class="logo" src="${LOGO}">
   <h1>${esc(c.heading)}</h1>
   <p class="sub">${esc(c.sub)}</p>
   <ol>${c.items.map((p, i) => `<li><span>${i + 1}</span>${esc(p)}</li>`).join('')}</ol>
   <div class="help">${esc(c.help || '')}</div>
 </section>`;
+const end = sb.end ? designed('end', sb.end) : '';
 
-const html = `<!doctype html><html><head><meta charset="utf-8"><style>${css}</style></head><body>${cover}${sb.steps.map(stepCard).join('')}</body></html>`;
+const html = `<!doctype html><html><head><meta charset="utf-8"><style>${css}</style></head><body>${cover}${sb.steps.map(stepCard).join('')}${end}</body></html>`;
 writeFileSync(`${OUT}/slides.html`, html);
 
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 540, height: 960 }, deviceScaleFactor: 2 });
 await page.goto('file://' + `${OUT}/slides.html`);
 await page.waitForLoadState('load');
-const name = (i) => (i === 0 ? '00-cover' : `${String(i).padStart(2, '0')}-${sb.steps[i - 1].id}`);
-await page.locator('#c-cover').screenshot({ path: `${SLIDES}/${name(0)}.png` });
-for (const [i, s] of sb.steps.entries()) await page.locator(`#c-${s.id}`).screenshot({ path: `${SLIDES}/${name(i + 1)}.png` });
+const cards = allCards(sb);
+for (const [i, cd] of cards.entries()) await page.locator(`#c-${cd.id}`).screenshot({ path: `${SLIDES}/${String(i).padStart(2, '0')}-${cd.id}.png` });
 await page.pdf({ path: `${OUT}/${sb.slug}.pdf`, width: '540px', height: '960px', printBackground: true, margin: { top: 0, right: 0, bottom: 0, left: 0 } });
 
 // ── video layers ──────────────────────────────────────────────────────────────
@@ -114,5 +116,5 @@ const p2 = await browser.newPage({ viewport: { width: 60, height: 85 }, deviceSc
 await p2.setContent(`<html><body style="margin:0;background:transparent">${ARROW}</body></html>`);
 await p2.screenshot({ path: `${LAYERS}/arrow.png`, omitBackground: true });
 await browser.close();
-console.log(`slides: ${sb.steps.length + 1} cards -> ${SLIDES}`);
+console.log(`slides: ${cards.length} cards -> ${SLIDES}`);
 console.log(`pdf:    ${OUT}/${sb.slug}.pdf`);
