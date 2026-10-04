@@ -30,7 +30,7 @@ const css = `
   .row { display: flex; gap: 14px; margin-top: 12px; align-items: flex-start; }
   .num { flex: 0 0 auto; width: 46px; height: 46px; border-radius: 23px; background: #fff; color: #000; font-weight: 800; font-size: 22px; display: flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; }
   .title { font-size: 27px; line-height: 1.15; font-weight: 800; letter-spacing: -0.2px; padding-top: 6px; }
-  .body { font-size: 17px; line-height: 1.35; color: #dedcdd; margin-top: 8px; }
+  .body { font-size: 17px; line-height: 1.35; color: #dedcdd; margin-top: 8px; white-space: pre-line; }
   .btn { display: inline-block; background: #fff; color: #000; font-weight: 700; border-radius: 8px; padding: 0 9px; font-size: 0.86em; line-height: 1.5; white-space: nowrap; box-shadow: 0 2px 0 #9b9799; letter-spacing: 0; }
   .phone { position: absolute; left: ${(540 - PHONE.w * S) / 2}px; top: 214px; width: ${PHONE.w * S}px; height: ${PHONE.h * S}px; border-radius: 26px; overflow: hidden; box-shadow: 0 0 0 5px #333132, 0 0 0 6px #4a4849; background: #111; }
   .phone img { width: 100%; height: 100%; display: block; }
@@ -63,7 +63,7 @@ export function marks(s, k = S) {
 const stepCard = (s, i) => `<section class="card" id="c-${s.id}">
   <div class="top">
     <div class="part">Part ${s.part}: ${esc(sb.parts[s.part - 1])}</div>
-    <div class="row"><div class="num">${i + 1}</div><div><div class="title">${chips(s.title)}</div>${s.body ? `<div class="body">${chips(s.body)}</div>` : ''}</div></div>
+    <div class="row"><div class="num">${i + 1}</div><div><div class="title" style="${esc(s.titleStyle || '')}">${chips(s.title)}</div>${s.body ? `<div class="body" style="${esc(s.bodyStyle || '')}">${chips(s.body)}</div>` : ''}</div></div>
   </div>
   <div class="phone"><img src="${b64(`${DIR}/frames/${s.img}.png`, 'image/png')}">${marks(s)}</div>
 </section>`;

@@ -40,6 +40,7 @@ const px = (tag, k) => { const m = new RegExp(`(?:^|[;"\\s])${k}:\\s*(-?[\\d.]+)
 
 const changes = [], problems = [];
 const set = (obj, key, val, label) => {
+  if (val === undefined && key.endsWith('Style')) { if (obj[key] !== undefined) { changes.push({ label, from: obj[key], to: '(none)' }); delete obj[key]; } return; }
   if (val == null) { problems.push(`${label}: could not be read off the canvas, check it by eye`); return; }
   if (JSON.stringify(obj[key] ?? '') === JSON.stringify(val)) return;
   changes.push({ label, from: obj[key], to: val });
@@ -105,6 +106,15 @@ sb.steps.forEach((s, i) => {
   const h = readFileSync(`${LIVE}/project/${name}`, 'utf8');
   set(s, 'title', words(inner(h, 'sb-title')), `${label} title`);
   set(s, 'body', words(inner(h, 'sb-body')) ?? '', `${label} body`);
+  // Layout Dave set by hand on the words (a width that forces his line break, bold):
+  // every declaration beyond the generator's own is kept and rendered by the builds.
+  for (const [cls, key, base] of [['sb-title', 'titleStyle', ['font-size', 'line-height', 'font-weight', 'padding-top']], ['sb-body', 'bodyStyle', ['font-size', 'line-height', 'color']]]) {
+    const tag = new RegExp(`<\\w+[^>]*class="[^"]*\\b${cls}\\b[^"]*"[^>]*>`).exec(h)?.[0] || '';
+    const style = /style="([^"]*)"/.exec(tag)?.[1] || '';
+    const seen = new Set(); const extra = [];
+    for (const d of style.split(';').map((x) => x.trim()).filter(Boolean).reverse()) { const k = d.split(':')[0].trim(); if (!base.includes(k) && !seen.has(k)) { seen.add(k); extra.unshift(d.replace(/\s*:\s*/, ': ')); } }
+    set(s, key, extra.join('; ') || undefined, `${label} ${key === 'titleStyle' ? 'title' : 'body'} layout`);
+  }
   const rings = all(h, 'sb-ring').map((t) => [px(t, 'left'), px(t, 'top'), px(t, 'width'), px(t, 'height')]);
   if (rings.every((r) => r.every((v) => v != null))) {
     const back = rings.map(([L, T, W, H], k) => { const b = [(L + 4) / S, (T + 4) / S, (W - 8) / S, (H - 8) / S].map(Math.round); const side = (s.boxes?.[k] || [])[4]; return side ? [...b, side] : b; });

@@ -66,8 +66,8 @@ function stepBoard(s, i) {
 <div style="display: flex; gap: 14px; margin-top: 12px; align-items: flex-start">
 <div style="flex: 0 0 auto; width: 46px; height: 46px; border-radius: 23px; background: #ffffff; color: #000000; font-weight: 800; font-size: 22px; display: flex; align-items: center; justify-content: center">${i + 1}</div>
 <div style="display: flex; flex-direction: column; gap: 8px">
-<div class="sb-title" style="font-size: 27px; line-height: 1.15; font-weight: 800; padding-top: 6px">${chips(s.title)}</div>
-<div class="sb-body" style="font-size: 17px; line-height: 1.35; color: #dedcdd">${chips(s.body || '')}</div>
+<div class="sb-title" style="font-size: 27px; line-height: 1.15; font-weight: 800; padding-top: 6px${s.titleStyle ? '; ' + s.titleStyle : ''}">${chips(s.title)}</div>
+<div class="sb-body" style="font-size: 17px; line-height: 1.35; color: #dedcdd${s.bodyStyle ? '; ' + s.bodyStyle : ''}">${chips(s.body || '')}</div>
 </div>
 </div>
 </div>
