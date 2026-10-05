@@ -115,6 +115,10 @@ for (const id of footageIds) await page.locator(`#c-${id}`).screenshot({ path: `
 const p2 = await browser.newPage({ viewport: { width: 60, height: 85 }, deviceScaleFactor: 2 });
 await p2.setContent(`<html><body style="margin:0;background:transparent">${ARROW}</body></html>`);
 await p2.screenshot({ path: `${LAYERS}/arrow.png`, omitBackground: true });
+// The finger marker for still cards: lib.mjs touchOn's look at video card scale (56 px x 1.72).
+const p3 = await browser.newPage({ viewport: { width: 97, height: 97 }, deviceScaleFactor: 1 });
+await p3.setContent(`<html><body style="margin:0;background:transparent"><div style="position:absolute;left:5px;top:5px;width:87px;height:87px;box-sizing:border-box;border-radius:50%;background:rgba(255,255,255,.45);border:5px solid rgba(255,255,255,.95);box-shadow:0 0 0 3px rgba(0,0,0,.35)"></div></body></html>`);
+await p3.screenshot({ path: `${LAYERS}/marker.png`, omitBackground: true });
 await browser.close();
 console.log(`slides: ${cards.length} cards -> ${SLIDES}`);
 console.log(`pdf:    ${OUT}/${sb.slug}.pdf`);
