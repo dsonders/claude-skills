@@ -77,7 +77,7 @@ for (const [i, c] of cards.entries()) {
     if (c.footage.sync) {
       const { frame, word, nth } = c.footage.sync;
       let at = 0, acc = 0;
-      for (const [start, count] of runs) { if (frame >= start && frame < start + count) { at = acc + (frame - start) / 30; break; } acc += count; }
+      for (const [start, count] of runs) { if (frame >= start && frame < start + count) { at = (acc + frame - start) / 30; break; } acc += count; }
       const said = await wordAt(c.id, word, nth);
       if (said > at) pad = said - at; else extra = at - said;
     }
