@@ -26,6 +26,16 @@ Each entry cost at least one wasted run on 2026-09-29. Read the section for the 
 - A recorded clip and its stills can share one run at dpr 3: the recorder's `clip.scale` is in CSS px, so it still returns 780 x 1688 at 30 fps. One run = one RO for both.
 - Footage cards lose their callouts: the card is drawn with the phone screen cut out and the clip plays underneath. If the narration points at something, keep it a still or add the pointer to the clip.
 
+## Taps, sync and continuity (Dave 2026-10-05)
+
+- **Every tap shows a finger.** Recordings draw it (`vt.touchOn`). Still cards get the same marker drawn by build-video: `"tap": { "at": [x, y], "word": "tap", "hold": 0.9 | "end" }` puts it on the control when the narration SAYS that word (Whisper word times, cached in `narration/words.json`).
+- **A clip's tap lands on its word:** `footage.sync: { frame, word }` holds the first frame or delays the voice so that frame plays on the word. Without it the voice drifts ahead of the screen (Dave heard it from card 11 on).
+- **A callout during footage:** `footage.rings: [{ box, word }]` draws a ring from that word on (the WARRANTY label on card 8).
+- **Record a part as ONE continuous take** and cut cards from `marks.json` (`capture-parts-3-4.mjs` + `cut-parts-3-4.py` in the story-writer project). Separate clips per card leave visible jumps between them, and a card's clip must start on the action its narration names, not the one before.
+- After a photo is saved the app opens Story Notes by itself and scrolls to the new note: there is no header to tap.
+- The 3C cards are a SIDE-scrolling row: gliding the page down lands on the Complaint. Slide the row with `scrollIntoView({ behavior: 'smooth', inline: 'center' })` on the Correction.
+- A take that crashes loses every frame (the recorder writes on `stop()`): wrap the take in try/catch that screenshots and logs open dialogs.
+
 ## Narration
 
 - The Mac's built-in voices (`say`) were rejected as robotic. Only compact voices are installed.
