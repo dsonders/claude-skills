@@ -5,7 +5,7 @@
 // Run build-slides.mjs and narrate.mjs first. Each card is held for the length
 // of its narration; a card with footage plays the clip inside the phone frame and
 // runs as long as the longer of the two.
-import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, symlinkSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { loadStoryboard, allCards, seconds, ffmpeg } from './lib.mjs';
@@ -52,6 +52,46 @@ async function wordAt(id, word, nth = 1) {
   if (!hits[nth - 1]) throw new Error(`card ${id}: the word "${word}" (#${nth}) was not heard in its narration`);
   return LEAD + hits[nth - 1].t / SPEED;
 }
+
+/**
+ * Event-locked footage (Dave 2026-10-06: "the VO runs ahead, the edit needs to be snappier").
+ * footage.events = [{ frame, word, nth } ..., { frame, end: true }]: each event frame
+ * plays on the moment its word is spoken; the last { end: true } frame lands at the
+ * card's end. The card is as long as its narration plus a short tail, never as long
+ * as the raw take. Between two events the take plays at 1x and HOLDS just before the
+ * next action when there is time to spare; when there is not, it speeds up (to 2x)
+ * and past that JUMP-CUTS (first half, last half), which is invisible in a spinner.
+ * Returns the source frame for every output frame (30 fps).
+ */
+const LEADIN = 15; // the finger marker shows ~0.45 s before a tap: keep those frames
+function remap(events, startFrame, lastFrame, outFrames) {
+  const seq = [];
+  const span = (a, b, n) => {             // n output frames from source a..b
+    const src = b - a;
+    if (n <= 0) return;
+    if (src <= 0) { for (let k = 0; k < n; k++) seq.push(a); return; }
+    if (n >= src) {                         // time to spare: 1x, hold before the lead-in, lead-in
+      const lead = Math.min(LEADIN, src), body = src - lead, hold = n - src;
+      for (let k = 0; k < body; k++) seq.push(a + k);
+      for (let k = 0; k < hold; k++) seq.push(a + body);
+      for (let k = 0; k < lead; k++) seq.push(a + body + k);
+    } else if (src <= 2 * n) {              // up to 2x: even speed-up
+      for (let k = 0; k < n; k++) seq.push(Math.round(a + (k * src) / n));
+    } else {                                // jump cut: first half, last half (the lead-in survives)
+      const h = Math.floor(n / 2);
+      for (let k = 0; k < h; k++) seq.push(a + k);
+      for (let k = 0; k < n - h; k++) seq.push(b - (n - h) + k);
+    }
+  };
+  let prevF = startFrame, prevT = 0;
+  for (const e of events) {
+    const t = Math.min(outFrames - 1, Math.max(prevT, Math.round(e.t * 30)));
+    span(prevF, e.frame, t - prevT);
+    prevF = e.frame; prevT = t;
+  }
+  span(prevF, lastFrame, outFrames - prevT);
+  return seq.slice(0, outFrames);
+}
 // The finger marker, the same look the recordings draw (lib.mjs touchOn), at card scale.
 const MW = Math.round(56 * K);
 const marker = (c, x, y, from, to) => `overlay=x=${Math.round(PH.x + x * K - MW / 2)}:y=${Math.round(PH.y + y * K - MW / 2)}:enable='between(t,${from.toFixed(2)},${to.toFixed(2)})'`;
@@ -67,7 +107,28 @@ for (const [i, c] of cards.entries()) {
   if (!existsSync(wav)) throw new Error(`no narration for ${c.id}: run narrate.mjs`);
   let len = LEAD + seconds(wav) / SPEED + TAIL;
   let kind = '';
-  if (c.footage) {
+  if (c.footage?.events) {
+    const fo = c.footage, OUTF = Math.round(len * 30);
+    const evs = [];
+    for (const e of fo.events) {
+      if (e.end) evs.push({ frame: e.frame, t: len - 0.35 });
+      else evs.push({ frame: e.frame, t: await wordAt(c.id, e.word, e.nth) });
+    }
+    // Start so the first event plays at 1x: skip what came before it in the take.
+    const first = evs[0];
+    const start = Math.max(fo.from ?? 0, first.frame - Math.round(first.t * 30));
+    const lastFrame = fo.to ?? evs[evs.length - 1].frame;
+    const seq = remap(evs, start, lastFrame, OUTF);
+    const dir = `${WORK}/${n2}-frames`; mkdirSync(dir, { recursive: true });
+    seq.forEach((f, k) => symlinkSync(`${DIR}/footage/${fo.clip}/f${String(f).padStart(5, '0')}.jpg`, `${dir}/o${String(k).padStart(5, '0')}.jpg`));
+    const rings = [];
+    for (const r of fo.rings || []) rings.push(ring(r.box, await wordAt(c.id, r.word, r.nth)));
+    ffmpeg(['-framerate', '30', '-i', `${dir}/o%05d.jpg`, ...still, '-i', `${LAYERS}/${c.id}-hole.png`, '-i', wav, '-filter_complex',
+      `[0:v]scale=${PH.w}:${PH.h}:flags=lanczos,setsar=1,tpad=stop_mode=clone:stop_duration=30[f];` +
+      `color=black:s=1080x1920:r=30[bg];[bg][f]overlay=${PH.x}:${PH.y}[u];[u][1:v]overlay=0:0${rings.length ? ',' + rings.join(',') : ''}[v];${voice(2)}`,
+      '-map', '[v]', '-map', '[a]', '-t', len.toFixed(2), ...V, ...A, seg]);
+    kind = `(footage, ${evs.length} events, ${(seq.length / 30).toFixed(1)}s of a ${((lastFrame - start) / 30).toFixed(1)}s take)`;
+  } else if (c.footage) {
     // footage: { clip, runs: [[firstFrame, frameCount], ...] } at 30 fps,
     //   sync: { frame, word, nth } -> that clip frame lands on that spoken word,
     //   rings: [{ box: [x,y,w,h], word, nth }] -> a callout drawn from that word on.
