@@ -123,9 +123,19 @@ for (const [i, c] of cards.entries()) {
     seq.forEach((f, k) => symlinkSync(`${DIR}/footage/${fo.clip}/f${String(f).padStart(5, '0')}.jpg`, `${dir}/o${String(k).padStart(5, '0')}.jpg`));
     const rings = [];
     for (const r of fo.rings || []) rings.push(ring(r.box, await wordAt(c.id, r.word, r.nth)));
-    ffmpeg(['-framerate', '30', '-i', `${dir}/o%05d.jpg`, ...still, '-i', `${LAYERS}/${c.id}-hole.png`, '-i', wav, '-filter_complex',
+    // footage.arrow: { at: [x, y], until: word } -> the bouncing arrow on a control from the
+    // card's start until that word (Dave 10/6: the camera button in card 11).
+    let arrowIn = [], arrowF = '', aud = 2;
+    if (fo.arrow) {
+      const until = fo.arrow.until ? (await wordAt(c.id, fo.arrow.until, fo.arrow.nth)) + 0.4 : len;
+      const ax = Math.round(PH.x - 0.6 + fo.arrow.at[0] * K - 60), ay = Math.round(PH.y + fo.arrow.at[1] * K - 170);
+      arrowIn = [...still, '-i', `${LAYERS}/arrow.png`];
+      arrowF = `[v0][2:v]overlay=x=${ax}:y='${ay}-18*abs(sin(PI*t*1.7))':enable='lt(t,${until.toFixed(2)})'[v];`;
+      aud = 3;
+    }
+    ffmpeg(['-framerate', '30', '-i', `${dir}/o%05d.jpg`, ...still, '-i', `${LAYERS}/${c.id}-hole.png`, ...arrowIn, '-i', wav, '-filter_complex',
       `[0:v]scale=${PH.w}:${PH.h}:flags=lanczos,setsar=1,tpad=stop_mode=clone:stop_duration=30[f];` +
-      `color=black:s=1080x1920:r=30[bg];[bg][f]overlay=${PH.x}:${PH.y}[u];[u][1:v]overlay=0:0${rings.length ? ',' + rings.join(',') : ''}[v];${voice(2)}`,
+      `color=black:s=1080x1920:r=30[bg];[bg][f]overlay=${PH.x}:${PH.y}[u];[u][1:v]overlay=0:0${rings.length ? ',' + rings.join(',') : ''}${fo.arrow ? '[v0];' + arrowF : '[v];'}${voice(aud)}`,
       '-map', '[v]', '-map', '[a]', '-t', len.toFixed(2), ...V, ...A, seg]);
     kind = `(footage, ${evs.length} events, ${(seq.length / 30).toFixed(1)}s of a ${((lastFrame - start) / 30).toFixed(1)}s take)`;
   } else if (c.footage) {
