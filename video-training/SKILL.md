@@ -108,6 +108,7 @@ The app has to be in the mode the video shows. Only test stores may be used.
 ### Step 3: Capture
 
 - **Stills:** `dpr: 3`. One frame per card, taken after the screen has settled.
+- **Every tap shows a finger, and every action the narration names lands on its word** (⛔ Dave 2026-10-05/06: "the VO is running well ahead of the video"). Record each part as ONE continuous take, cut cards by `marks.json`, and give each footage card `events` (one `{frame, word}` per named action + `{frame, end}`); still cards get `tap`. Mechanics in reference.md "Taps, sync and continuity".
 - **Clips:** `dpr: 2` with `vt.recorder`. Open each clip with a beat of stillness, show the finger marker, then act. Read `marks.json` to choose `footage.runs`.
 - **Dictation is real.** `vt.dictation` plays a spoken clip into a fake microphone; the app records and transcribes it. Print every transcript and read it: the transcriber rewrites numbers and brand names.
 - A retake needs a fresh repair order. Number them upward and list each id in `created-ros.txt`.
@@ -123,7 +124,7 @@ cd /Users/davidsonders/ro-bot/app
 NODE_OPTIONS='-r dotenv/config' node ~/.claude/skills/video-training/scripts/narrate.mjs <project>
 ```
 
-Voice `ash`, model `gpt-audio-1.5` (moved from `gpt-4o-mini-tts`, which OpenAI shuts off 2027-01-06). A take whose transcript doesn't match the card's words is retried, then refused. Dave approved this voice and rejected the Mac's built-in voices as robotic. It uses the app's OpenAI key and costs a few cents a build: say so in the brief for each new video, so the spend is never a surprise. `DRY=1` lists what would be regenerated.
+Voice per video in storyboard.json `voice` (default `ash`; ⛔ Dave 2026-10-04 picked a female voice for the Story Writer video → `marin`, "experienced service trainer" style), model `gpt-audio-1.5` (moved from `gpt-4o-mini-tts`, which OpenAI shuts off 2027-01-06). A take whose transcript doesn't match the card's words is retried, then refused. Dave approved this voice and rejected the Mac's built-in voices as robotic. It uses the app's OpenAI key and costs a few cents a build: say so in the brief for each new video, so the spend is never a surprise. `DRY=1` lists what would be regenerated.
 
 Write narration for the ear: "R O", "three Cs", "tenthgear dot A I". Announce each part on its first card.
 
