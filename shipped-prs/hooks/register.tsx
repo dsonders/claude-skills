@@ -140,9 +140,16 @@ export const register: Register = on => {
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     const list = await read($, prs)
-    if (e.props.hasSurvey || list.length === 0 || (await read($, isHidden))) return next(e)
+    if (e.props.hasSurvey || (await read($, isHidden))) return next(e)
 
     const { Box, Text } = $.ui.resolve(e)
+    if (list.length === 0) {
+      return (
+        <Box>
+          <Text dimColor>PRs: none shipped yet</Text>
+        </Box>
+      )
+    }
     const width = e.props.bodyColumns
     const merged = list.filter(pr => pr.state === 'merged').length
     const label = `PRs ${merged}/${list.length} merged`

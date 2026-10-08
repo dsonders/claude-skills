@@ -23,6 +23,14 @@ const props = (bodyColumns: number) => ({
   view: {},
 })
 
+test('the band is on from the start, with an empty state', async $ => {
+  for (const surface of ['terminal', 'desktop'] as const) {
+    const ui = await $.ui.mount({ ...BAND, surface, props: props(100) })
+    expect(await ui.find({ type: 'Text', text: /none shipped yet/ })).toBeDefined()
+    await ui.unmount()
+  }
+})
+
 test('a gh pr create lands in the band: numbers narrow, titles wide', async ($, on) => {
   on('tool.call', { tool: 'Bash' }, () => ({
     result: { stdout: `${URL}\n`, stderr: '', interrupted: false },
