@@ -1,0 +1,5 @@
+{
+  "name": "dsonders-mods",
+  "owner": { "name": "dsonders" },
+  "plugins": [{ "name": "shipped-prs", "source": "./" }]
+}
