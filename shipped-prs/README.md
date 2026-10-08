@@ -16,3 +16,10 @@ Install elsewhere:
 ```
 /plugin install shipped-prs --marketplace dsonders/claude-skills
 ```
+
+## Authoring notes (test kit, Claude Code 2.1.293)
+
+- A test's `on('process.run', …)` answers with `{ value: { exitCode, stdout, stderr, … } }`, not the bare result.
+- A test's bottom `on('ui.render', …)` must return a tree (`<Text key="bottom">…</Text>` via `$.ui.resolve(e)`); `null` is refused.
+- The test `Engine`'s `$.command.run` is typed with the full input; cast `{ command, args }` to `Parameters<Engine['command']['run']>[0]`.
+- `tsc` on the mod needs the engine's `claude-code.d.ts` in `include`; the plugin-authoring skill prints its path.
