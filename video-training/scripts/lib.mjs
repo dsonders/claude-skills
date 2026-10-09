@@ -11,6 +11,22 @@ import { execFileSync } from 'node:child_process';
 export const APP = '/Users/davidsonders/ro-bot/app';
 export const BASE = process.env.VT_BASE || 'https://app.tenthgear.ai';
 export const PHONE = { w: 390, h: 844 };
+
+/**
+ * Where a step's screen sits on the 540 x 960 card, and its scale k (frame pt -> card px).
+ * Phone (default): frames are sb.phone ({w,h} in points, default PHONE), drawn 335 px wide,
+ * centred, as in every earlier video. Laptop (step.screen === 'laptop'): a CROP of a desktop
+ * browser take, sb.laptop ({w,h} points, default 640 x 600), drawn 500 px wide so the
+ * address bar stays readable on a portrait card. boxes/arrow/tap are in that frame's points.
+ */
+export function screenOf(sb, s) {
+  if (s.screen === 'laptop') {
+    const f = sb.laptop || { w: 640, h: 600 }, w = 500, k = w / f.w;
+    return { kind: 'laptop', fw: f.w, fh: f.h, k, x: 20, y: 224, w, h: Math.round(f.h * k), radius: 12 };
+  }
+  const f = sb.phone || PHONE, w = PHONE.w * 0.86, k = w / f.w;
+  return { kind: 'phone', fw: f.w, fh: f.h, k, x: (540 - w) / 2, y: 214, w, h: f.h * k, radius: 26 };
+}
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const harness = () => import(`${APP}/__tests__/workflow/live-pass/lib.mjs`);
 const playwright = () => import(`${APP}/node_modules/playwright/index.mjs`);

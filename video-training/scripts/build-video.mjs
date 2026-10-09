@@ -8,7 +8,7 @@
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, symlinkSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
-import { loadStoryboard, allCards, seconds, ffmpeg } from './lib.mjs';
+import { loadStoryboard, allCards, seconds, ffmpeg, screenOf } from './lib.mjs';
 
 const DIR = resolve(process.argv[2] || '.');
 const sb = loadStoryboard(DIR);
@@ -19,8 +19,11 @@ mkdirSync(WORK, { recursive: true });
 // 1.25 = QuickTime's "Fast", the pace Dave approved. Pitch is preserved.
 const SPEED = sb.speed || 1.25;
 const LEAD = 0.35 / SPEED, TAIL = 0.75 / SPEED;
-// Where the phone screen sits on the 1080 x 1920 card (card px x 2).
-const K = 0.86 * 2, PH = { x: 205, y: 428, w: 670, h: 1452 };
+// Where the screen sits on the 1080 x 1920 card (card px x 2), set per card from
+// screenOf(): the phone is { x: 205, y: 428, w: 670, h: 1452 } as before, a laptop crop
+// sits wider. K = frame point -> video px.
+let K, PH;
+const place = (c) => { const g = screenOf(sb, c); K = g.k * 2; PH = { x: Math.round(g.x * 2), y: Math.round(g.y * 2), w: Math.floor(g.w * 2), h: Math.round(g.h * 2) }; };
 const V = ['-c:v', 'libx264', '-crf', '19', '-pix_fmt', 'yuv420p', '-r', '30'];
 const A = ['-c:a', 'aac', '-b:a', '128k', '-ac', '2', '-ar', '48000'];
 const voice = (n, extra = 0) => `[${n}:a]aresample=48000,atempo=${SPEED},adelay=${Math.round((LEAD + extra) * 1000)}:all=1,apad[a]`;
@@ -93,7 +96,7 @@ function remap(events, startFrame, lastFrame, outFrames) {
   return seq.slice(0, outFrames);
 }
 // The finger marker, the same look the recordings draw (lib.mjs touchOn), at card scale.
-const MW = Math.round(56 * K);
+const MW = Math.round(56 * 0.86 * 2);
 const marker = (c, x, y, from, to) => `overlay=x=${Math.round(PH.x + x * K - MW / 2)}:y=${Math.round(PH.y + y * K - MW / 2)}:enable='between(t,${from.toFixed(2)},${to.toFixed(2)})'`;
 const ring = ([x, y, w, h], from) => `drawbox=x=${Math.round(PH.x + x * K - 7)}:y=${Math.round(PH.y + y * K - 7)}:w=${Math.round(w * K + 14)}:h=${Math.round(h * K + 14)}:color=0xffd23f:t=6:enable='gte(t,${from.toFixed(2)})'`;
 const still = ['-loop', '1', '-framerate', '30'];
@@ -103,6 +106,7 @@ const list = [];
 let total = 0;
 for (const [i, c] of cards.entries()) {
   const n2 = String(i).padStart(2, '0');
+  if (c.img) place(c);
   const slide = `${SLIDES}/${n2}-${c.id}.png`, wav = `${DIR}/narration/${c.id}.wav`, seg = `${WORK}/${n2}.mp4`;
   if (!existsSync(wav)) throw new Error(`no narration for ${c.id}: run narrate.mjs`);
   let len = LEAD + seconds(wav) / SPEED + TAIL;

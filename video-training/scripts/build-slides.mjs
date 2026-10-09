@@ -4,7 +4,7 @@
 //   node build-slides.mjs <project-dir>
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { APP, PHONE, loadStoryboard, allCards, boardBody } from './lib.mjs';
+import { APP, PHONE, loadStoryboard, allCards, boardBody, screenOf } from './lib.mjs';
 
 const DIR = resolve(process.argv[2] || '.');
 const sb = loadStoryboard(DIR);
@@ -65,8 +65,13 @@ const stepCard = (s, i) => `<section class="card" id="c-${s.id}">
     <div class="part">Part ${s.part}: ${esc(sb.parts[s.part - 1])}</div>
     <div class="row"><div class="num">${i + 1}</div><div><div class="title" style="${esc(s.titleStyle || '')}">${chips(s.title)}</div>${s.body ? `<div class="body" style="${esc(s.bodyStyle || '')}">${chips(s.body)}</div>` : ''}</div></div>
   </div>
-  <div class="phone"><img src="${b64(`${DIR}/frames/${s.img}.png`, 'image/png')}">${marks(s)}</div>
+  ${screenBox(s, `<img src="${b64(`${DIR}/frames/${s.img}.png`, 'image/png')}">`)}
 </section>`;
+/** The screen (phone or laptop crop) at its place on the card, with the callouts on top. */
+function screenBox(s, img) {
+  const g = screenOf(sb, s);
+  return `<div class="phone" style="left:${g.x}px;top:${g.y}px;width:${g.w}px;height:${g.h}px;border-radius:${g.radius}px">${img}${marks(s, g.k)}</div>`;
+}
 
 const c = sb.cover;
 // A board Dave designed on the canvas renders verbatim; the template is the fallback.

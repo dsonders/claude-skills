@@ -9,7 +9,7 @@
 // open, and a publish that does not start from the live copy is refused.
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { PHONE, loadStoryboard } from './lib.mjs';
+import { loadStoryboard, screenOf } from './lib.mjs';
 
 const DIR = resolve(process.argv[2] || '.');
 const liveAt = process.argv.indexOf('--live');
@@ -19,7 +19,7 @@ const OUT = `${DIR}/storyboard/project`;
 if (existsSync(OUT)) rmSync(OUT, { recursive: true });
 mkdirSync(OUT, { recursive: true });
 
-const W = 540, H = 960, S = 0.86;
+const W = 540, H = 960;
 const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const CHIP = 'display: inline-block; background: #ffffff; color: #000000; font-weight: 700; border-radius: 8px; padding: 0px 9px; font-size: 0.86em; line-height: 1.5; white-space: nowrap; box-shadow: 0 2px 0 #9b9799';
 const chips = (t) => esc(t).replace(/\[\[(.+?)\]\]/g, `<span class="sb-chip" style="${CHIP}">$1</span>`);
@@ -54,6 +54,7 @@ renderVals() { return {}; }
 `;
 
 function stepBoard(s, i) {
+  const g = screenOf(sb, s), S = g.k;
   const boxes = s.boxes || [];
   const rings = boxes.map(([x, y, w, h, side], k) => {
     const pad = 4, L = x * S - pad, T = y * S - pad, Wd = w * S + pad * 2, Hd = h * S + pad * 2;
@@ -71,7 +72,7 @@ function stepBoard(s, i) {
 </div>
 </div>
 </div>
-<div class="sb-phone" style="position: absolute; left: ${(W - PHONE.w * S) / 2}px; top: 214px; width: ${PHONE.w * S}px; height: ${PHONE.h * S}px; border-radius: 26px; overflow: hidden; box-shadow: 0 0 0 5px #333132; background: #111111">
+<div class="sb-phone" style="position: absolute; left: ${g.x}px; top: ${g.y}px; width: ${g.w}px; height: ${g.h}px; border-radius: ${g.radius}px; overflow: hidden; box-shadow: 0 0 0 5px #333132; background: #111111">
 <img src="${meta.assets[s.img]}" alt="Key frame: ${esc(s.img)}" style="width: 100%; height: 100%; display: block">
 ${rings}
 ${arrow}
