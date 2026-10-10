@@ -8,10 +8,11 @@
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, symlinkSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
-import { loadStoryboard, allCards, seconds, ffmpeg, screenOf } from './lib.mjs';
+import { loadStoryboard, allCards, seconds, ffmpeg, screenOf, cardOf } from './lib.mjs';
 
 const DIR = resolve(process.argv[2] || '.');
 const sb = loadStoryboard(DIR);
+const { W: CW, H: CH } = cardOf(sb), SIZE = `${CW * 2}x${CH * 2}`;
 const OUT = `${DIR}/out`, SLIDES = `${OUT}/slides`, LAYERS = `${OUT}/layers`, WORK = `${OUT}/segments`;
 if (existsSync(WORK)) rmSync(WORK, { recursive: true });
 mkdirSync(WORK, { recursive: true });
@@ -19,11 +20,11 @@ mkdirSync(WORK, { recursive: true });
 // 1.25 = QuickTime's "Fast", the pace Dave approved. Pitch is preserved.
 const SPEED = sb.speed || 1.25;
 const LEAD = 0.35 / SPEED, TAIL = 0.75 / SPEED;
-// Where the screen sits on the 1080 x 1920 card (card px x 2), set per card from
+// Where the screen sits on the card (1080 x 1920, or 1920 x 1080 when landscape) (card px x 2), set per card from
 // screenOf(): the phone is { x: 205, y: 428, w: 670, h: 1452 } as before, a laptop crop
 // sits wider. K = frame point -> video px.
 let K, PH;
-const place = (c) => { const g = screenOf(sb, c); K = g.k * 2; PH = { x: Math.round(g.x * 2), y: Math.round(g.y * 2), w: Math.floor(g.w * 2), h: Math.round(g.h * 2) }; };
+const place = (c) => { const g = screenOf(sb, c); K = g.k * 2; MW = Math.round(56 * K); PH = { x: Math.round(g.x * 2), y: Math.round(g.y * 2), w: Math.floor(g.w * 2), h: Math.round(g.h * 2) }; };
 const V = ['-c:v', 'libx264', '-crf', '19', '-pix_fmt', 'yuv420p', '-r', '30'];
 const A = ['-c:a', 'aac', '-b:a', '128k', '-ac', '2', '-ar', '48000'];
 const voice = (n, extra = 0) => `[${n}:a]aresample=48000,atempo=${SPEED},adelay=${Math.round((LEAD + extra) * 1000)}:all=1,apad[a]`;
@@ -95,8 +96,9 @@ function remap(events, startFrame, lastFrame, outFrames) {
   span(prevF, lastFrame, outFrames - prevT);
   return seq.slice(0, outFrames);
 }
-// The finger marker, the same look the recordings draw (lib.mjs touchOn), at card scale.
-const MW = Math.round(56 * 0.86 * 2);
+// The finger marker, the same look the recordings draw (lib.mjs touchOn), at card scale:
+// 56 frame px wide, so 96 px on a portrait phone card and smaller on a landscape one.
+let MW = 96;
 const marker = (c, x, y, from, to) => `overlay=x=${Math.round(PH.x + x * K - MW / 2)}:y=${Math.round(PH.y + y * K - MW / 2)}:enable='between(t,${from.toFixed(2)},${to.toFixed(2)})'`;
 const ring = ([x, y, w, h], from) => `drawbox=x=${Math.round(PH.x + x * K - 7)}:y=${Math.round(PH.y + y * K - 7)}:w=${Math.round(w * K + 14)}:h=${Math.round(h * K + 14)}:color=0xffd23f:t=6:enable='gte(t,${from.toFixed(2)})'`;
 const still = ['-loop', '1', '-framerate', '30'];
@@ -139,7 +141,7 @@ for (const [i, c] of cards.entries()) {
     }
     ffmpeg(['-framerate', '30', '-i', `${dir}/o%05d.jpg`, ...still, '-i', `${LAYERS}/${c.id}-hole.png`, ...arrowIn, '-i', wav, '-filter_complex',
       `[0:v]scale=${PH.w}:${PH.h}:flags=lanczos,setsar=1,tpad=stop_mode=clone:stop_duration=30[f];` +
-      `color=black:s=1080x1920:r=30[bg];[bg][f]overlay=${PH.x}:${PH.y}[u];[u][1:v]overlay=0:0${rings.length ? ',' + rings.join(',') : ''}${fo.arrow ? '[v0];' + arrowF : '[v];'}${voice(aud)}`,
+      `color=black:s=${SIZE}:r=30[bg];[bg][f]overlay=${PH.x}:${PH.y}[u];[u][1:v]overlay=0:0${rings.length ? ',' + rings.join(',') : ''}${fo.arrow ? '[v0];' + arrowF : '[v];'}${voice(aud)}`,
       '-map', '[v]', '-map', '[a]', '-t', len.toFixed(2), ...V, ...A, seg]);
     kind = `(footage, ${evs.length} events, ${(seq.length / 30).toFixed(1)}s of a ${((lastFrame - start) / 30).toFixed(1)}s take)`;
   } else if (c.footage) {
@@ -166,7 +168,7 @@ for (const [i, c] of cards.entries()) {
     const lead = pad > 0 ? `tpad=start_mode=clone:start_duration=${pad.toFixed(2)},` : '';
     ffmpeg([...inputs, ...still, '-i', `${LAYERS}/${c.id}-hole.png`, '-i', wav, '-filter_complex',
       `${trims};${joined};[fj]${lead}scale=${PH.w}:${PH.h}:flags=lanczos,setsar=1,tpad=stop_mode=clone:stop_duration=30[f];` +
-      `color=black:s=1080x1920:r=30[bg];[bg][f]overlay=${PH.x}:${PH.y}[u];[u][${n}:v]overlay=0:0${rings.length ? ',' + rings.join(',') : ''}[v];${voice(n + 1, extra)}`,
+      `color=black:s=${SIZE}:r=30[bg];[bg][f]overlay=${PH.x}:${PH.y}[u];[u][${n}:v]overlay=0:0${rings.length ? ',' + rings.join(',') : ''}[v];${voice(n + 1, extra)}`,
       '-map', '[v]', '-map', '[a]', '-t', len.toFixed(2), ...V, ...A, seg]);
     kind = `(footage${pad ? ` +${pad.toFixed(1)}s hold` : ''}${extra ? ` voice +${extra.toFixed(1)}s` : ''})`;
   } else {
@@ -184,7 +186,7 @@ for (const [i, c] of cards.entries()) {
       const from = (await wordAt(c.id, c.tap.word || 'tap', c.tap.nth)) - 0.15;
       const to = c.tap.hold === 'end' ? len + 1 : from + (c.tap.hold || 0.9);
       ins.push(...still, '-i', `${LAYERS}/marker.png`);
-      chain += `;[${last}][${k}:v]${marker(c, c.tap.at[0], c.tap.at[1], from, to)}[b${k}]`; last = `b${k}`; k++;
+      chain += `;[${k}:v]scale=${MW}:${MW}[m${k}];[${last}][m${k}]${marker(c, c.tap.at[0], c.tap.at[1], from, to)}[b${k}]`; last = `b${k}`; k++;
     }
     ins.push('-i', wav);
     ffmpeg([...ins, '-filter_complex', `${chain};[${last}]null[v];${voice(k)}`, '-map', '[v]', '-map', '[a]', '-t', len.toFixed(2), '-tune', 'stillimage', ...V, ...A, seg]);

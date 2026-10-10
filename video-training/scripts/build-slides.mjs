@@ -4,10 +4,11 @@
 //   node build-slides.mjs <project-dir>
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { APP, PHONE, loadStoryboard, allCards, boardBody, screenOf } from './lib.mjs';
+import { APP, PHONE, loadStoryboard, allCards, boardBody, screenOf, cardOf, textBox } from './lib.mjs';
 
 const DIR = resolve(process.argv[2] || '.');
 const sb = loadStoryboard(DIR);
+const { W: CW, H: CH } = cardOf(sb), TB = textBox(sb);
 const OUT = `${DIR}/out`, SLIDES = `${OUT}/slides`, LAYERS = `${OUT}/layers`;
 for (const d of [SLIDES, LAYERS]) { if (existsSync(d)) rmSync(d, { recursive: true }); mkdirSync(d, { recursive: true }); }
 const { chromium } = await import(`${APP}/node_modules/playwright/index.mjs`);
@@ -24,13 +25,13 @@ const css = `
   * { box-sizing: border-box; }
   html, body { margin: 0; background: #000; }
   body { font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Arial, sans-serif; color: #fff; }
-  .card { width: 540px; height: 960px; background: #000; position: relative; overflow: hidden; page-break-after: always; break-after: page; }
-  .top { position: absolute; left: 0; right: 0; top: 0; height: 200px; padding: 22px 30px 0; }
+  .card { width: ${CW}px; height: ${CH}px; background: #000; position: relative; overflow: hidden; page-break-after: always; break-after: page; }
+  .top { position: absolute; left: ${TB.left}px; top: ${TB.top}px; width: ${TB.width}px; height: ${TB.height}px; padding: ${TB.padding}; }
   .part { font-size: 13px; letter-spacing: 1.6px; text-transform: uppercase; color: #9b9799; font-weight: 600; }
   .row { display: flex; gap: 14px; margin-top: 12px; align-items: flex-start; }
   .num { flex: 0 0 auto; width: 46px; height: 46px; border-radius: 23px; background: #fff; color: #000; font-weight: 800; font-size: 22px; display: flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; }
-  .title { font-size: 27px; line-height: 1.15; font-weight: 800; letter-spacing: -0.2px; padding-top: 6px; }
-  .body { font-size: 17px; line-height: 1.35; color: #dedcdd; margin-top: 8px; white-space: pre-line; }
+  .title { font-size: ${TB.title}px; line-height: 1.15; font-weight: 800; letter-spacing: -0.2px; padding-top: 6px; }
+  .body { font-size: ${TB.body}px; line-height: 1.35; color: #dedcdd; margin-top: 8px; white-space: pre-line; }
   .btn { display: inline-block; background: #fff; color: #000; font-weight: 700; border-radius: 8px; padding: 0 9px; font-size: 0.86em; line-height: 1.5; white-space: nowrap; box-shadow: 0 2px 0 #9b9799; letter-spacing: 0; }
   .phone { position: absolute; left: ${(540 - PHONE.w * S) / 2}px; top: 214px; width: ${PHONE.w * S}px; height: ${PHONE.h * S}px; border-radius: 26px; overflow: hidden; box-shadow: 0 0 0 5px #333132, 0 0 0 6px #4a4849; background: #111; }
   .phone img { width: 100%; height: 100%; display: block; }
@@ -89,12 +90,12 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><style>${css}</st
 writeFileSync(`${OUT}/slides.html`, html);
 
 const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage({ viewport: { width: 540, height: 960 }, deviceScaleFactor: 2 });
+const page = await browser.newPage({ viewport: { width: CW, height: CH }, deviceScaleFactor: 2 });
 await page.goto('file://' + `${OUT}/slides.html`);
 await page.waitForLoadState('load');
 const cards = allCards(sb);
 for (const [i, cd] of cards.entries()) await page.locator(`#c-${cd.id}`).screenshot({ path: `${SLIDES}/${String(i).padStart(2, '0')}-${cd.id}.png` });
-await page.pdf({ path: `${OUT}/${sb.slug}.pdf`, width: '540px', height: '960px', printBackground: true, margin: { top: 0, right: 0, bottom: 0, left: 0 } });
+await page.pdf({ path: `${OUT}/${sb.slug}.pdf`, width: `${CW}px`, height: `${CH}px`, printBackground: true, margin: { top: 0, right: 0, bottom: 0, left: 0 } });
 
 // ── video layers ──────────────────────────────────────────────────────────────
 // Footage steps: the card with the phone screen cut out (footage plays under it).
