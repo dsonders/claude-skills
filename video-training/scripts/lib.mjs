@@ -18,8 +18,22 @@ export const PHONE = { w: 390, h: 844 };
  * centred, as in every earlier video. Laptop (step.screen === 'laptop'): a CROP of a desktop
  * browser take, sb.laptop ({w,h} points, default 640 x 600), drawn 500 px wide so the
  * address bar stays readable on a portrait card. boxes/arrow/tap are in that frame's points.
+ *
+ * sb.format === 'landscape': a 960 x 540 card (1920 x 1080 video) for viewers on a laptop.
+ * The words sit in a left column (textBox), the screen on the right, 470 px tall and
+ * top-aligned for both kinds so nothing jumps between a laptop card and a phone card.
  */
+export const cardOf = (sb) => (sb.format === 'landscape' ? { W: 960, H: 540 } : { W: 540, H: 960 });
+/** The words' box on a step card: a top band (portrait) or a left column (landscape). */
+export const textBox = (sb) => (sb.format === 'landscape'
+  ? { left: 0, top: 0, width: 420, height: 540, padding: '56px 28px 0px 44px', title: 32, body: 19 }
+  : { left: 0, top: 0, width: 540, height: 200, padding: '22px 30px 0px 30px', title: 27, body: 17 });
 export function screenOf(sb, s) {
+  if (sb.format === 'landscape') {
+    const lap = s.screen === 'laptop', f = lap ? (sb.laptop || { w: 640, h: 600 }) : (sb.phone || PHONE);
+    const h = 470, k = h / f.h, w = Math.round(f.w * k), AREA_X = 420, AREA_W = 510;
+    return { kind: lap ? 'laptop' : 'phone', fw: f.w, fh: f.h, k, x: AREA_X + Math.round((AREA_W - w) / 2), y: 35, w, h, radius: lap ? 12 : 24 };
+  }
   if (s.screen === 'laptop') {
     const f = sb.laptop || { w: 640, h: 600 }, w = 500, k = w / f.w;
     return { kind: 'laptop', fw: f.w, fh: f.h, k, x: 20, y: 224, w, h: Math.round(f.h * k), radius: 12 };

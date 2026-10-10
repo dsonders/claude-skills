@@ -9,13 +9,13 @@
 // Without --write this only prints what changed.
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { loadStoryboard, saveStoryboard } from './lib.mjs';
+import { loadStoryboard, saveStoryboard, screenOf } from './lib.mjs';
 
 const DIR = resolve(process.argv[2] || '.');
 const LIVE = resolve(process.argv[3] || '.');
 const WRITE = process.argv.includes('--write');
 const sb = loadStoryboard(DIR);
-const S = 0.86;
+// Callouts are read back through each card's own screen scale (screenOf), never a constant.
 
 const decode = (t) => t.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
 /** Inner markup of the first element carrying `cls`, tag-balanced. */
@@ -115,6 +115,7 @@ sb.steps.forEach((s, i) => {
     for (const d of style.split(';').map((x) => x.trim()).filter(Boolean).reverse()) { const k = d.split(':')[0].trim(); if (!base.includes(k) && !seen.has(k)) { seen.add(k); extra.unshift(d.replace(/\s*:\s*/, ': ')); } }
     set(s, key, extra.join('; ') || undefined, `${label} ${key === 'titleStyle' ? 'title' : 'body'} layout`);
   }
+  const S = screenOf(sb, s).k;
   const rings = all(h, 'sb-ring').map((t) => [px(t, 'left'), px(t, 'top'), px(t, 'width'), px(t, 'height')]);
   if (rings.every((r) => r.every((v) => v != null))) {
     const back = rings.map(([L, T, W, H], k) => { const b = [(L + 4) / S, (T + 4) / S, (W - 8) / S, (H - 8) / S].map(Math.round); const side = (s.boxes?.[k] || [])[4]; return side ? [...b, side] : b; });

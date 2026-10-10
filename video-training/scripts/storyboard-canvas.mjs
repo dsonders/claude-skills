@@ -9,7 +9,7 @@
 // open, and a publish that does not start from the live copy is refused.
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { loadStoryboard, screenOf } from './lib.mjs';
+import { loadStoryboard, screenOf, cardOf, textBox } from './lib.mjs';
 
 const DIR = resolve(process.argv[2] || '.');
 const liveAt = process.argv.indexOf('--live');
@@ -19,7 +19,7 @@ const OUT = `${DIR}/storyboard/project`;
 if (existsSync(OUT)) rmSync(OUT, { recursive: true });
 mkdirSync(OUT, { recursive: true });
 
-const W = 540, H = 960;
+const { W, H } = cardOf(sb), TB = textBox(sb);
 const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const CHIP = 'display: inline-block; background: #ffffff; color: #000000; font-weight: 700; border-radius: 8px; padding: 0px 9px; font-size: 0.86em; line-height: 1.5; white-space: nowrap; box-shadow: 0 2px 0 #9b9799';
 const chips = (t) => esc(t).replace(/\[\[(.+?)\]\]/g, `<span class="sb-chip" style="${CHIP}">$1</span>`);
@@ -62,13 +62,13 @@ function stepBoard(s, i) {
     return `<div class="sb-ring" style="position: absolute; left: ${L}px; top: ${T}px; width: ${Wd}px; height: ${Hd}px; box-sizing: border-box; border: 3px solid #ffd23f; border-radius: 12px; box-shadow: 0 0 0 2px rgba(0,0,0,.55)"></div>${tag}`;
   }).join('\n');
   const arrow = s.arrow ? `<div class="sb-arrow" style="position: absolute; left: ${s.arrow[0] * S - 30}px; top: ${s.arrow[1] * S - 85}px; width: 60px; height: 85px">${ARROW}</div>` : '';
-  return page(`Step ${i + 1}: ${s.title.replace(/\[\[|\]\]/g, '')}`, `<div style="position: absolute; left: 0px; right: 0px; top: 0px; height: 200px; box-sizing: border-box; padding: 22px 30px 0px 30px">
+  return page(`Step ${i + 1}: ${s.title.replace(/\[\[|\]\]/g, '')}`, `<div style="position: absolute; left: ${TB.left}px; top: ${TB.top}px; width: ${TB.width}px; height: ${TB.height}px; box-sizing: border-box; padding: ${TB.padding}">
 <div class="sb-part" style="font-size: 13px; letter-spacing: 1.6px; text-transform: uppercase; color: #9b9799; font-weight: 600">Part ${s.part}: ${esc(sb.parts[s.part - 1])}</div>
 <div style="display: flex; gap: 14px; margin-top: 12px; align-items: flex-start">
 <div style="flex: 0 0 auto; width: 46px; height: 46px; border-radius: 23px; background: #ffffff; color: #000000; font-weight: 800; font-size: 22px; display: flex; align-items: center; justify-content: center">${i + 1}</div>
 <div style="display: flex; flex-direction: column; gap: 8px">
-<div class="sb-title" style="font-size: 27px; line-height: 1.15; font-weight: 800; padding-top: 6px${s.titleStyle ? '; ' + s.titleStyle : ''}">${chips(s.title)}</div>
-<div class="sb-body" style="font-size: 17px; line-height: 1.35; color: #dedcdd${s.bodyStyle ? '; ' + s.bodyStyle : ''}">${chips(s.body || '')}</div>
+<div class="sb-title" style="font-size: ${TB.title}px; line-height: 1.15; font-weight: 800; padding-top: 6px${s.titleStyle ? '; ' + s.titleStyle : ''}">${chips(s.title)}</div>
+<div class="sb-body" style="font-size: ${TB.body}px; line-height: 1.35; color: #dedcdd${s.bodyStyle ? '; ' + s.bodyStyle : ''}">${chips(s.body || '')}</div>
 </div>
 </div>
 </div>
@@ -116,7 +116,7 @@ sb.steps.forEach((s, i) => {
   const x = col * (W + GX), y = row * PITCH;
   place(boardName(s, i), x, y, `${i + 1} · ${s.id}`);
   voice(s.id, x, y, s.narration);
-  if (s.footage) notes[`fx-${s.id}`] = { x, y: y + H + STICKY_DOWN + VO_H + 20, w: W, maxH: NOTE_H, text: `VIDEO CLIP plays in the phone here.\n${s.footage.note || s.footage.clip}`, size: 's', color: 'orange' };
+  if (s.footage) notes[`fx-${s.id}`] = { x, y: y + H + STICKY_DOWN + VO_H + 20, w: W, maxH: NOTE_H, text: `VIDEO CLIP plays in the screen here.\n${s.footage.note || s.footage.clip}`, size: 's', color: 'orange' };
   else if (s.arrow) notes[`fx-${s.id}`] = { x, y: y + H + STICKY_DOWN + VO_H + 20, w: W, maxH: NOTE_H, text: 'In the video the arrow bounces on its target.', size: 's', color: 'orange' };
   col += 1;
 });
