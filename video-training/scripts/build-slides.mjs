@@ -136,6 +136,33 @@ await p2.screenshot({ path: `${LAYERS}/arrow.png`, omitBackground: true });
 const p3 = await browser.newPage({ viewport: { width: 97, height: 97 }, deviceScaleFactor: 1 });
 await p3.setContent(`<html><body style="margin:0;background:transparent"><div style="position:absolute;left:5px;top:5px;width:87px;height:87px;box-sizing:border-box;border-radius:50%;background:rgba(255,255,255,.45);border:5px solid rgba(255,255,255,.95);box-shadow:0 0 0 3px rgba(0,0,0,.35)"></div></body></html>`);
 await p3.screenshot({ path: `${LAYERS}/marker.png`, omitBackground: true });
+// The tap animation for footage (⛔ Dave 10/11: "go with A, plus a small tap ring that expands
+// from the yellow circle after the tap"): a yellow fingertip lands 0.5 s early, presses in on
+// the tap and fades; a thin ring spreads out from it. 34 frames, tap at frame 15 (TAP_LEAD).
+mkdirSync(`${LAYERS}/tap`, { recursive: true });
+const p4 = await browser.newPage({ viewport: { width: 160, height: 160 }, deviceScaleFactor: 1 });
+await p4.setContent('<canvas id="c" width="160" height="160"></canvas>');
+for (let i = 0; i < 34; i++) {
+  const url = await p4.evaluate((u) => {
+    const c = document.getElementById('c').getContext('2d'), Y = '255,210,63', x = 80, y = 80;
+    const clamp = (v) => Math.max(0, Math.min(1, v));
+    c.clearRect(0, 0, 160, 160);
+    if (u <= 0.35) {
+      c.globalAlpha = clamp(u < -0.35 ? (u + 0.5) / 0.15 : u > 0.2 ? (0.35 - u) / 0.15 : 1);
+      c.beginPath(); c.arc(x, y, 26 * (Math.abs(u) < 0.09 ? 0.82 : 1), 0, 7); c.fillStyle = `rgba(${Y},.5)`; c.fill();
+      c.lineWidth = 6; c.strokeStyle = 'rgba(0,0,0,.35)'; c.stroke();
+      c.lineWidth = 4; c.strokeStyle = `rgb(${Y})`; c.stroke();
+    }
+    if (u >= 0.05) {
+      const k = (u - 0.05) / 0.55;
+      c.globalAlpha = clamp(0.95 * (1 - k));
+      c.beginPath(); c.arc(x, y, 28 + 26 * (1 - Math.pow(1 - clamp(k), 2)), 0, 7);
+      c.lineWidth = 3; c.strokeStyle = `rgb(${Y})`; c.stroke();
+    }
+    return document.getElementById('c').toDataURL('image/png');
+  }, (i - 15) / 30);
+  writeFileSync(`${LAYERS}/tap/t${String(i).padStart(3, '0')}.png`, Buffer.from(url.split(',')[1], 'base64'));
+}
 // One subtitle layer per sentence: the band only, see-through, at video scale.
 if (FOCUS) {
   const pc = await browser.newPage({ viewport: { width: CW, height: CAPTION_BAND.height }, deviceScaleFactor: 2 });

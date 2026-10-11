@@ -163,10 +163,6 @@ async function captionLayers(c, len, last, n) {
   }
   return { ins, chain, last, n };
 }
-const highlight = ([x, y, w, h], from, to) => {
-  const X = Math.round(PH.x + x * K - 6), Y = Math.round(PH.y + y * K - 6), W = Math.round(w * K + 12), H = Math.round(h * K + 12), on = `enable='between(t,${from.toFixed(2)},${to.toFixed(2)})'`;
-  return `drawbox=x=${X}:y=${Y}:w=${W}:h=${H}:color=0xffd23f@0.35:t=fill:${on},drawbox=x=${X}:y=${Y}:w=${W}:h=${H}:color=0xffd23f:t=6:${on}`;
-};
 const still = ['-loop', '1', '-framerate', '30'];
 
 const cards = allCards(sb);
@@ -197,9 +193,6 @@ for (const [i, c] of cards.entries()) {
     const rings = [];
     // rings: [{ box, word, nth, until, untilNth }]: a callout from that word on, or until another word.
     for (const r of fo.rings || []) rings.push(ring(r.box, await wordAt(c.id, r.word, r.nth), r.until ? (await wordAt(c.id, r.until, r.untilNth)) + 0.3 : null));
-    // An event with box: [x, y, w, h] lights the control up in yellow as the finger reaches it
-    // (⛔ Dave 10/11: "some of the taps are a little hard to see").
-    fo.events.forEach((e, k) => { if (e.box) rings.push(highlight(e.box, evs[k].t - 0.8, evs[k].t + 0.1)); });
     // footage.arrow: { at: [x, y], until: word } -> the bouncing arrow on a control from the
     // card's start until that word (Dave 10/6: the camera button in card 11).
     // A video stream chain after the hole layer: [h] -> optional arrow -> optional finger taps -> [v].
@@ -214,11 +207,13 @@ for (const [i, c] of cards.entries()) {
     // An event with at: [x, y] (frame points) draws the finger marker on that control as the
     // take reaches it: for recordings that show no touches (the iOS Simulator).
     const taps = fo.events.map((e, k) => (e.at ? { at: e.at, t: evs[k].t } : null)).filter(Boolean);
-    if (taps.length) {
-      ins.push(...still, '-i', `${LAYERS}/marker.png`);
-      chain += `;[${n}:v]scale=${MW}:${MW},split=${taps.length}${taps.map((_, k) => `[m${k}]`).join('')}`;
-      taps.forEach((tp, k) => { chain += `;[${last}][m${k}]${marker(c, tp.at[0], tp.at[1], tp.t - 0.6, tp.t + 0.25)}[t${k}]`; last = `t${k}`; });
-      n++;
+    // Each tap plays the tap animation (build-slides layers/tap, 160 px, tap on its frame 15),
+    // shifted so its tap frame lands on the event (⛔ Dave 10/11 "A + ring": no box on the button).
+    for (const tp of taps) {
+      const from = tp.t - 15 / 30;
+      ins.push('-framerate', '30', '-i', `${LAYERS}/tap/t%03d.png`);
+      chain += `;[${n}:v]setpts=PTS-STARTPTS+${from.toFixed(3)}/TB[tp${n}];[${last}][tp${n}]overlay=x=${Math.round(PH.x + tp.at[0] * K - 80)}:y=${Math.round(PH.y + tp.at[1] * K - 80)}:eof_action=pass[t${n}]`;
+      last = `t${n}`; n++;
     }
     const cap = await captionLayers(c, len, last, n);
     ins.push(...cap.ins); chain += cap.chain; last = cap.last; n = cap.n;
