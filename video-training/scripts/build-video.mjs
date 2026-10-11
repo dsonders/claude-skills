@@ -47,7 +47,10 @@ async function pausesOf(c) {
 const voice = (n, extra = 0) => {
   // A pause before the card's first word is a later start, not a cut.
   const lead = PAUSES.filter((p) => p.at <= 0.001), mid = PAUSES.filter((p) => p.at > 0.001);
-  const tail = `adelay=${Math.round((LEAD + extra + lead.reduce((x, p) => x + p.sec, 0)) * 1000)}:all=1,apad[a]`;
+  // adelay only shifts timestamps: the MP4 then carries a HOLE, not silence, and a player or
+  // decoder that closes holes plays the voice early, drifting further every card (⛔ Dave 10/11:
+  // "the phone VO runs slightly ahead"). aresample async fills the hole with real silence.
+  const tail = `adelay=${Math.round((LEAD + extra + lead.reduce((x, p) => x + p.sec, 0)) * 1000)}:all=1,aresample=async=1:first_pts=0,apad[a]`;
   if (!mid.length) return `[${n}:a]aresample=48000,atempo=${SPEED},${tail}`;
   const cuts = mid.map((p) => p.at / SPEED), k = cuts.length;
   let f = `[${n}:a]aresample=48000,atempo=${SPEED},asplit=${k + 1}${cuts.map((_, i) => `[s${i}]`).join('')}[s${k}]`;
@@ -96,6 +99,7 @@ async function wordAt(id, word, nth = 1) {
  * and past that JUMP-CUTS (first half, last half), which is invisible in a spinner.
  * Returns the source frame for every output frame (30 fps).
  */
+const TAP_EARLY = 0.2;
 const LEADIN = 15; // the finger marker shows ~0.45 s before a tap: keep those frames
 function remap(events, startFrame, lastFrame, outFrames) {
   const seq = [];
@@ -181,7 +185,10 @@ for (const [i, c] of cards.entries()) {
     const evs = [];
     for (const e of fo.events) {
       if (e.end) evs.push({ frame: e.frame, t: len - 0.35 });
-      else evs.push({ frame: e.frame, t: (await wordAt(c.id, e.word, e.nth)) + (e.plus || 0) }); // plus: seconds after the word, for an action no word names
+      // plus: seconds after the word, for an action no word names. A finger tap (at) presses
+      // TAP_EARLY before its word, so the screen is already reacting as the word is heard
+      // (⛔ Dave 10/11: on the word exactly, "the taps aren't quite keeping up with the VO").
+      else evs.push({ frame: e.frame, t: (await wordAt(c.id, e.word, e.nth)) + (e.plus || 0) - (e.at ? TAP_EARLY : 0) });
     }
     // Start so the first event plays at 1x: skip what came before it in the take.
     const first = evs[0];
