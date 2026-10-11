@@ -131,17 +131,28 @@ for (const [i, c] of cards.entries()) {
     for (const r of fo.rings || []) rings.push(ring(r.box, await wordAt(c.id, r.word, r.nth)));
     // footage.arrow: { at: [x, y], until: word } -> the bouncing arrow on a control from the
     // card's start until that word (Dave 10/6: the camera button in card 11).
-    let arrowIn = [], arrowF = '', aud = 2;
+    // A video stream chain after the hole layer: [h] -> optional arrow -> optional finger taps -> [v].
+    const ins = ['-framerate', '30', '-i', `${dir}/o%05d.jpg`, ...still, '-i', `${LAYERS}/${c.id}-hole.png`];
+    let chain = '', last = 'h', n = 2;
     if (fo.arrow) {
       const until = fo.arrow.until ? (await wordAt(c.id, fo.arrow.until, fo.arrow.nth)) + 0.4 : len;
       const ax = Math.round(PH.x - 0.6 + fo.arrow.at[0] * K - 60), ay = Math.round(PH.y + fo.arrow.at[1] * K - 170);
-      arrowIn = [...still, '-i', `${LAYERS}/arrow.png`];
-      arrowF = `[v0][2:v]overlay=x=${ax}:y='${ay}-18*abs(sin(PI*t*1.7))':enable='lt(t,${until.toFixed(2)})'[v];`;
-      aud = 3;
+      ins.push(...still, '-i', `${LAYERS}/arrow.png`);
+      chain += `;[${last}][${n}:v]overlay=x=${ax}:y='${ay}-18*abs(sin(PI*t*1.7))':enable='lt(t,${until.toFixed(2)})'[a${n}]`; last = `a${n}`; n++;
     }
-    ffmpeg(['-framerate', '30', '-i', `${dir}/o%05d.jpg`, ...still, '-i', `${LAYERS}/${c.id}-hole.png`, ...arrowIn, '-i', wav, '-filter_complex',
+    // An event with at: [x, y] (frame points) draws the finger marker on that control as the
+    // take reaches it: for recordings that show no touches (the iOS Simulator).
+    const taps = fo.events.map((e, k) => (e.at ? { at: e.at, t: evs[k].t } : null)).filter(Boolean);
+    if (taps.length) {
+      ins.push(...still, '-i', `${LAYERS}/marker.png`);
+      chain += `;[${n}:v]scale=${MW}:${MW},split=${taps.length}${taps.map((_, k) => `[m${k}]`).join('')}`;
+      taps.forEach((tp, k) => { chain += `;[${last}][m${k}]${marker(c, tp.at[0], tp.at[1], tp.t - 0.5, tp.t + 0.3)}[t${k}]`; last = `t${k}`; });
+      n++;
+    }
+    ins.push('-i', wav);
+    ffmpeg([...ins, '-filter_complex',
       `[0:v]scale=${PH.w}:${PH.h}:flags=lanczos,setsar=1,tpad=stop_mode=clone:stop_duration=30[f];` +
-      `color=black:s=${SIZE}:r=30[bg];[bg][f]overlay=${PH.x}:${PH.y}[u];[u][1:v]overlay=0:0${rings.length ? ',' + rings.join(',') : ''}${fo.arrow ? '[v0];' + arrowF : '[v];'}${voice(aud)}`,
+      `color=black:s=${SIZE}:r=30[bg];[bg][f]overlay=${PH.x}:${PH.y}[u];[u][1:v]overlay=0:0${rings.length ? ',' + rings.join(',') : ''}[h]${chain};[${last}]null[v];${voice(n)}`,
       '-map', '[v]', '-map', '[a]', '-t', len.toFixed(2), ...V, ...A, seg]);
     kind = `(footage, ${evs.length} events, ${(seq.length / 30).toFixed(1)}s of a ${((lastFrame - start) / 30).toFixed(1)}s take)`;
   } else if (c.footage) {
