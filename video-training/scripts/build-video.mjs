@@ -8,7 +8,7 @@
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, symlinkSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
-import { loadStoryboard, allCards, seconds, ffmpeg, screenOf, cardOf } from './lib.mjs';
+import { loadStoryboard, allCards, seconds, ffmpeg, screenOf, cardOf, captionsOf, CAPTION_BAND } from './lib.mjs';
 
 const DIR = resolve(process.argv[2] || '.');
 const sb = loadStoryboard(DIR);
@@ -27,7 +27,34 @@ let K, PH;
 const place = (c) => { const g = screenOf(sb, c); K = g.k * 2; MW = Math.round(56 * K); PH = { x: Math.round(g.x * 2), y: Math.round(g.y * 2), w: Math.floor(g.w * 2), h: Math.round(g.h * 2) }; };
 const V = ['-c:v', 'libx264', '-crf', '19', '-pix_fmt', 'yuv420p', '-r', '30'];
 const A = ['-c:a', 'aac', '-b:a', '128k', '-ac', '2', '-ar', '48000'];
-const voice = (n, extra = 0) => `[${n}:a]aresample=48000,atempo=${SPEED},adelay=${Math.round((LEAD + extra) * 1000)}:all=1,apad[a]`;
+// card.pause = [{ before: word, nth, seconds }]: silence in the voice just before that word, so the
+// screen gets time the narration does not (⛔ Dave 10/11: "Click Log In" happened too fast to see
+// where Log In is). PAUSES holds the current card's, in narration seconds; every time below goes
+// through tOut() so words, events and subtitles after a pause all move with it.
+let PAUSES = [];
+const pauseTotal = () => PAUSES.reduce((n, p) => n + p.sec, 0);
+const tOut = (raw) => LEAD + raw / SPEED + PAUSES.filter((p) => p.at <= raw).reduce((n, p) => n + p.sec, 0);
+async function pausesOf(c) {
+  const out = [];
+  for (const p of c.pause || []) {
+    const ws = await wordsOf(c.id), key = p.before.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const hit = ws.filter((w) => w.w === key || w.w.startsWith(key))[(p.nth || 1) - 1];
+    if (!hit) throw new Error(`card ${c.id}: pause before "${p.before}" (#${p.nth || 1}): word not heard`);
+    out.push({ at: Math.max(0, hit.t - 0.12), sec: p.seconds });
+  }
+  return out.sort((a, b) => a.at - b.at);
+}
+const voice = (n, extra = 0) => {
+  const tail = `adelay=${Math.round((LEAD + extra) * 1000)}:all=1,apad[a]`;
+  if (!PAUSES.length) return `[${n}:a]aresample=48000,atempo=${SPEED},${tail}`;
+  const cuts = PAUSES.map((p) => p.at / SPEED), k = cuts.length;
+  let f = `[${n}:a]aresample=48000,atempo=${SPEED},asplit=${k + 1}${cuts.map((_, i) => `[s${i}]`).join('')}[s${k}]`;
+  for (let i = 0; i <= k; i++) {
+    const from = i ? cuts[i - 1] : 0, to = i < k ? cuts[i] : null;
+    f += `;[s${i}]atrim=start=${from.toFixed(3)}${to != null ? `:end=${to.toFixed(3)}` : ''},asetpts=PTS-STARTPTS${i < k ? `,apad=pad_dur=${PAUSES[i].sec}` : ''}[p${i}]`;
+  }
+  return f + `;${cuts.map((_, i) => `[p${i}]`).join('')}[p${k}]concat=n=${k + 1}:v=0:a=1,${tail}`;
+};
 
 // ── word timing ───────────────────────────────────────────────────────────────
 // Taps are synced to the WORD that names them ("Tap Done" -> the finger lands on
@@ -54,7 +81,7 @@ async function wordAt(id, word, nth = 1) {
   const ws = await wordsOf(id), key = word.toLowerCase().replace(/[^a-z0-9]/g, '');
   const hits = ws.filter((w) => w.w === key || w.w.startsWith(key));
   if (!hits[nth - 1]) throw new Error(`card ${id}: the word "${word}" (#${nth}) was not heard in its narration`);
-  return LEAD + hits[nth - 1].t / SPEED;
+  return tOut(hits[nth - 1].t);
 }
 
 /**
@@ -100,7 +127,40 @@ function remap(events, startFrame, lastFrame, outFrames) {
 // 56 frame px wide, so 96 px on a portrait phone card and smaller on a landscape one.
 let MW = 96;
 const marker = (c, x, y, from, to) => `overlay=x=${Math.round(PH.x + x * K - MW / 2)}:y=${Math.round(PH.y + y * K - MW / 2)}:enable='between(t,${from.toFixed(2)},${to.toFixed(2)})'`;
-const ring = ([x, y, w, h], from) => `drawbox=x=${Math.round(PH.x + x * K - 7)}:y=${Math.round(PH.y + y * K - 7)}:w=${Math.round(w * K + 14)}:h=${Math.round(h * K + 14)}:color=0xffd23f:t=6:enable='gte(t,${from.toFixed(2)})'`;
+const ring = ([x, y, w, h], from, to) => `drawbox=x=${Math.round(PH.x + x * K - 7)}:y=${Math.round(PH.y + y * K - 7)}:w=${Math.round(w * K + 14)}:h=${Math.round(h * K + 14)}:color=0xffd23f:t=6:enable='${to == null ? `gte(t,${from.toFixed(2)})` : `between(t,${from.toFixed(2)},${to.toFixed(2)})`}'`;
+// Subtitles (focus format): each sentence shows from its first spoken word to the next one.
+// Sentence starts come from the Whisper word times; a word Whisper spells differently
+// falls back to the sentence's share of the characters.
+async function captionTimes(c, len) {
+  const chunks = captionsOf(c);
+  if (!chunks.length) return [];
+  const ws = await wordsOf(c.id), norm = (w) => w.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const voiceEnd = tOut(seconds(`${DIR}/narration/${c.id}.wav`)), total = chunks.join(' ').length;
+  const starts = [LEAD - 0.05];
+  let chars = chunks[0].length + 1;
+  for (let k = 1; k < chunks.length; k++) {
+    // The sentence's first TWO words, nearest the estimate: one word ("The") also matches inside
+    // the sentence before ("the top of the page").
+    const [a, b2] = chunks[k].split(/\s+/).map(norm);
+    const est = LEAD + (voiceEnd - LEAD) * (chars / total);
+    const hits = ws.map((w, j) => (w.w === a && (!b2 || ws[j + 1]?.w === b2) ? tOut(w.t) : null)).filter((t) => t != null && t > starts[k - 1]);
+    const best = hits.sort((x, y) => Math.abs(x - est) - Math.abs(y - est))[0];
+    starts.push(best != null && Math.abs(best - est) < 2 ? best - 0.1 : est);
+    chars += chunks[k].length + 1;
+  }
+  return chunks.map((_, k) => ({ k, from: starts[k], to: k + 1 < chunks.length ? starts[k + 1] : len + 1 }));
+}
+/** Adds the caption layers to a filter chain: returns the extra inputs and the new chain end. */
+async function captionLayers(c, len, last, n) {
+  if (sb.format !== 'focus' || !c.img) return { ins: [], chain: '', last, n };
+  const ins = [], times = await captionTimes(c, len);
+  let chain = '';
+  for (const { k, from, to } of times) {
+    ins.push(...still, '-i', `${LAYERS}/${c.id}-cap${k}.png`);
+    chain += `;[${last}][${n}:v]overlay=x=0:y=${CAPTION_BAND.top * 2}:enable='between(t,${from.toFixed(2)},${to.toFixed(2)})'[c${n}]`; last = `c${n}`; n++;
+  }
+  return { ins, chain, last, n };
+}
 const still = ['-loop', '1', '-framerate', '30'];
 
 const cards = allCards(sb);
@@ -111,7 +171,8 @@ for (const [i, c] of cards.entries()) {
   if (c.img) place(c);
   const slide = `${SLIDES}/${n2}-${c.id}.png`, wav = `${DIR}/narration/${c.id}.wav`, seg = `${WORK}/${n2}.mp4`;
   if (!existsSync(wav)) throw new Error(`no narration for ${c.id}: run narrate.mjs`);
-  let len = LEAD + seconds(wav) / SPEED + TAIL;
+  PAUSES = await pausesOf(c);
+  let len = LEAD + seconds(wav) / SPEED + pauseTotal() + TAIL;
   let kind = '';
   if (c.footage?.events) {
     const fo = c.footage, OUTF = Math.round(len * 30);
@@ -128,7 +189,8 @@ for (const [i, c] of cards.entries()) {
     const dir = `${WORK}/${n2}-frames`; mkdirSync(dir, { recursive: true });
     seq.forEach((f, k) => symlinkSync(`${DIR}/footage/${fo.clip}/f${String(f).padStart(5, '0')}.jpg`, `${dir}/o${String(k).padStart(5, '0')}.jpg`));
     const rings = [];
-    for (const r of fo.rings || []) rings.push(ring(r.box, await wordAt(c.id, r.word, r.nth)));
+    // rings: [{ box, word, nth, until, untilNth }]: a callout from that word on, or until another word.
+    for (const r of fo.rings || []) rings.push(ring(r.box, await wordAt(c.id, r.word, r.nth), r.until ? (await wordAt(c.id, r.until, r.untilNth)) + 0.3 : null));
     // footage.arrow: { at: [x, y], until: word } -> the bouncing arrow on a control from the
     // card's start until that word (Dave 10/6: the camera button in card 11).
     // A video stream chain after the hole layer: [h] -> optional arrow -> optional finger taps -> [v].
@@ -149,6 +211,8 @@ for (const [i, c] of cards.entries()) {
       taps.forEach((tp, k) => { chain += `;[${last}][m${k}]${marker(c, tp.at[0], tp.at[1], tp.t - 0.5, tp.t + 0.3)}[t${k}]`; last = `t${k}`; });
       n++;
     }
+    const cap = await captionLayers(c, len, last, n);
+    ins.push(...cap.ins); chain += cap.chain; last = cap.last; n = cap.n;
     ins.push('-i', wav);
     ffmpeg([...ins, '-filter_complex',
       `[0:v]scale=${PH.w}:${PH.h}:flags=lanczos,setsar=1,tpad=stop_mode=clone:stop_duration=30[f];` +
@@ -185,7 +249,7 @@ for (const [i, c] of cards.entries()) {
   } else {
     // A still card. tap: { at: [x, y], word, nth, hold } draws the finger on the
     // control from the word that names it (hold = seconds, or to the card's end).
-    const base = c.arrow ? `${LAYERS}/${c.id}-noarrow.png` : slide;
+    const base = c.arrow ? `${LAYERS}/${c.id}-noarrow.png` : sb.format === 'focus' && c.img ? `${LAYERS}/${c.id}-nocap.png` : slide;
     const ins = [...still, '-i', base];
     let chain = '[0:v]null[b0]', last = 'b0', k = 1;
     if (c.arrow) {
@@ -199,6 +263,8 @@ for (const [i, c] of cards.entries()) {
       ins.push(...still, '-i', `${LAYERS}/marker.png`);
       chain += `;[${k}:v]scale=${MW}:${MW}[m${k}];[${last}][m${k}]${marker(c, c.tap.at[0], c.tap.at[1], from, to)}[b${k}]`; last = `b${k}`; k++;
     }
+    const cap = await captionLayers(c, len, last, k);
+    ins.push(...cap.ins); chain += cap.chain; last = cap.last; k = cap.n;
     ins.push('-i', wav);
     ffmpeg([...ins, '-filter_complex', `${chain};[${last}]null[v];${voice(k)}`, '-map', '[v]', '-map', '[a]', '-t', len.toFixed(2), '-tune', 'stillimage', ...V, ...A, seg]);
     kind = [c.arrow && '(arrow)', c.tap && '(tap)'].filter(Boolean).join(' ');

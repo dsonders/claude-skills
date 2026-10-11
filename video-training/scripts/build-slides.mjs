@@ -4,11 +4,11 @@
 //   node build-slides.mjs <project-dir>
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { APP, PHONE, loadStoryboard, allCards, boardBody, screenOf, cardOf, textBox } from './lib.mjs';
+import { APP, PHONE, loadStoryboard, allCards, boardBody, screenOf, cardOf, textBox, captionsOf, CAPTION_BAND } from './lib.mjs';
 
 const DIR = resolve(process.argv[2] || '.');
 const sb = loadStoryboard(DIR);
-const { W: CW, H: CH } = cardOf(sb), TB = textBox(sb);
+const { W: CW, H: CH } = cardOf(sb), TB = textBox(sb), FOCUS = sb.format === 'focus';
 const OUT = `${DIR}/out`, SLIDES = `${OUT}/slides`, LAYERS = `${OUT}/layers`;
 for (const d of [SLIDES, LAYERS]) { if (existsSync(d)) rmSync(d, { recursive: true }); mkdirSync(d, { recursive: true }); }
 const { chromium } = await import(`${APP}/node_modules/playwright/index.mjs`);
@@ -38,6 +38,7 @@ const css = `
   .ring { position: absolute; border: 3px solid #ffd23f; border-radius: 12px; box-shadow: 0 0 0 2px rgba(0,0,0,.55), 0 0 18px rgba(255,210,63,.55); }
   .tag { position: absolute; width: 24px; height: 24px; border-radius: 12px; background: #ffd23f; color: #000; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 2px rgba(0,0,0,.6); }
   .arrow { position: absolute; width: 60px; height: 85px; filter: drop-shadow(0 3px 6px rgba(0,0,0,.6)); }
+  .cap { position: absolute; left: 40px; right: 40px; top: ${CAPTION_BAND.top}px; height: ${CAPTION_BAND.height}px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 22px; line-height: 1.25; font-weight: 600; color: #fff; text-wrap: balance; }
   .cover { display: flex; flex-direction: column; padding: 90px 44px 60px; }
   .cover img.logo { width: 300px; }
   .cover h1 { font-size: 44px; line-height: 1.08; margin: 120px 0 0; font-weight: 800; letter-spacing: -0.6px; white-space: pre-line; }
@@ -61,7 +62,13 @@ export function marks(s, k = S) {
   return rings + arrow;
 }
 
-const stepCard = (s, i) => `<section class="card" id="c-${s.id}">
+// Focus format: the screen alone, the narration as a subtitle under it (the PDF shows every
+// sentence at once; the video shows each one as it is spoken, from the layers below).
+const focusCard = (s) => `<section class="card" id="c-${s.id}">
+  ${screenBox(s, `<img src="${b64(`${DIR}/frames/${s.img}.png`, 'image/png')}">`)}
+  <div class="cap">${esc(captionsOf(s).join(' '))}</div>
+</section>`;
+const stepCard = (s, i) => FOCUS ? focusCard(s) : `<section class="card" id="c-${s.id}">
   <div class="top">
     <div class="part">Part ${s.part}: ${esc(sb.parts[s.part - 1])}</div>
     <div class="row"><div class="num">${i + 1}</div><div><div class="title" style="${esc(s.titleStyle || '')}">${chips(s.title)}</div>${s.body ? `<div class="body" style="${esc(s.bodyStyle || '')}">${chips(s.body)}</div>` : ''}</div></div>
@@ -109,13 +116,17 @@ await page.evaluate(([fIds, aIds]) => {
   for (const id of fIds) {
     const card = document.getElementById('c-' + id);
     card.style.background = 'transparent';
-    card.querySelector('.top').style.zIndex = '2';
+    const top = card.querySelector('.top'); if (top) top.style.zIndex = '2';
+    card.querySelector('.cap')?.remove();
     const phone = card.querySelector('.phone');
     phone.innerHTML = '';
     phone.style.background = 'transparent';
     phone.style.boxShadow = '0 0 0 5px #333132, 0 0 0 6px #4a4849, 0 0 0 2000px #000';
   }
 }, [footageIds, arrowIds]);
+// Still cards in focus format lose their caption too: the video lays each sentence on in time.
+if (FOCUS) await page.evaluate(() => document.querySelectorAll('.cap').forEach((e) => e.remove()));
+if (FOCUS) for (const s of sb.steps.filter((x) => !x.footage && !x.arrow)) await page.locator(`#c-${s.id}`).screenshot({ path: `${LAYERS}/${s.id}-nocap.png` });
 for (const id of arrowIds) await page.locator(`#c-${id}`).screenshot({ path: `${LAYERS}/${id}-noarrow.png` });
 for (const id of footageIds) await page.locator(`#c-${id}`).screenshot({ path: `${LAYERS}/${id}-hole.png`, omitBackground: true });
 const p2 = await browser.newPage({ viewport: { width: 60, height: 85 }, deviceScaleFactor: 2 });
@@ -125,6 +136,14 @@ await p2.screenshot({ path: `${LAYERS}/arrow.png`, omitBackground: true });
 const p3 = await browser.newPage({ viewport: { width: 97, height: 97 }, deviceScaleFactor: 1 });
 await p3.setContent(`<html><body style="margin:0;background:transparent"><div style="position:absolute;left:5px;top:5px;width:87px;height:87px;box-sizing:border-box;border-radius:50%;background:rgba(255,255,255,.45);border:5px solid rgba(255,255,255,.95);box-shadow:0 0 0 3px rgba(0,0,0,.35)"></div></body></html>`);
 await p3.screenshot({ path: `${LAYERS}/marker.png`, omitBackground: true });
+// One subtitle layer per sentence: the band only, see-through, at video scale.
+if (FOCUS) {
+  const pc = await browser.newPage({ viewport: { width: CW, height: CAPTION_BAND.height }, deviceScaleFactor: 2 });
+  for (const s of sb.steps) for (const [k, t] of captionsOf(s).entries()) {
+    await pc.setContent(`<html><head><style>${css} .cap { top: 0; text-shadow: 0 2px 6px rgba(0,0,0,.8); } html, body { background: transparent !important; }</style></head><body><div class="cap">${esc(t)}</div></body></html>`);
+    await pc.screenshot({ path: `${LAYERS}/${s.id}-cap${k}.png`, omitBackground: true });
+  }
+}
 await browser.close();
 console.log(`slides: ${cards.length} cards -> ${SLIDES}`);
 console.log(`pdf:    ${OUT}/${sb.slug}.pdf`);

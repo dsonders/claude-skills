@@ -23,12 +23,29 @@ export const PHONE = { w: 390, h: 844 };
  * The words sit in a left column (textBox), the screen on the right, 470 px tall and
  * top-aligned for both kinds so nothing jumps between a laptop card and a phone card.
  */
-export const cardOf = (sb) => (sb.format === 'landscape' ? { W: 960, H: 540 } : { W: 540, H: 960 });
+export const cardOf = (sb) => (sb.format === 'landscape' || sb.format === 'focus' ? { W: 960, H: 540 } : { W: 540, H: 960 });
+/**
+ * sb.format === 'focus' (⛔ Dave 2026-10-11: "the browser window is the focus, no headlines or
+ * helper text to read"): a 960 x 540 card with the screen alone, centred, 440 px tall, and the
+ * narration as SUBTITLES in the band under it (captionsOf). No title, no body, no step number.
+ */
+export const CAPTION_BAND = { top: 458, height: 78 };
+/** A card's subtitles: its narration written for the eye, one chunk per sentence. */
+export function captionsOf(c) {
+  const text = (c.caption ?? c.narration ?? '')
+    .replace(/tenthgear dot a i/gi, 'tenthgear.ai').replace(/\bA I\b/g, 'AI').replace(/\bR O\b/g, 'RO');
+  return text.split(/(?<=[.!?]["')]*)\s+/).map((t) => t.trim()).filter(Boolean); // a '.' inside a word (tenthgear.ai) is not a break
+}
 /** The words' box on a step card: a top band (portrait) or a left column (landscape). */
 export const textBox = (sb) => (sb.format === 'landscape'
   ? { left: 0, top: 0, width: 420, height: 540, padding: '56px 28px 0px 44px', title: 32, body: 19 }
   : { left: 0, top: 0, width: 540, height: 200, padding: '22px 30px 0px 30px', title: 27, body: 17 });
 export function screenOf(sb, s) {
+  if (sb.format === 'focus') {
+    const lap = s.screen === 'laptop', f = lap ? (sb.laptop || { w: 1280, h: 818 }) : (sb.phone || PHONE);
+    const h = 440, k = h / f.h, w = Math.round(f.w * k);
+    return { kind: lap ? 'laptop' : 'phone', fw: f.w, fh: f.h, k, x: Math.round((960 - w) / 2), y: 12, w, h, radius: lap ? 10 : 24 };
+  }
   if (sb.format === 'landscape') {
     const lap = s.screen === 'laptop', f = lap ? (sb.laptop || { w: 640, h: 600 }) : (sb.phone || PHONE);
     const h = 470, k = h / f.h, w = Math.round(f.w * k), AREA_X = 420, AREA_W = 510;
