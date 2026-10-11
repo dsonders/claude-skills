@@ -5,7 +5,11 @@ description: Produce a narrated training or walkthrough video (plus matching ann
 
 # Video Training: storyboard first, then the real app on screen
 
-A training video here is a set of phone-shaped cards. Each card has a headline, one line of help, a key frame from the real app with callouts, and a line of narration. Some cards play a short clip of the app instead of a still. The same cards are delivered as slides and a PDF.
+A training video here is a set of cards, one per thing the viewer does. Each card shows a key frame from the real app with callouts and carries a line of narration; most cards play a clip of the app instead of a still. The same cards are delivered as slides and a PDF.
+
+Two formats, picked in Step 0:
+- **Phone viewing** (the default, e.g. Story Writer): portrait cards with a headline, one line of help and the phone.
+- **Laptop viewing** (`"format": "focus"`, ⛔ Dave 2026-10-11, the Get Set Up video): 16:9, the browser window or phone ALONE in the frame, no headline or help text, and the narration as sentence-timed subtitles under it for viewers in a noisy shop.
 
 One file drives everything: `storyboard.json`. Dave edits it through a design canvas; every build script reads it.
 
@@ -60,7 +64,8 @@ Find these in the request. Ask only for what is missing, one question, recommend
 | Decide | Default |
 |---|---|
 | Who watches, and in which role | Technician |
-| Phone or desktop | Phone, 390 x 844 |
+| Where viewers watch it | Phone: portrait cards. Laptop (an email attachment, onboarding): `"format": "focus"`, see reference.md "Laptop-viewing format". |
+| What the video shows | The phone app, 390 x 844. A laptop flow: a fresh-profile Chrome window, full window, never a half crop. |
 | Which flow, start to finish | Dave's outline |
 | Store and workflow mode | Ask Dave. See Step 2. |
 | Stills only, or stills plus clips | Clips wherever the screen moves: recording, loading, open and close |
@@ -88,7 +93,7 @@ This is the first thing Dave sees and the place he edits the script and the call
 5. **Upload the key frames** to the canvas as assets (JPEG, 1688 px tall, staged in the scratchpad so they go in one call). Record each returned `/_blob/...` url under `assets` in `artifact.json`, keyed by frame name.
 6. **Generate and publish.** `node scripts/storyboard-canvas.mjs <project>` writes `storyboard/project/`. Copy that folder into the scratchpad and publish it: `canvas.json` as `file_path`, every `.dc.html` in `files`.
 7. **Hand Dave the link and stop.** Tell him: retype any words on a card, the blue note under each card is the voice track, drag the yellow callouts, write anything else on a note. Do not start production.
-8. **Harvest his edits.** Artifact `read` with `paths` (the index and every artboard) and an `out_dir`, then `node scripts/storyboard-harvest.mjs <project> <out_dir>`. Read the report to him in plain words, act on any notes he added, then rerun with `--write`.
+8. **Harvest his edits, before EVERY build, not just the first.** Artifact `read` with `paths` (the index and every artboard) and an `out_dir`, then `node scripts/storyboard-harvest.mjs <project> <out_dir>`. Read the report to him in plain words, act on any notes he added, then rerun with `--write`. Dave keeps editing voice notes between rounds; a build that skips this ships his old words (⛔ 2026-10-11, v4: "some edits did not make it").
 9. **Another round?** Read `project/canvas.json` back, regenerate with `--live <that file>`, republish. A publish that does not start from the live index is refused.
 
 ### Step 2: Borrow a store
@@ -108,7 +113,8 @@ The app has to be in the mode the video shows. Only test stores may be used.
 ### Step 3: Capture
 
 - **Stills:** `dpr: 3`. One frame per card, taken after the screen has settled.
-- **Every tap shows a finger, and every action the narration names lands on its word** (⛔ Dave 2026-10-05/06: "the VO is running well ahead of the video"). Record each part as ONE continuous take, cut cards by `marks.json`, and give each footage card `events` (one `{frame, word}` per named action + `{frame, end}`); still cards get `tap`. Mechanics in reference.md "Taps, sync and continuity".
+- **Every tap shows a finger, and every action the narration names lands on its word** (⛔ Dave 2026-10-05/06: "the VO is running well ahead of the video"). Record each part as ONE continuous take, cut cards by `marks.json`, and give each footage card `events` (one `{frame, word}` per named action + `{frame, end}`); still cards get `tap`. A finger tap (`at`) presses 0.2 s BEFORE its word so the screen is reacting as the word is heard (⛔ 2026-10-11). Mechanics in reference.md "Taps, sync and continuity" and "Timing".
+- **Flows outside the app** (installing the web app on a phone, bookmarking it on a laptop): the iOS Simulator and a fresh-profile Chrome. Recipes in reference.md "Capturing outside the app".
 - **Clips:** `dpr: 2` with `vt.recorder`. Open each clip with a beat of stillness, show the finger marker, then act. Read `marks.json` to choose `footage.runs`.
 - **Dictation is real.** `vt.dictation` plays a spoken clip into a fake microphone; the app records and transcribes it. Print every transcript and read it: the transcriber rewrites numbers and brand names.
 - A retake needs a fresh repair order. Number them upward and list each id in `created-ros.txt`.
@@ -130,13 +136,14 @@ Write narration for the ear: "R O", "three Cs", "tenthgear dot A I". Announce ea
 
 ### Step 6: Video
 
-`node scripts/build-video.mjs <project>`. Speed is 1.25 (QuickTime's "Fast"), the pace Dave approved. A card with a clip runs as long as the longer of its narration and its clip.
+`node scripts/build-video.mjs <project>`. Speed is 1.25 (QuickTime's "Fast"), the pace Dave approved. A card with a clip runs as long as the longer of its narration and its clip. The build fails if the finished video's audio has a hole: some players close holes and play the voice early (the 2026-10-11 drift).
 
 ### Step 7: Verify, and say what was not verified
 
 1. `check-audio.mjs` transcribes the video and scores each card. Read every `LOOK` line.
-2. Pull one frame from each card that has a clip or an arrow and look at it.
-3. In the hand-back, state plainly: not listened to, not watched end to end.
+2. `check-sync.mjs` proves the picture keeps time with the voice: no holes in the audio, and `out/sync-sheet.png` shows the frame at the START of every word that names an action. Look at the sheet: each press or click must already be on screen in its frame. A tap that is not there yet is late; move it (`plus`, `pause`, or a different word).
+3. Pull one frame from each card that has a clip or an arrow and look at it.
+4. In the hand-back, state plainly: not listened to, not watched end to end.
 
 ### Step 8: Deliver
 
@@ -162,6 +169,17 @@ Copy the video, the PDF and `out/slides/` to `~/Desktop/<Title>/`. Keep earlier 
 | Anything that moves in the app should move in the video | Waveform, spinner, card opening |
 | Shop-floor words | RO, line, story, 3Cs, CP |
 
+**Rulings 2026-10-11 (Get Set Up, laptop viewing):**
+
+| Rule | Example |
+|---|---|
+| A video watched on a laptop is 16:9 with the screen as the focus: no headlines or help text, subtitles instead | `"format": "focus"` |
+| Cover and end page: no subhead, the list stacked under the title | Get set up / Laptop → Bookmark / Phone → Home screen icon |
+| A tap is a yellow fingertip that lands early, presses, and sends out a thin ring. No box on the button | the `layers/tap/` animation |
+| Give the viewer time to find a control before it is clicked | `pause` after "...at the top of the page", ring on Log In until the click |
+| A part opens where a real user starts | Home screen, tap Safari; never an already-open browser |
+| A pause between parts | 2 s of silence before the phone part |
+
 Dave gives slide edits by PDF page number. Page 1 is the cover, so "pg 7" is step 6. Restate each edit by step name before applying it.
 
 ## Success criteria
@@ -170,6 +188,8 @@ Dave gives slide edits by PDF page number. Page 1 is the cover, so "pg 7" is ste
 - [ ] Every frame and clip is the real app, in the mode the video is about
 - [ ] Slides, PDF and video all come from the same `storyboard.json`
 - [ ] Narration checked by transcription; unclear lines named
+- [ ] `check-sync.mjs`: no audio holes, and the sync sheet looked at (every action on screen at its word)
+- [ ] Every canvas voice note matches storyboard.json at build time (harvest dry run: 0 changes)
 - [ ] The hand-back says what was not listened to or watched
 - [ ] Store mode restored and confirmed; retake repair orders closed
 - [ ] Project folder kept outside the scratchpad

@@ -9,7 +9,7 @@
 // open, and a publish that does not start from the live copy is refused.
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { loadStoryboard, screenOf, cardOf, textBox } from './lib.mjs';
+import { loadStoryboard, screenOf, cardOf, textBox, captionsOf, CAPTION_BAND } from './lib.mjs';
 
 const DIR = resolve(process.argv[2] || '.');
 const liveAt = process.argv.indexOf('--live');
@@ -62,6 +62,15 @@ function stepBoard(s, i) {
     return `<div class="sb-ring" style="position: absolute; left: ${L}px; top: ${T}px; width: ${Wd}px; height: ${Hd}px; box-sizing: border-box; border: 3px solid #ffd23f; border-radius: 12px; box-shadow: 0 0 0 2px rgba(0,0,0,.55)"></div>${tag}`;
   }).join('\n');
   const arrow = s.arrow ? `<div class="sb-arrow" style="position: absolute; left: ${s.arrow[0] * S - 30}px; top: ${s.arrow[1] * S - 85}px; width: 60px; height: 85px">${ARROW}</div>` : '';
+  const screen = `<div class="sb-phone" style="position: absolute; left: ${g.x}px; top: ${g.y}px; width: ${g.w}px; height: ${g.h}px; border-radius: ${g.radius}px; overflow: hidden; box-shadow: 0 0 0 5px #333132; background: #111111">
+<img src="${meta.assets[s.img]}" alt="Key frame: ${esc(s.img)}" style="width: 100%; height: 100%; display: block">
+${rings}
+${arrow}
+</div>`;
+  // Focus format (laptop viewing, ⛔ Dave 10/11): the screen alone, the voice line as the subtitle
+  // under it. The subtitle is DRAWN from the blue voice note; that note is the one place to edit it.
+  if (sb.format === 'focus') return page(`Step ${i + 1}: ${s.id}`, `${screen}
+<div class="sb-caption" style="position: absolute; left: 40px; right: 40px; top: ${CAPTION_BAND.top}px; height: ${CAPTION_BAND.height}px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 22px; line-height: 1.25; font-weight: 600; color: #ffffff">${esc(captionsOf(s).join(' '))}</div>`);
   return page(`Step ${i + 1}: ${s.title.replace(/\[\[|\]\]/g, '')}`, `<div style="position: absolute; left: ${TB.left}px; top: ${TB.top}px; width: ${TB.width}px; height: ${TB.height}px; box-sizing: border-box; padding: ${TB.padding}">
 <div class="sb-part" style="font-size: 13px; letter-spacing: 1.6px; text-transform: uppercase; color: #9b9799; font-weight: 600">Part ${s.part}: ${esc(sb.parts[s.part - 1])}</div>
 <div style="display: flex; gap: 14px; margin-top: 12px; align-items: flex-start">

@@ -7,6 +7,7 @@
 // runs as long as the longer of the two.
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, symlinkSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { loadStoryboard, allCards, seconds, ffmpeg, screenOf, cardOf, captionsOf, CAPTION_BAND } from './lib.mjs';
 
@@ -287,5 +288,9 @@ for (const [i, c] of cards.entries()) {
 writeFileSync(`${WORK}/list.txt`, list.join('\n'));
 const out = `${OUT}/${sb.slug}.mp4`;
 ffmpeg(['-f', 'concat', '-safe', '0', '-i', `${WORK}/list.txt`, '-c', 'copy', '-movflags', '+faststart', out]);
+// A hole in the audio timestamps plays EARLY in players that close it (the v5 drift): refuse it.
+const holes = execFileSync('ffprobe', ['-v', 'error', '-select_streams', 'a', '-show_entries', 'packet=pts_time', '-of', 'csv=p=0', out], { encoding: 'utf8' })
+  .split('\n').map(parseFloat).filter((n) => !Number.isNaN(n)).filter((t, i, a) => i && t - a[i - 1] > 0.05);
+if (holes.length) { console.log(`FAIL the audio has ${holes.length} hole(s), first at ${holes[0].toFixed(2)}s: the voice will run ahead in some players`); process.exitCode = 1; }
 const m = Math.floor(total / 60), s = Math.round(total % 60);
 console.log(`video: ${m}:${String(s).padStart(2, '0')} -> ${out}`);

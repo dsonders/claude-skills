@@ -150,7 +150,8 @@ for (let i = 0; i < 34; i++) {
     if (u <= 0.35) {
       c.globalAlpha = clamp(u < -0.35 ? (u + 0.5) / 0.15 : u > 0.2 ? (0.35 - u) / 0.15 : 1);
       c.beginPath(); c.arc(x, y, 26 * (Math.abs(u) < 0.09 ? 0.82 : 1), 0, 7); c.fillStyle = `rgba(${Y},.5)`; c.fill();
-      c.lineWidth = 6; c.strokeStyle = 'rgba(0,0,0,.35)'; c.stroke();
+      // a dark rim keeps the fingertip visible on yellow buttons (the TenthGear icon)
+      c.lineWidth = 8; c.strokeStyle = 'rgba(0,0,0,.6)'; c.stroke();
       c.lineWidth = 4; c.strokeStyle = `rgb(${Y})`; c.stroke();
     }
     if (u >= 0.05) {

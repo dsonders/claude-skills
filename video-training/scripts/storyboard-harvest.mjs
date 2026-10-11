@@ -72,7 +72,8 @@ const allWords = (h, cls) => { const out = []; let rest = h; for (let m; (m = ne
     const heads = allWords(h, 'sb-cover-heading');
     set(sb.cover, 'heading', heads[0] ?? null, 'cover heading');
     if (heads[1] || sb.cover.subheading) set(sb.cover, 'subheading', heads[1] ?? '', 'cover subheading');
-    set(sb.cover, 'sub', words(inner(h, 'sb-cover-sub')), 'cover subhead');
+    // A cover with no subhead (removed on the canvas) reads back as an empty one, not a problem.
+    set(sb.cover, 'sub', words(inner(h, 'sb-cover-sub')) ?? (/sb-cover-sub/.test(h) ? undefined : ''), 'cover subhead');
     set(sb.cover, 'help', allWords(h, 'sb-cover-help')[0] ?? null, 'cover footer');
     const items = allWords(h, 'sb-cover-item');
     if (items.length) set(sb.cover, 'items', items, 'cover list');
@@ -104,6 +105,8 @@ sb.steps.forEach((s, i) => {
   const label = `step ${i + 1} (${s.id})`;
   if (!name || !existsSync(`${LIVE}/project/${name}`)) { problems.push(`${label}: its card was removed from the canvas. Drop the step?`); return; }
   const h = readFileSync(`${LIVE}/project/${name}`, 'utf8');
+  // Focus format has no title or body on the card: the voice note is the only text to read back.
+  if (sb.format !== 'focus') {
   set(s, 'title', words(inner(h, 'sb-title')), `${label} title`);
   set(s, 'body', words(inner(h, 'sb-body')) ?? '', `${label} body`);
   // Layout Dave set by hand on the words (a width that forces his line break, bold):
@@ -114,6 +117,7 @@ sb.steps.forEach((s, i) => {
     const seen = new Set(); const extra = [];
     for (const d of style.split(';').map((x) => x.trim()).filter(Boolean).reverse()) { const k = d.split(':')[0].trim(); if (!base.includes(k) && !seen.has(k)) { seen.add(k); extra.unshift(d.replace(/\s*:\s*/, ': ')); } }
     set(s, key, extra.join('; ') || undefined, `${label} ${key === 'titleStyle' ? 'title' : 'body'} layout`);
+  }
   }
   const S = screenOf(sb, s).k;
   const rings = all(h, 'sb-ring').map((t) => [px(t, 'left'), px(t, 'top'), px(t, 'width'), px(t, 'height')]);

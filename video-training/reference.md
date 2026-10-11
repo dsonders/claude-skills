@@ -1,6 +1,6 @@
 # Video Training: traps and mechanics
 
-Each entry cost at least one wasted run on 2026-09-29. Read the section for the step you are on.
+Each entry cost at least one wasted run (2026-09-29 onward). Read the section for the step you are on.
 
 ## Capturing the app
 
@@ -36,6 +36,43 @@ Each entry cost at least one wasted run on 2026-09-29. Read the section for the 
 - After a photo is saved the app opens Story Notes by itself and scrolls to the new note: there is no header to tap.
 - The 3C cards are a SIDE-scrolling row: gliding the page down lands on the Complaint. Slide the row with `scrollIntoView({ behavior: 'smooth', inline: 'center' })` on the Correction.
 - A take that crashes loses every frame (the recorder writes on `stop()`): wrap the take in try/catch that screenshots and logs open dialogs.
+
+## Timing (2026-10-11, Get Set Up v5 → v6)
+
+- **An audio HOLE makes the voice run ahead.** `adelay` only shifts timestamps, so each card's MP4 carried a gap instead of silence (0.28 s per card, 2.3 s before a 2 s pause). Players and decoders that close gaps play the voice early, and the drift grows card by card: Dave heard the phone part "slightly ahead". build-video now writes real silence (`aresample=async=1:first_pts=0`) and fails the build on any hole; `check-sync.mjs` checks again. The tell: `ffprobe -select_streams a -show_entries packet=pts_time` shows a jump; a whole-video transcription loses a sentence or its times shift.
+- **Exactly on the word still reads as late.** The screen reacts a few frames after a press, so a press at the start of its word looks behind the voice. A finger tap (`events[].at`) presses `TAP_EARLY` (0.2 s) before its word. Laptop clicks (the real cursor, no `at`) keep the word time.
+- **A tap event's `frame` is 3 frames BEFORE the screen first reacts** (the press), not the reaction. Find reactions with a frame-difference trace: `ffmpeg -i f%05d.jpg -vf "scale=108:235,format=gray,tblend=all_mode=difference,signalstats,metadata=print:key=lavfi.signalstats.YAVG:file=diff.txt" -f null -`, then the first frame over ~0.8 in each window. A page with its own animation (the landing page's testimonial) gives false hits: check those by a frame strip.
+- **Time the voice, not the take:** `card.pause: [{ before: word, nth, seconds }]` puts silence in the voice before a word (a pause before the first word = a later start, e.g. the 2 s between parts); `card.tail: seconds` holds the screen after the voice; `events[].plus: seconds` times an action no word names ("Go" 0.7 s after "A I"); `footage.rings[].until` ends a callout at a word. Every time after a pause moves with it (`tOut`), subtitles included.
+- **Measure, don't eyeball.** Transcribe a SECTION of the finished video (whole-video Whisper drifts over a minute), or just run `check-sync.mjs`, which transcribes each card's own segment.
+- Whisper spells TenthGear "10thyear", "tentgear", "10th gear": never put an event on that word. Sync on a neighbour ("go", "and", "ai").
+
+## Laptop-viewing format (`"format": "focus"`)
+
+- 960 x 540 cards → 1920 x 1080 video. The screen alone, 440 px tall, centred (`screenOf`); laptop frames are the FULL browser window (`"laptop": { "w": 1280, "h": 818 }`, a 1280 x 818 pt Chrome window), phone frames are `sb.phone`.
+- No title, body or step number. The narration is the subtitle: `captionsOf()` splits it into sentences and writes it for the eye ("tenthgear dot A I" → "tenthgear.ai"); a card's `caption` overrides. Each sentence shows from its first spoken word to the next (two-word match on the Whisper times: one word like "The" also matches inside the sentence before). Cover and end page carry no subtitles (the band would cover the Questions box).
+- The PDF slides show the whole caption under each screen; build-slides writes one see-through caption layer per sentence for the video.
+- The canvas draws the same layout: the screen plus the caption, drawn from the blue voice note, which is the one place to edit words. The harvest reads no title or body in this format.
+- A card can mix screens: `"screen": "laptop"` on laptop cards, phone otherwise.
+
+## Capturing outside the app (Simulator, desktop browser)
+
+**iPhone (Simulator, iPhone 17 Pro, iOS 26):**
+- `xcrun simctl status_bar <udid> override --time "9:41" --batteryState charged --batteryLevel 100`; record with `xcrun simctl io <udid> recordVideo --codec h264 --force take.mp4` (run in the background, stop with SIGINT; that is safe for simctl). Taps: computer-use clicks on the Simulator window.
+- **Record a part as ONE take, from where a real user starts** (the home screen). Set the state first: Safari left on a blank tab (⋯ → New Tab, then Home), any TenthGear icon from an earlier take deleted (long-press → Delete Bookmark), and the share sheet COLLAPSED so View More shows (open it once on any page and tap View Less).
+- **Type by tapping the on-screen keys.** Typing from the Mac keyboard drops letters and hides the iOS keyboard: turn off I/O → Keyboard → Connect Hardware Keyboard, then click each key.
+- The recording is variable frame rate and starts about a second late: convert once to 30 fps frames (`ffmpeg -vf fps=30,scale=432:940 … f%05d.jpg`) and pull stills BY FRAME NUMBER from those frames, never by time.
+- iOS 26 Safari: ⋯ → Share → View More → Add to Home Screen → Add ("Open as Web App" on by default). A one-time "slide to type" tip can cover the Add screen on a fresh simulator: cut it with `footage.from`.
+
+**Laptop (Chrome, Mac and PC alike):**
+- A fresh profile, sized and placed: `open -na "Google Chrome" --args --user-data-dir=<scratch>/chrome-clean --no-first-run --no-default-browser-check --disable-sync --window-position=224,100 --window-size=1280,820 about:blank`.
+- Drive it with CGEvent through JXA (glide, click, type) and record with `screencapture -v -k -V <secs> -R x,y,w,h` (`-k` draws click rings). **Never stop screencapture with SIGINT: it discards the file.** Always a fixed `-V`.
+- Bookmarks: a fresh profile files a star under "Other Bookmarks": show picking Bookmarks Bar. Chrome's Install button does not exist on PC Firefox: the bookmark is the step common to Mac and PC.
+
+## Tap style (⛔ Dave 2026-10-11)
+
+- Phone taps in footage: a yellow fingertip lands 0.5 s early, presses in on the tap, fades, and a thin yellow ring spreads from it (`layers/tap/`, rendered by build-slides, overlaid per `events[].at`). No box on the button: a box plus a circle "feels strange".
+- A dark rim keeps it visible on yellow buttons (the TenthGear icon).
+- Comparing styles: render them over the same real clip and put them side by side on one page; Dave picked from loops, not descriptions.
 
 ## Narration
 
@@ -96,6 +133,7 @@ node $S/build-slides.mjs $P
 (cd /Users/davidsonders/ro-bot/app && NODE_OPTIONS='-r dotenv/config' node $S/narrate.mjs $P)
 node $S/build-video.mjs $P
 (cd /Users/davidsonders/ro-bot/app && NODE_OPTIONS='-r dotenv/config' node $S/check-audio.mjs $P)
+(cd /Users/davidsonders/ro-bot/app && NODE_OPTIONS='-r dotenv/config' node $S/check-sync.mjs $P)
 node $S/close-ros.mjs $P tyler@demo.test demo-dealership
 ```
 
