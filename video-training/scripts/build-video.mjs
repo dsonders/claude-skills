@@ -24,7 +24,7 @@ const LEAD = 0.35 / SPEED, TAIL = 0.75 / SPEED;
 // screenOf(): the phone is { x: 205, y: 428, w: 670, h: 1452 } as before, a laptop crop
 // sits wider. K = frame point -> video px.
 let K, PH;
-const place = (c) => { const g = screenOf(sb, c); K = g.k * 2; MW = Math.round(56 * K); PH = { x: Math.round(g.x * 2), y: Math.round(g.y * 2), w: Math.floor(g.w * 2), h: Math.round(g.h * 2) }; };
+const place = (c) => { const g = screenOf(sb, c); K = g.k * 2; MW = Math.round(56 * K * (sb.format === 'focus' ? 1.3 : 1)); PH = { x: Math.round(g.x * 2), y: Math.round(g.y * 2), w: Math.floor(g.w * 2), h: Math.round(g.h * 2) }; };
 const V = ['-c:v', 'libx264', '-crf', '19', '-pix_fmt', 'yuv420p', '-r', '30'];
 const A = ['-c:a', 'aac', '-b:a', '128k', '-ac', '2', '-ar', '48000'];
 // card.pause = [{ before: word, nth, seconds }]: silence in the voice just before that word, so the
@@ -40,18 +40,20 @@ async function pausesOf(c) {
     const ws = await wordsOf(c.id), key = p.before.toLowerCase().replace(/[^a-z0-9]/g, '');
     const hit = ws.filter((w) => w.w === key || w.w.startsWith(key))[(p.nth || 1) - 1];
     if (!hit) throw new Error(`card ${c.id}: pause before "${p.before}" (#${p.nth || 1}): word not heard`);
-    out.push({ at: Math.max(0, hit.t - 0.12), sec: p.seconds });
+    out.push({ at: hit.t < 0.15 ? 0 : hit.t - 0.12, sec: p.seconds });
   }
   return out.sort((a, b) => a.at - b.at);
 }
 const voice = (n, extra = 0) => {
-  const tail = `adelay=${Math.round((LEAD + extra) * 1000)}:all=1,apad[a]`;
-  if (!PAUSES.length) return `[${n}:a]aresample=48000,atempo=${SPEED},${tail}`;
-  const cuts = PAUSES.map((p) => p.at / SPEED), k = cuts.length;
+  // A pause before the card's first word is a later start, not a cut.
+  const lead = PAUSES.filter((p) => p.at <= 0.001), mid = PAUSES.filter((p) => p.at > 0.001);
+  const tail = `adelay=${Math.round((LEAD + extra + lead.reduce((x, p) => x + p.sec, 0)) * 1000)}:all=1,apad[a]`;
+  if (!mid.length) return `[${n}:a]aresample=48000,atempo=${SPEED},${tail}`;
+  const cuts = mid.map((p) => p.at / SPEED), k = cuts.length;
   let f = `[${n}:a]aresample=48000,atempo=${SPEED},asplit=${k + 1}${cuts.map((_, i) => `[s${i}]`).join('')}[s${k}]`;
   for (let i = 0; i <= k; i++) {
     const from = i ? cuts[i - 1] : 0, to = i < k ? cuts[i] : null;
-    f += `;[s${i}]atrim=start=${from.toFixed(3)}${to != null ? `:end=${to.toFixed(3)}` : ''},asetpts=PTS-STARTPTS${i < k ? `,apad=pad_dur=${PAUSES[i].sec}` : ''}[p${i}]`;
+    f += `;[s${i}]atrim=start=${from.toFixed(3)}${to != null ? `:end=${to.toFixed(3)}` : ''},asetpts=PTS-STARTPTS${i < k ? `,apad=pad_dur=${mid[i].sec}` : ''}[p${i}]`;
   }
   return f + `;${cuts.map((_, i) => `[p${i}]`).join('')}[p${k}]concat=n=${k + 1}:v=0:a=1,${tail}`;
 };
@@ -136,7 +138,7 @@ async function captionTimes(c, len) {
   if (!chunks.length) return [];
   const ws = await wordsOf(c.id), norm = (w) => w.toLowerCase().replace(/[^a-z0-9]/g, '');
   const voiceEnd = tOut(seconds(`${DIR}/narration/${c.id}.wav`)), total = chunks.join(' ').length;
-  const starts = [LEAD - 0.05];
+  const starts = [tOut(0) - 0.05]; // after any pause before the first word
   let chars = chunks[0].length + 1;
   for (let k = 1; k < chunks.length; k++) {
     // The sentence's first TWO words, nearest the estimate: one word ("The") also matches inside
@@ -161,6 +163,10 @@ async function captionLayers(c, len, last, n) {
   }
   return { ins, chain, last, n };
 }
+const highlight = ([x, y, w, h], from, to) => {
+  const X = Math.round(PH.x + x * K - 6), Y = Math.round(PH.y + y * K - 6), W = Math.round(w * K + 12), H = Math.round(h * K + 12), on = `enable='between(t,${from.toFixed(2)},${to.toFixed(2)})'`;
+  return `drawbox=x=${X}:y=${Y}:w=${W}:h=${H}:color=0xffd23f@0.35:t=fill:${on},drawbox=x=${X}:y=${Y}:w=${W}:h=${H}:color=0xffd23f:t=6:${on}`;
+};
 const still = ['-loop', '1', '-framerate', '30'];
 
 const cards = allCards(sb);
@@ -172,14 +178,14 @@ for (const [i, c] of cards.entries()) {
   const slide = `${SLIDES}/${n2}-${c.id}.png`, wav = `${DIR}/narration/${c.id}.wav`, seg = `${WORK}/${n2}.mp4`;
   if (!existsSync(wav)) throw new Error(`no narration for ${c.id}: run narrate.mjs`);
   PAUSES = await pausesOf(c);
-  let len = LEAD + seconds(wav) / SPEED + pauseTotal() + TAIL;
+  let len = LEAD + seconds(wav) / SPEED + pauseTotal() + TAIL + (c.tail || 0); // tail: extra seconds after the voice, for the screen
   let kind = '';
   if (c.footage?.events) {
     const fo = c.footage, OUTF = Math.round(len * 30);
     const evs = [];
     for (const e of fo.events) {
       if (e.end) evs.push({ frame: e.frame, t: len - 0.35 });
-      else evs.push({ frame: e.frame, t: await wordAt(c.id, e.word, e.nth) });
+      else evs.push({ frame: e.frame, t: (await wordAt(c.id, e.word, e.nth)) + (e.plus || 0) }); // plus: seconds after the word, for an action no word names
     }
     // Start so the first event plays at 1x: skip what came before it in the take.
     const first = evs[0];
@@ -191,6 +197,9 @@ for (const [i, c] of cards.entries()) {
     const rings = [];
     // rings: [{ box, word, nth, until, untilNth }]: a callout from that word on, or until another word.
     for (const r of fo.rings || []) rings.push(ring(r.box, await wordAt(c.id, r.word, r.nth), r.until ? (await wordAt(c.id, r.until, r.untilNth)) + 0.3 : null));
+    // An event with box: [x, y, w, h] lights the control up in yellow as the finger reaches it
+    // (⛔ Dave 10/11: "some of the taps are a little hard to see").
+    fo.events.forEach((e, k) => { if (e.box) rings.push(highlight(e.box, evs[k].t - 0.8, evs[k].t + 0.1)); });
     // footage.arrow: { at: [x, y], until: word } -> the bouncing arrow on a control from the
     // card's start until that word (Dave 10/6: the camera button in card 11).
     // A video stream chain after the hole layer: [h] -> optional arrow -> optional finger taps -> [v].
@@ -208,7 +217,7 @@ for (const [i, c] of cards.entries()) {
     if (taps.length) {
       ins.push(...still, '-i', `${LAYERS}/marker.png`);
       chain += `;[${n}:v]scale=${MW}:${MW},split=${taps.length}${taps.map((_, k) => `[m${k}]`).join('')}`;
-      taps.forEach((tp, k) => { chain += `;[${last}][m${k}]${marker(c, tp.at[0], tp.at[1], tp.t - 0.5, tp.t + 0.3)}[t${k}]`; last = `t${k}`; });
+      taps.forEach((tp, k) => { chain += `;[${last}][m${k}]${marker(c, tp.at[0], tp.at[1], tp.t - 0.6, tp.t + 0.25)}[t${k}]`; last = `t${k}`; });
       n++;
     }
     const cap = await captionLayers(c, len, last, n);
