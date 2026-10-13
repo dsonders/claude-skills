@@ -1,5 +1,5 @@
 ---
-name: ro-bot-blog-post
+name: tenthgear-blog-post
 description: End-to-end workflow for producing a new blog post on the TenthGear marketing site at /ro-bot/website/. Covers ideation, drafting, hero image, infographic, SEO/AEO optimization, two-way internal linking, distribution drafts, build verification, and deploy. Use ONLY when working in /ro-bot/website/ — the blog frontmatter schema, Astro content collection, and deploy pipeline described here are website-specific.
 ---
 
