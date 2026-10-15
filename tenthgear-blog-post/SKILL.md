@@ -76,13 +76,7 @@ For Fixed Ops / technician content, sources in order of value:
 - **Tech forums:** Humble Mechanic, ScannerDanner, brand-specific Nation forums. These mirror Reddit voice as a secondary source.
 - **Industry reporting:** Auto Dealer Today, Automotive News Fixed Ops Journal, Digital Dealer.
 
-**Reddit is NOT DNS-blocked** (the old note here was wrong). reddit.com resolves fine; it returns HTTP 403 to non-browser user agents (curl, WebFetch, the WebSearch crawler) via Fastly anti-bot. A real browser defeats it — pull real threads with Playwright + real Chrome:
-
-1. `chromium.launch({ channel: 'chrome' })`; navigate to `https://old.reddit.com/` once to warm the session (reuse the `/tmp/pw-tools` install from Phase 4).
-2. From the page, `page.evaluate(() => fetch(url).then(r => r.json()))` against the old.reddit JSON endpoints — same-origin, so it inherits the browser cookies + TLS and passes the bot check:
-   - search: `https://old.reddit.com/r/{sub}/search.json?q=...&restrict_sr=1&sort=relevance&t=all`
-   - thread + comments: `https://old.reddit.com{permalink}.json?limit=50&sort=top`
-3. Restrict queries AND thread-selection to specific automotive subs (r/serviceadvisors — the jackpot for Fixed Ops voice — r/askcarsales, r/MechanicAdvice, r/AskMechanics, r/Justrolledintotheshop, r/Service_Technicians). Global/all-reddit search returns viral off-topic noise.
+**Reddit access (as of 2026-10-13):** curl/WebFetch get 403, and live reddit.com now sends even headed real Chrome to a login wall and a CAPTCHA (do not solve it). The route that works is **Wayback Machine snapshots** of thread URLs (`https://web.archive.org/web/2025/https://www.reddit.com/r/{sub}/comments/...`); find thread URLs with WebSearch (indexes Reddit poorly) or the Wayback CDX index `web.archive.org/cdx/search/cdx?url=reddit.com/r/{sub}/comments/*` (slow, rate-limited). Snapshots lack per-comment permalinks, so cite by username. Coverage is thin (one good thread is typical); say so in the draft notes. Try the older Playwright same-origin fetch first only if Reddit's wall lifts. Target subs: r/serviceadvisors, r/askcarsales, r/MechanicAdvice, r/AskMechanics, r/Justrolledintotheshop, r/Service_Technicians.
 
 Want: top 5-7 reasons the audience does X in their own words, plus what is non-obvious or contradicts conventional wisdom. Full write-up: `shared/lessons-learned/reddit-403-browser-fetch.md`.
 
