@@ -8,7 +8,8 @@ PR count, merge instruction>.
 Non-negotiables (also in the brief header — they bind you):
 - Read the repo's CLAUDE.md + the lesson docs your brief section names BEFORE writing code.
 - Worktree per RULE #4; never the primary checkout.
-- Gates + one-at-a-time probes before every push; watch checks after; whole-class fix on a
+- Gates + one-at-a-time probes before every push — COMMIT before every probe (a probe's revert eats uncommitted
+  edits: #2400 r1 pushed a test pin without its fix); watch checks after; whole-class fix on a
   Codex block, ONE re-push, then stop and report.
 - PR size cap: ~800 non-test changed lines. Run `git diff --stat origin/main` BEFORE the first
   push; over the cap = split into the stacked PRs your brief names (or stop and ask the

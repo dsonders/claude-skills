@@ -11,7 +11,7 @@ RULES FOR ALL AGENTS
 - Gates before every push: tsc (fresh tsbuildinfo if suspicious), targeted jest (worktree
   needs the testPathIgnorePatterns override — verify tests RAN), `npm run check:org-scoping`,
   `npm run check:status-literals`.
-- Probe every new/updated source-content guard ONE AT A TIME (break → red → revert; assert
+- Probe every new/updated source-content guard ONE AT A TIME, on a COMMITTED tree (a probe's revert eats uncommitted edits) (break → red → revert; assert
   the mutation applied before reading the verdict).
 - Watch checks after every push (`gh pr checks --watch`). Codex block → fix the WHOLE CLASS,
   ONE re-push; second block → stop and report to the manager.
