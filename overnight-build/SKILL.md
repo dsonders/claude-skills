@@ -39,7 +39,7 @@ not the merge button. First validated 2026-08-25 (P1 batch: 8 PRs, #1555–#1564
 ## Merge Policy (Dave's ruling, 2026-08-25 — applies to overnight-build runs only)
 
 - **Green = merge**, sensitive categories included (auth, schema, permissions), PROVIDED the
-  PR implements only groomed rulings. Arm `gh pr merge --auto --squash` on every PR.
+  PR implements only groomed rulings. Arm `npm run pr:automerge -- <n>` on every PR (the guarded wrapper, app #2404: refuses a feature-branch base, a conflicting PR or a draft; never bare `gh pr merge --auto`).
 - **Parks regardless of green:** any PR carrying a decision the brief didn't cover.
 - **Hard floor — never auto-EXECUTE overnight, even if the code merges green:**
   1. Anything that RUNS against production data (backfills, migrations, bulk deletes —

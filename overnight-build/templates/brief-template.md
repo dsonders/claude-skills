@@ -15,7 +15,7 @@ RULES FOR ALL AGENTS
   the mutation applied before reading the verdict).
 - Watch checks after every push (`gh pr checks --watch`). Codex block → fix the WHOLE CLASS,
   ONE re-push; second block → stop and report to the manager.
-- MERGE POLICY (overnight-build): arm `gh pr merge --auto --squash` on every PR that
+- MERGE POLICY (overnight-build): arm `npm run pr:automerge -- <n>` (the guarded wrapper, #2404 — refuses a feature-branch base or a conflicting PR; never bare `gh pr merge --auto`) on every PR that
   implements only the rulings below — sensitive categories included. EXCEPTIONS: a PR
   carrying an un-ruled decision parks (no auto-merge, question in the PR body); never
   EXECUTE backfills/migrations/bulk-data scripts or touch billing overnight (merging the

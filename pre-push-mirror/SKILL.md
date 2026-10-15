@@ -62,7 +62,7 @@ Invoke `/code-review high` on the branch diff (vs `origin/main`). Let it complet
 
 The PR body must carry: what the mirror round changed and why, every DEFERRED item as a named follow-up, and residual risks for the reviewer. A clean gate must never read as "nothing to look at."
 
-Then apply RULE #7: non-sensitive → `gh pr merge --auto --squash`; sensitive → no auto-merge, ask Dave to review.
+Then apply RULE #7: non-sensitive → `npm run pr:automerge -- <n>` (the guarded wrapper; never bare `gh pr merge --auto`); sensitive → no auto-merge, ask Dave to review.
 
 ### Step 6 — If Codex blocks anyway
 
