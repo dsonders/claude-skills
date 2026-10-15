@@ -208,12 +208,13 @@ If the post naturally pairs with a downloadable asset (checklist, template, calc
 ### Auto-steps
 
 1. **Create the markdown file** at `src/content/blog/{slug}.md` with frontmatter and body from Phase 2.
-2. **Wire in the hero image** using this constrained block pattern (keeps the hero at 50% width on desktop, full on mobile):
-   ```html
-   <div class="not-prose my-8 mx-auto max-w-full md:max-w-[50%]">
-     <img src="/blog-assets/{N}-{slug}/{filename}" alt="{alt with primary keyword if natural}" class="w-full rounded-lg" />
-   </div>
+2. **Wire in the hero image through frontmatter, never in the body** (website PR #147). `BlogPost.astro` renders it: on desktop a 2:1 crop rising into the navy header, on phones full width 16:9. Write the Nano Banana prompt so the subject survives a 2:1 center crop.
+   ```yaml
+   heroImage: "/blog-assets/{N}-{slug}/hero.jpg"
+   heroAlt: "{alt with primary keyword if natural}"
+   heroPosition: "50% 35%"   # optional, only if the 2:1 crop cuts the subject
    ```
+   Changing the content schema needs a dev-server restart AND may still serve stale data; verify with `npm run build` + `npx astro preview` if the hero doesn't appear.
 
    **If the hero doesn't exist yet** (user asked to review the mockup before Phase 3), generate a placeholder JPEG at the real 16:9 size and save it to the FINAL path (`hero.jpg`), so the approved Nano Banana output later drops in with no markdown edit. Render the placeholder with Playwright + Chrome (`page.setContent` → `screenshot({type:'jpeg'})`); `sips` cannot rasterize SVG.
 
