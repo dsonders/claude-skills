@@ -128,7 +128,12 @@ sb.steps.forEach((s, i) => {
   } else problems.push(`${label}: a callout lost its position, check it by eye`);
   const arrows = all(h, 'sb-arrow');
   if (s.arrow && !arrows.length) { changes.push({ label: `${label} arrow`, from: s.arrow, to: 'removed' }); delete s.arrow; }
-  if (arrows.length) { const a = [Math.round((px(arrows[0], 'left') + 30) / S), Math.round((px(arrows[0], 'top') + 85) / S)]; if (!s.arrow || a.some((v, j) => Math.abs(v - s.arrow[j]) > 2)) set(s, 'arrow', a, `${label} arrow`); }
+  if (arrows.length) {
+    // A dragged arrow moves its tip; its direction and label stay as written.
+    const a = [Math.round((px(arrows[0], 'left') + 30) / S), Math.round((px(arrows[0], 'top') + 85) / S)];
+    const was = Array.isArray(s.arrow) ? s.arrow : s.arrow?.at;
+    if (!was || a.some((v, j) => Math.abs(v - was[j]) > 2)) set(s, 'arrow', Array.isArray(s.arrow) || !s.arrow ? a : { ...s.arrow, at: a }, `${label} arrow`);
+  }
   const vo = notes[`vo-${s.id}`];
   if (vo) set(s, 'narration', vo.text.trim(), `${label} voice`); else problems.push(`${label}: its voice note was deleted`);
 });

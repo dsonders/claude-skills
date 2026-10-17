@@ -4,7 +4,7 @@
 //   node build-slides.mjs <project-dir>
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { APP, PHONE, loadStoryboard, allCards, boardBody, screenOf, cardOf, textBox, captionsOf, CAPTION_BAND } from './lib.mjs';
+import { APP, PHONE, loadStoryboard, allCards, boardBody, screenOf, cardOf, textBox, captionsOf, CAPTION_BAND, arrowSpec, arrowHtml, arrowGeometry } from './lib.mjs';
 
 const DIR = resolve(process.argv[2] || '.');
 const sb = loadStoryboard(DIR);
@@ -19,7 +19,6 @@ export const S = 0.86; // phone px -> card px (card is 540 x 960, rendered at 2x
 const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 // [[Label]] renders as a button chip: every control the viewer is told to tap.
 const chips = (t) => esc(t).replace(/\[\[(.+?)\]\]/g, '<span class="btn">$1</span>');
-const ARROW = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 85" width="60" height="85"><polygon points="21,2 39,2 39,48 57,48 30,83 3,48 21,48" fill="#ffd23f" stroke="#000" stroke-width="3" stroke-linejoin="round"/></svg>';
 
 const css = `
   * { box-sizing: border-box; }
@@ -37,7 +36,6 @@ const css = `
   .phone img { width: 100%; height: 100%; display: block; }
   .ring { position: absolute; border: 3px solid #ffd23f; border-radius: 12px; box-shadow: 0 0 0 2px rgba(0,0,0,.55), 0 0 18px rgba(255,210,63,.55); }
   .tag { position: absolute; width: 24px; height: 24px; border-radius: 12px; background: #ffd23f; color: #000; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 2px rgba(0,0,0,.6); }
-  .arrow { position: absolute; width: 60px; height: 85px; filter: drop-shadow(0 3px 6px rgba(0,0,0,.6)); }
   .cap { position: absolute; left: 40px; right: 40px; top: ${CAPTION_BAND.top}px; height: ${CAPTION_BAND.height}px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 22px; line-height: 1.25; font-weight: 600; color: #fff; text-wrap: balance; }
   .cover { display: flex; flex-direction: column; padding: 90px 44px 60px; }
   .cover img.logo { width: 300px; }
@@ -58,7 +56,7 @@ export function marks(s, k = S) {
     const tag = boxes.length > 1 ? `<div class="tag" style="left:${side === 'r' ? L + W - 12 : Math.max(2, L - 10)}px;top:${Math.max(2, T - 10)}px">${i + 1}</div>` : '';
     return `<div class="ring" style="left:${L}px;top:${T}px;width:${W}px;height:${H}px"></div>${tag}`;
   }).join('');
-  const arrow = s.arrow ? `<div class="arrow" style="left:${s.arrow[0] * k - 30}px;top:${s.arrow[1] * k - 85}px">${ARROW}</div>` : '';
+  const a = arrowSpec(s.arrow), arrow = a ? arrowHtml(a, a.at[0] * k, a.at[1] * k) : '';
   return rings + arrow;
 }
 
@@ -129,9 +127,22 @@ if (FOCUS) await page.evaluate(() => document.querySelectorAll('.cap').forEach((
 if (FOCUS) for (const s of sb.steps.filter((x) => !x.footage && !x.arrow)) await page.locator(`#c-${s.id}`).screenshot({ path: `${LAYERS}/${s.id}-nocap.png` });
 for (const id of arrowIds) await page.locator(`#c-${id}`).screenshot({ path: `${LAYERS}/${id}-noarrow.png` });
 for (const id of footageIds) await page.locator(`#c-${id}`).screenshot({ path: `${LAYERS}/${id}-hole.png`, omitBackground: true });
-const p2 = await browser.newPage({ viewport: { width: 60, height: 85 }, deviceScaleFactor: 2 });
-await p2.setContent(`<html><body style="margin:0;background:transparent">${ARROW}</body></html>`);
-await p2.screenshot({ path: `${LAYERS}/arrow.png`, omitBackground: true });
+// One arrow layer per card (direction and label differ), cropped to the arrow, plus where its tip
+// and head direction sit in the PNG (video px) so the video lands the tip on the control.
+const p2 = await browser.newPage({ viewport: { width: 600, height: 600 }, deviceScaleFactor: 2 });
+for (const s of sb.steps) {
+  const a = arrowSpec(s.footage?.arrow || s.arrow);
+  if (!a) continue;
+  await p2.setContent(`<html><body style="margin:0;background:transparent">${arrowHtml(a, 300, 300)}</body></html>`);
+  const box = await p2.evaluate(() => {
+    const rs = [...document.querySelectorAll('.arrow path, .arrow polygon, .arrow > div')].map((e) => e.getBoundingClientRect());
+    return { x: Math.min(...rs.map((r) => r.left)), y: Math.min(...rs.map((r) => r.top)), r: Math.max(...rs.map((r) => r.right)), b: Math.max(...rs.map((r) => r.bottom)) };
+  });
+  const clip = { x: Math.floor(box.x - 10), y: Math.floor(box.y - 8), width: 0, height: 0 };
+  clip.width = Math.ceil(box.r + 10) - clip.x; clip.height = Math.ceil(box.b + 14) - clip.y;
+  await p2.screenshot({ path: `${LAYERS}/${s.id}-arrow.png`, omitBackground: true, clip });
+  writeFileSync(`${LAYERS}/${s.id}-arrow.json`, JSON.stringify({ tip: [(300 - clip.x) * 2, (300 - clip.y) * 2], dir: arrowGeometry(a).dir }));
+}
 // The finger marker for still cards: lib.mjs touchOn's look at video card scale (56 px x 1.72).
 const p3 = await browser.newPage({ viewport: { width: 97, height: 97 }, deviceScaleFactor: 1 });
 await p3.setContent(`<html><body style="margin:0;background:transparent"><div style="position:absolute;left:5px;top:5px;width:87px;height:87px;box-sizing:border-box;border-radius:50%;background:rgba(255,255,255,.45);border:5px solid rgba(255,255,255,.95);box-shadow:0 0 0 3px rgba(0,0,0,.35)"></div></body></html>`);

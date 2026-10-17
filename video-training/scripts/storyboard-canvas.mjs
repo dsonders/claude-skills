@@ -9,7 +9,7 @@
 // open, and a publish that does not start from the live copy is refused.
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { loadStoryboard, screenOf, cardOf, textBox, captionsOf, CAPTION_BAND } from './lib.mjs';
+import { loadStoryboard, screenOf, cardOf, textBox, captionsOf, CAPTION_BAND, arrowSpec, arrowHtml } from './lib.mjs';
 
 const DIR = resolve(process.argv[2] || '.');
 const liveAt = process.argv.indexOf('--live');
@@ -23,7 +23,6 @@ const { W, H } = cardOf(sb), TB = textBox(sb);
 const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const CHIP = 'display: inline-block; background: #ffffff; color: #000000; font-weight: 700; border-radius: 8px; padding: 0px 9px; font-size: 0.86em; line-height: 1.5; white-space: nowrap; box-shadow: 0 2px 0 #9b9799';
 const chips = (t) => esc(t).replace(/\[\[(.+?)\]\]/g, `<span class="sb-chip" style="${CHIP}">$1</span>`);
-const ARROW = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 85" width="60" height="85"><polygon points="21,2 39,2 39,48 57,48 30,83 3,48 21,48" fill="#ffd23f" stroke="#000000" stroke-width="3" stroke-linejoin="round"></polygon></svg>';
 
 const page = (title, inner) => `<!doctype html>
 <html lang="en">
@@ -61,7 +60,9 @@ function stepBoard(s, i) {
     const tag = boxes.length > 1 ? `<div class="sb-tag" style="position: absolute; left: ${side === 'r' ? L + Wd - 12 : Math.max(2, L - 10)}px; top: ${Math.max(2, T - 10)}px; width: 24px; height: 24px; border-radius: 12px; background: #ffd23f; color: #000000; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center">${k + 1}</div>` : '';
     return `<div class="sb-ring" style="position: absolute; left: ${L}px; top: ${T}px; width: ${Wd}px; height: ${Hd}px; box-sizing: border-box; border: 3px solid #ffd23f; border-radius: 12px; box-shadow: 0 0 0 2px rgba(0,0,0,.55)"></div>${tag}`;
   }).join('\n');
-  const arrow = s.arrow ? `<div class="sb-arrow" style="position: absolute; left: ${s.arrow[0] * S - 30}px; top: ${s.arrow[1] * S - 85}px; width: 60px; height: 85px">${ARROW}</div>` : '';
+  // The 60 x 85 box marks the tip at its bottom centre (harvest reads it back); the arrow draws from there.
+  const a = arrowSpec(s.arrow);
+  const arrow = a ? `<div class="sb-arrow" style="position: absolute; left: ${a.at[0] * S - 30}px; top: ${a.at[1] * S - 85}px; width: 60px; height: 85px">${arrowHtml(a, 30, 85)}</div>` : '';
   const screen = `<div class="sb-phone" style="position: absolute; left: ${g.x}px; top: ${g.y}px; width: ${g.w}px; height: ${g.h}px; border-radius: ${g.radius}px; overflow: hidden; box-shadow: 0 0 0 5px #333132; background: #111111">
 <img src="${meta.assets[s.img]}" alt="Key frame: ${esc(s.img)}" style="width: 100%; height: 100%; display: block">
 ${rings}

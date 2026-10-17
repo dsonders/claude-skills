@@ -252,3 +252,48 @@ export async function dictation(page, dir, lines) {
 /** Length of an audio or video file, in seconds. */
 export const seconds = (file) => parseFloat(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file]).toString());
 export const ffmpeg = (args) => execFileSync('ffmpeg', ['-loglevel', 'error', '-y', ...args]);
+
+// ── the arrow (look borrowed from bigarrow, MIT: github.com/franzenzenhofer/big-arrow-on-the-screen) ──
+// A step's arrow is [x, y] (the tip, frame points, coming from above) or
+// { at: [x, y], from: 'top' | 'top-left' | 'left' | 'bottom-left' | 'bottom' | ..., text: 'Tap here' }.
+// `from` is the side the arrow comes from; `text` hangs a label on its tail.
+const ARROW_FROM = { top: [0, 1], bottom: [0, -1], left: [1, 0], right: [-1, 0], 'top-left': [1, 1], 'top-right': [-1, 1], 'bottom-left': [1, -1], 'bottom-right': [-1, -1] };
+export const ARROW_INK = { fill: '#ffd23f', edge: '#1c1c1e' };
+export function arrowSpec(a) {
+  if (!a) return null;
+  const s = Array.isArray(a) ? { at: a } : { ...a };
+  s.from = s.from || 'top';
+  if (!ARROW_FROM[s.from]) throw new Error(`arrow from '${s.from}' is not one of ${Object.keys(ARROW_FROM).join(', ')}`);
+  return s;
+}
+/** Shaft, head and label in card px, with the tip at (0, 0). head = the unit direction the head points. */
+export function arrowGeometry(spec, { reach = 92, stroke = 11, headLen = 32, headW = 38 } = {}) {
+  const [vx, vy] = ARROW_FROM[spec.from], m = Math.hypot(vx, vy), u = [vx / m, vy / m];
+  const tail = [-u[0] * reach, -u[1] * reach];
+  // A soft bend: the control point sits off the chord, always to the same hand.
+  const bow = reach * 0.2, C = [tail[0] / 2 - u[1] * bow, tail[1] / 2 + u[0] * bow];
+  const hm = Math.hypot(C[0], C[1]), h = [-C[0] / hm, -C[1] / hm], hp = [-h[1], h[0]];
+  const base = [-h[0] * headLen, -h[1] * headLen], notch = [base[0] + h[0] * headLen * 0.28, base[1] + h[1] * headLen * 0.28];
+  const head = [[0, 0], [base[0] + hp[0] * headW / 2, base[1] + hp[1] * headW / 2], notch, [base[0] - hp[0] * headW / 2, base[1] - hp[1] * headW / 2]];
+  const end = [notch[0] + h[0] * 2, notch[1] + h[1] * 2];
+  const shaft = `M${tail[0].toFixed(1)},${tail[1].toFixed(1)} Q${C[0].toFixed(1)},${C[1].toFixed(1)} ${end[0].toFixed(1)},${end[1].toFixed(1)}`;
+  return { u, tail, shaft, head: head.map((p) => p.map((n) => n.toFixed(1)).join(',')).join(' '), dir: h, stroke };
+}
+/** The arrow as HTML, its tip at (left, top) of the box it is placed in. Borders draw under fills,
+ *  so shaft, head and label read as one shape. */
+export function arrowHtml(spec, left, top) {
+  const g = arrowGeometry(spec), B = 3, { fill, edge } = ARROW_INK;
+  const svg = (pass) => `<svg width="400" height="400" viewBox="-200 -200 400 400" style="position:absolute;left:-200px;top:-200px;overflow:visible">
+    <path d="${g.shaft}" fill="none" stroke="${pass ? fill : edge}" stroke-width="${g.stroke + (pass ? 0 : 2 * B)}" stroke-linecap="round"/>
+    <polygon points="${g.head}" fill="${pass ? fill : edge}" stroke="${pass ? fill : edge}" stroke-width="${pass ? 0.5 : 2 * B}" stroke-linejoin="round"/></svg>`;
+  let label = ['', ''];
+  if (spec.text) {
+    const tx = g.u[0] > 0.9 ? -100 : g.u[0] < -0.9 ? 0 : g.u[0] > 0 ? -78 : g.u[0] < 0 ? -22 : -50;
+    const ty = g.u[1] > 0 ? -100 : g.u[1] < 0 ? 0 : -50;
+    // The label overlaps the tail by a few px, so the shaft grows out of it.
+    const ox = g.u[0] * 4, oy = g.u[1] * 4;
+    const box = (pass) => `<div style="position:absolute;left:${(g.tail[0] + ox).toFixed(1)}px;top:${(g.tail[1] + oy).toFixed(1)}px;transform:translate(${tx}%,${ty}%);white-space:nowrap;background:${fill};color:${pass ? edge : 'transparent'};font:800 18px/1 -apple-system,'SF Pro Text','Helvetica Neue',Arial,sans-serif;padding:9px 15px;border-radius:999px;${pass ? '' : `box-shadow:0 0 0 ${B}px ${edge};`}">${String(spec.text).replace(/&/g, '&amp;').replace(/</g, '&lt;')}</div>`;
+    label = [box(0), box(1)];
+  }
+  return `<div class="arrow" style="position:absolute;left:${left}px;top:${top}px;width:0;height:0;filter:drop-shadow(0 3px 5px rgba(0,0,0,.55))">${svg(0)}${label[0]}${svg(1)}${label[1]}</div>`;
+}

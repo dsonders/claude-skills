@@ -169,6 +169,14 @@ async function captionLayers(c, len, last, n) {
   return { ins, chain, last, n };
 }
 const still = ['-loop', '1', '-framerate', '30'];
+// The card's arrow layer (build-slides): lands its tip on `at` and bounces back along its own
+// direction, so an arrow from the left bounces sideways.
+function arrowOverlay(c, at) {
+  const { tip, dir } = JSON.parse(readFileSync(`${LAYERS}/${c.id}-arrow.json`, 'utf8'));
+  const ax = Math.round(PH.x + at[0] * K - tip[0]), ay = Math.round(PH.y + at[1] * K - tip[1]);
+  const b = (v) => (18 * v).toFixed(1), wave = 'abs(sin(PI*t*1.7))';
+  return { png: `${LAYERS}/${c.id}-arrow.png`, xy: `x='${ax}-(${b(dir[0])})*${wave}':y='${ay}-(${b(dir[1])})*${wave}'` };
+}
 
 const cards = allCards(sb);
 const list = [];
@@ -208,9 +216,9 @@ for (const [i, c] of cards.entries()) {
     let chain = '', last = 'h', n = 2;
     if (fo.arrow) {
       const until = fo.arrow.until ? (await wordAt(c.id, fo.arrow.until, fo.arrow.nth)) + 0.4 : len;
-      const ax = Math.round(PH.x - 0.6 + fo.arrow.at[0] * K - 60), ay = Math.round(PH.y + fo.arrow.at[1] * K - 170);
-      ins.push(...still, '-i', `${LAYERS}/arrow.png`);
-      chain += `;[${last}][${n}:v]overlay=x=${ax}:y='${ay}-18*abs(sin(PI*t*1.7))':enable='lt(t,${until.toFixed(2)})'[a${n}]`; last = `a${n}`; n++;
+      const ao = arrowOverlay(c, fo.arrow.at);
+      ins.push(...still, '-i', ao.png);
+      chain += `;[${last}][${n}:v]overlay=${ao.xy}:enable='lt(t,${until.toFixed(2)})'[a${n}]`; last = `a${n}`; n++;
     }
     // An event with at: [x, y] (frame points) draws the finger marker on that control as the
     // take reaches it: for recordings that show no touches (the iOS Simulator).
@@ -265,9 +273,9 @@ for (const [i, c] of cards.entries()) {
     const ins = [...still, '-i', base];
     let chain = '[0:v]null[b0]', last = 'b0', k = 1;
     if (c.arrow) {
-      const ax = Math.round(PH.x - 0.6 + c.arrow[0] * K - 60), ay = Math.round(PH.y + c.arrow[1] * K - 170);
-      ins.push(...still, '-i', `${LAYERS}/arrow.png`);
-      chain += `;[${last}][${k}:v]overlay=x=${ax}:y='${ay}-18*abs(sin(PI*t*1.7))'[b${k}]`; last = `b${k}`; k++;
+      const ao = arrowOverlay(c, Array.isArray(c.arrow) ? c.arrow : c.arrow.at);
+      ins.push(...still, '-i', ao.png);
+      chain += `;[${last}][${k}:v]overlay=${ao.xy}[b${k}]`; last = `b${k}`; k++;
     }
     if (c.tap) {
       const from = (await wordAt(c.id, c.tap.word || 'tap', c.tap.nth)) - 0.15;
