@@ -83,12 +83,12 @@ This is the first thing Dave sees and the place he edits the script and the call
    { "id": "write-story", "part": 2, "img": "10-write-story",
      "title": "Tap [[Write Story]]",
      "body": "The AI writer will review your notes and write 3Cs for you.",
-     "boxes": [[183, 400, 191, 44]], "arrow": [162, 768],
+     "boxes": [[183, 400, 191, 44]], "arrow": { "at": [162, 768], "from": "top-right", "text": "Press and hold" },
      "footage": { "clip": "C-write", "runs": [[15, 336]], "note": "What the clip shows" },
      "narration": "When you are ready, tap Write Story." }
    ```
 
-   `boxes` and `arrow` are in phone pixels; the capture writes each control's box beside its frame. `[[Label]]` draws a button chip. Follow the style rulings below from the first draft.
+   `boxes` and `arrow` are in phone pixels; the capture writes each control's box beside its frame. `arrow.at` is the tip; `from` is top, bottom, left, right or a corner (default top); `text` hangs a label on the tail. A plain `[x, y]` is an unlabeled arrow from the top. The arrow is clipped at the screen's edge, so a control near an edge needs an arrow from the side with room. On a footage card it is `footage.arrow` with the same fields plus `until`. `[[Label]]` draws a button chip. Follow the style rulings below from the first draft.
 4. **Create the canvas.** Artifact tool: `quickstart` with intent `design`, then publish with the `type_url` it returns and a title. Save the url in `<project>/storyboard/artifact.json`.
 5. **Upload the key frames** to the canvas as assets (JPEG, 1688 px tall, staged in the scratchpad so they go in one call). Record each returned `/_blob/...` url under `assets` in `artifact.json`, keyed by frame name.
 6. **Generate and publish.** `node scripts/storyboard-canvas.mjs <project>` writes `storyboard/project/`. Copy that folder into the scratchpad and publish it: `canvas.json` as `file_path`, every `.dc.html` in `files`.
@@ -166,6 +166,7 @@ Copy the video, the PDF and `out/slides/` to `~/Desktop/<Title>/`. Keep earlier 
 | Drop a card whose point is self-evident | Reading Cause and Correction |
 | Say who acts and with what | "Add a voice note", not "Add a note" |
 | When two things on screen could be meant, point at the one | Arrow on the green button |
+| Arrows are curved yellow arrows with a dark edge (look from bigarrow, MIT). Label one with the action when that helps, in a few words; leave it off when the narration already says it (⛔ Dave 10/17) | `"text": "Press and hold"` |
 | Anything that moves in the app should move in the video | Waveform, spinner, card opening |
 | Shop-floor words | RO, line, story, 3Cs, CP |
 

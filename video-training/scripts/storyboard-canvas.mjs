@@ -127,7 +127,7 @@ sb.steps.forEach((s, i) => {
   place(boardName(s, i), x, y, `${i + 1} · ${s.id}`);
   voice(s.id, x, y, s.narration);
   if (s.footage) notes[`fx-${s.id}`] = { x, y: y + H + STICKY_DOWN + VO_H + 20, w: W, maxH: NOTE_H, text: `VIDEO CLIP plays in the screen here.\n${s.footage.note || s.footage.clip}`, size: 's', color: 'orange' };
-  else if (s.arrow) notes[`fx-${s.id}`] = { x, y: y + H + STICKY_DOWN + VO_H + 20, w: W, maxH: NOTE_H, text: 'In the video the arrow bounces on its target.', size: 's', color: 'orange' };
+  else if (s.arrow) notes[`fx-${s.id}`] = { x, y: y + H + STICKY_DOWN + VO_H + 20, w: W, maxH: NOTE_H, text: 'In the video the arrow bounces on its target. To change where it comes from or its label, write it on a note.', size: 's', color: 'orange' };
   col += 1;
 });
 if (sb.end?.board) {
