@@ -166,7 +166,7 @@ Copy the video, the PDF and `out/slides/` to `~/Desktop/<Title>/`. Keep earlier 
 | Drop a card whose point is self-evident | Reading Cause and Correction |
 | Say who acts and with what | "Add a voice note", not "Add a note" |
 | When two things on screen could be meant, point at the one | Arrow on the green button |
-| Arrows are curved yellow arrows with a dark edge (look from bigarrow, MIT). Label one with the action when that helps, in a few words; leave it off when the narration already says it (⛔ Dave 10/17) | `"text": "Press and hold"` |
+| Arrows are curved yellow arrows with a dark edge (look from bigarrow, MIT). Label it with the action in a few words, even when the narration says the same thing (emphasis). When in doubt, label it; Dave removes the ones he doesn't want (⛔ Dave 10/17) | `"text": "Press and hold"` |
 | Anything that moves in the app should move in the video | Waveform, spinner, card opening |
 | Shop-floor words | RO, line, story, 3Cs, CP |
 
