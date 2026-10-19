@@ -130,7 +130,9 @@ sb.steps.forEach((s, i) => {
   if (s.arrow && !arrows.length) { changes.push({ label: `${label} arrow`, from: s.arrow, to: 'removed' }); delete s.arrow; }
   if (arrows.length) {
     // A dragged arrow moves its tip; its direction and label stay as written.
-    const a = [Math.round((px(arrows[0], 'left') + 30) / S), Math.round((px(arrows[0], 'top') + 85) / S)];
+    // data-tip: where the tip sits in the arrow's box; a canvas made before it used a 60 x 85 box.
+    const [tx, ty] = (/data-tip="(-?[\d.]+),(-?[\d.]+)"/.exec(arrows[0]) || [0, 30, 85]).slice(1).map(Number);
+    const a = [Math.round((px(arrows[0], 'left') + tx) / S), Math.round((px(arrows[0], 'top') + ty) / S)];
     const was = Array.isArray(s.arrow) ? s.arrow : s.arrow?.at;
     if (!was || a.some((v, j) => Math.abs(v - was[j]) > 2)) set(s, 'arrow', Array.isArray(s.arrow) || !s.arrow ? a : { ...s.arrow, at: a }, `${label} arrow`);
   }

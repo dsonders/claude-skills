@@ -277,19 +277,44 @@ export function arrowGeometry(spec, { reach = 92, stroke = 11, headLen = 32, hea
   const head = [[0, 0], [base[0] + hp[0] * headW / 2, base[1] + hp[1] * headW / 2], notch, [base[0] - hp[0] * headW / 2, base[1] - hp[1] * headW / 2]];
   const end = [notch[0] + h[0] * 2, notch[1] + h[1] * 2];
   const shaft = `M${tail[0].toFixed(1)},${tail[1].toFixed(1)} Q${C[0].toFixed(1)},${C[1].toFixed(1)} ${end[0].toFixed(1)},${end[1].toFixed(1)}`;
-  return { u, tail, shaft, head: head.map((p) => p.map((n) => n.toFixed(1)).join(',')).join(' '), dir: h, stroke };
+  return { u, tail, C, shaft, head: head.map((p) => p.map((n) => n.toFixed(1)).join(',')).join(' '), dir: h, stroke };
+}
+/** The label's pill (card px): an estimate from its length, for the canvas, which cannot measure text. */
+const labelSize = (text) => ({ w: Math.round(String(text).length * 10.6 + 30), h: 36 });
+/** Which share of the label sits left of / above the tail, by the side the arrow comes from. */
+const labelAnchor = (u) => [u[0] > 0.9 ? -1 : u[0] < -0.9 ? 0 : u[0] > 0 ? -0.78 : u[0] < 0 ? -0.22 : -0.5, u[1] > 0 ? -1 : u[1] < 0 ? 0 : -0.5];
+/** The box around shaft, head and label (card px, relative to the tip; the label's width is estimated).
+ *  The canvas makes this box the one thing Dave grabs, so a drag moves the whole arrow. */
+export function arrowBox(spec) {
+  // pad covers half the head's width and the stroke; the control point covers the bend.
+  const g = arrowGeometry(spec), pad = 22, xs = [0, g.tail[0], g.C[0]], ys = [0, g.tail[1], g.C[1]];
+  if (spec.text) {
+    const { w, h } = labelSize(spec.text), [tx, ty] = labelAnchor(g.u), x0 = g.tail[0] + tx * w, y0 = g.tail[1] + ty * h;
+    xs.push(x0, x0 + w); ys.push(y0, y0 + h);
+  }
+  const left = Math.floor(Math.min(...xs) - pad), top = Math.floor(Math.min(...ys) - pad);
+  return { left, top, w: Math.ceil(Math.max(...xs) + pad) - left, h: Math.ceil(Math.max(...ys) + pad) - top };
 }
 /** The arrow as HTML, its tip at (left, top) of the box it is placed in. Borders draw under fills,
  *  so shaft, head and label read as one shape. */
-export function arrowHtml(spec, left, top) {
+export function arrowHtml(spec, left, top, { svgLabel = false } = {}) {
   const g = arrowGeometry(spec), B = 3, { fill, edge } = ARROW_INK;
+  // svgLabel (the canvas): the label is drawn inside the SVG, so the editor sees no text to select
+  // and a click grabs the whole arrow; its width is estimated and the text fitted to it.
+  let pill = ['', ''];
+  if (spec.text && svgLabel) {
+    const { w, h } = labelSize(spec.text), [tx, ty] = labelAnchor(g.u);
+    const x = g.tail[0] + g.u[0] * 4 + tx * w, y = g.tail[1] + g.u[1] * 4 + ty * h;
+    const t = String(spec.text).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    pill = [`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w}" height="${h}" rx="${h / 2}" fill="${fill}" stroke="${edge}" stroke-width="${2 * B}"/>`,
+      `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w}" height="${h}" rx="${h / 2}" fill="${fill}"/><text x="${(x + w / 2).toFixed(1)}" y="${(y + h / 2 + 6).toFixed(1)}" text-anchor="middle" textLength="${w - 30}" lengthAdjust="spacingAndGlyphs" fill="${edge}" font-family="-apple-system,'SF Pro Text','Helvetica Neue',Arial,sans-serif" font-size="18" font-weight="800">${t}</text>`];
+  }
   const svg = (pass) => `<svg width="400" height="400" viewBox="-200 -200 400 400" style="position:absolute;left:-200px;top:-200px;overflow:visible">
     <path d="${g.shaft}" fill="none" stroke="${pass ? fill : edge}" stroke-width="${g.stroke + (pass ? 0 : 2 * B)}" stroke-linecap="round"/>
-    <polygon points="${g.head}" fill="${pass ? fill : edge}" stroke="${pass ? fill : edge}" stroke-width="${pass ? 0.5 : 2 * B}" stroke-linejoin="round"/></svg>`;
+    <polygon points="${g.head}" fill="${pass ? fill : edge}" stroke="${pass ? fill : edge}" stroke-width="${pass ? 0.5 : 2 * B}" stroke-linejoin="round"/>${pill[pass]}</svg>`;
   let label = ['', ''];
-  if (spec.text) {
-    const tx = g.u[0] > 0.9 ? -100 : g.u[0] < -0.9 ? 0 : g.u[0] > 0 ? -78 : g.u[0] < 0 ? -22 : -50;
-    const ty = g.u[1] > 0 ? -100 : g.u[1] < 0 ? 0 : -50;
+  if (spec.text && !svgLabel) {
+    const [tx, ty] = labelAnchor(g.u).map((v) => v * 100);
     // The label overlaps the tail by a few px, so the shaft grows out of it.
     const ox = g.u[0] * 4, oy = g.u[1] * 4;
     const box = (pass) => `<div style="position:absolute;left:${(g.tail[0] + ox).toFixed(1)}px;top:${(g.tail[1] + oy).toFixed(1)}px;transform:translate(${tx}%,${ty}%);white-space:nowrap;background:${fill};color:${pass ? edge : 'transparent'};font:800 18px/1 -apple-system,'SF Pro Text','Helvetica Neue',Arial,sans-serif;padding:9px 15px;border-radius:999px;${pass ? '' : `box-shadow:0 0 0 ${B}px ${edge};`}">${String(spec.text).replace(/&/g, '&amp;').replace(/</g, '&lt;')}</div>`;

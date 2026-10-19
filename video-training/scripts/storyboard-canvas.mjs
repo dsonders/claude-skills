@@ -9,7 +9,7 @@
 // open, and a publish that does not start from the live copy is refused.
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { loadStoryboard, screenOf, cardOf, textBox, captionsOf, CAPTION_BAND, arrowSpec, arrowHtml } from './lib.mjs';
+import { loadStoryboard, screenOf, cardOf, textBox, captionsOf, CAPTION_BAND, arrowSpec, arrowHtml, arrowBox } from './lib.mjs';
 
 const DIR = resolve(process.argv[2] || '.');
 const liveAt = process.argv.indexOf('--live');
@@ -60,9 +60,10 @@ function stepBoard(s, i) {
     const tag = boxes.length > 1 ? `<div class="sb-tag" style="position: absolute; left: ${side === 'r' ? L + Wd - 12 : Math.max(2, L - 10)}px; top: ${Math.max(2, T - 10)}px; width: 24px; height: 24px; border-radius: 12px; background: #ffd23f; color: #000000; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center">${k + 1}</div>` : '';
     return `<div class="sb-ring" style="position: absolute; left: ${L}px; top: ${T}px; width: ${Wd}px; height: ${Hd}px; box-sizing: border-box; border: 3px solid #ffd23f; border-radius: 12px; box-shadow: 0 0 0 2px rgba(0,0,0,.55)"></div>${tag}`;
   }).join('\n');
-  // The 60 x 85 box marks the tip at its bottom centre (harvest reads it back); the arrow draws from there.
-  const a = arrowSpec(s.arrow);
-  const arrow = a ? `<div class="sb-arrow" style="position: absolute; left: ${a.at[0] * S - 30}px; top: ${a.at[1] * S - 85}px; width: 60px; height: 85px">${arrowHtml(a, 30, 85)}</div>` : '';
+  // One box around the whole arrow is what a click grabs (the label is SVG, so there is no text to
+  // select instead), so a drag moves shaft, head and label together; data-tip = the tip in the box.
+  const a = arrowSpec(s.arrow), bx = a && arrowBox(a);
+  const arrow = a ? `<div class="sb-arrow" data-tip="${-bx.left},${-bx.top}" style="position: absolute; left: ${(a.at[0] * S + bx.left).toFixed(1)}px; top: ${(a.at[1] * S + bx.top).toFixed(1)}px; width: ${bx.w}px; height: ${bx.h}px">${arrowHtml(a, -bx.left, -bx.top, { svgLabel: true })}</div>` : '';
   const screen = `<div class="sb-phone" style="position: absolute; left: ${g.x}px; top: ${g.y}px; width: ${g.w}px; height: ${g.h}px; border-radius: ${g.radius}px; overflow: hidden; box-shadow: 0 0 0 5px #333132; background: #111111">
 <img src="${meta.assets[s.img]}" alt="Key frame: ${esc(s.img)}" style="width: 100%; height: 100%; display: block">
 ${rings}
