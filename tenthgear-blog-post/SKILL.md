@@ -175,15 +175,20 @@ If the post naturally pairs with a downloadable asset (checklist, template, calc
    - Reference WSJ / editorial photography, never stock photo
 2. **Frame the prompt so top/bottom 10% is expendable** — this lets you crop out the Gemini watermark (lower-right sparkle) cleanly without losing subject. Plan for this up front.
 
+3. **Generate the hero yourself — don't hand Dave the prompt.** Run it as soon as the first HTML mockup is built (Phase 4 step 1–2), so his first look at the page already has the real image. Save the prompt to the scratchpad, then (~$0.15 per image on Fal, key in `app/.env`):
+   ```bash
+   NODE_OPTIONS='-r /Users/davidsonders/ro-bot/app/node_modules/dotenv/config' DOTENV_CONFIG_PATH=/Users/davidsonders/ro-bot/app/.env DOTENV_CONFIG_QUIET=true \
+     node ~/.claude/skills/tenthgear-blog-post/hero.mjs {scratchpad}/hero-prompt.txt {scratchpad}/hero 2
+   ```
+   Look at both results yourself (Read the PNGs). Reject garbled text, hands, logos, or a subject that won't survive the 2:1 crop, and regenerate with a fix prompt from the iteration table below. Process the best one (step 4) straight into `hero.jpg`.
+
 ### Checkpoint 3
 
-> Give the user the prompt in a single paste-ready code block. Wait for them to run Nano Banana externally, paste results, and iterate. Provide follow-up edit prompts for refinements (blur background, shift focal plane, extend elements out of frame, fix text garble, etc.). Loop until the user says "good enough" or similar.
+> Dave reviews the hero in the mockup itself. If he wants changes, regenerate with an edit prompt from the iteration table and replace `hero.jpg`. Never put the prompt on the page.
 
-**Dave often asks to see the post mocked up before the hero exists** ("mock this up and I'll review"), which inverts Phase 3 and Phase 4. That is fine. When it happens, build the mockup with a placeholder hero AND ship the image prompt inside the mockup itself — see Phase 4 step 2. Do not make him ask for the prompt as a separate step.
+### Auto-steps (image processing)
 
-### Auto-steps (after image approved)
-
-3. **Process the hero image with sips**:
+4. **Process the hero image with sips**:
    ```bash
    # Get current dimensions
    sips -g pixelWidth -g pixelHeight {source}
@@ -192,8 +197,8 @@ If the post naturally pairs with a downloadable asset (checklist, template, calc
    # Also compress and convert to JPEG
    sips -c {new_height} {width} -s format jpeg -s formatOptions 82 {source} --out {dest}
    ```
-4. **Save with clean name** to `public/blog-assets/{N}-{slug}/hero.jpg` (or a descriptive filename like `warranty-audit-letter.jpg`).
-5. **Target file size under 500 KB** after compression. If larger, resize to max 1600px wide first.
+5. **Save with clean name** to `public/blog-assets/{N}-{slug}/hero.jpg` (or a descriptive filename like `warranty-audit-letter.jpg`).
+6. **Target file size under 500 KB** after compression. If larger, resize to max 1600px wide first.
 
 ---
 
@@ -210,16 +215,7 @@ If the post naturally pairs with a downloadable asset (checklist, template, calc
    ```
    Changing the content schema needs a dev-server restart AND may still serve stale data; verify with `npm run build` + `npx astro preview` if the hero doesn't appear.
 
-   **If the hero doesn't exist yet** (user asked to review the mockup before Phase 3), generate a placeholder JPEG at the real 16:9 size and save it to the FINAL path (`hero.jpg`), so the approved Nano Banana output later drops in with no markdown edit. Render the placeholder with Playwright + Chrome (`page.setContent` → `screenshot({type:'jpeg'})`); `sips` cannot rasterize SVG.
-
-   **Always pair the placeholder with the image prompt, in the mockup itself.** Dave reviews on localhost and should be able to copy the prompt straight off the page instead of asking for it. Put the full Nano Banana prompt in a selectable `<pre>` directly below the placeholder, wrapped in a clearly temporary block:
-   ```html
-   <div class="not-prose my-8 rounded-lg border-2 border-dashed border-teal bg-surface p-5" data-build-artifact="hero-prompt">
-     <p class="text-xs font-semibold uppercase tracking-widest text-teal">Hero prompt &middot; remove before deploy</p>
-     <pre class="mt-3 whitespace-pre-wrap text-xs text-navy">{full Nano Banana prompt}</pre>
-   </div>
-   ```
-   The `data-build-artifact="hero-prompt"` hook is what Phase 5 greps for. **Deploy pre-flight: `grep -r 'data-build-artifact' src/content/blog/` must return nothing before staging.** If it hits, the placeholder block never got removed.
+   **The first mockup triggers the hero.** As soon as the page builds, run Phase 3 step 3 and drop the processed image at this path before showing Dave. No placeholder image, no hero prompt on the page.
 3. **Build the infographic inline** (if planned in Phase 2) using brand colors and `not-prose` wrapper. See existing example in `src/content/blog/warranty-audit-playbook.md` for a reference pattern.
 4. **Two-way internal linking** — identify 1-2 older posts that should link TO this new one. Propose specific sentences to add or edit. Add them.
 5. **Run `npm run build`** and verify:
@@ -304,7 +300,7 @@ No checkpoint here — these are generated as output files for the user to pick 
 
 ### Auto-steps
 
-0. **Pre-flight: `grep -rn 'data-build-artifact' src/content/blog/`** must return nothing. If it hits, remove the leftover hero-prompt placeholder block and rebuild before staging.
+0. **Pre-flight: `grep -rn 'data-build-artifact' src/content/blog/`** must return nothing. If it hits, remove the leftover review-only block and rebuild before staging.
 1. **Stage specific files only** (never `-A` or `.`):
    - `src/content/blog/{slug}.md`
    - `public/blog-assets/{N}-{slug}/{filename}`
@@ -359,7 +355,7 @@ Runs only after the post is live on tenthgear.ai (Netlify deploy finished after 
 |---|---|---|
 | 1 | Ideate | Picks one of 5 proposed ideas |
 | 2 | Draft | Approves draft + visual direction |
-| 3 | Assets | Runs Nano Banana externally, iterates until image is good |
+| 3 | Assets | Reviews the hero I generated, in the mockup; asks for changes if needed |
 | 4 | Integrate | Reviews on localhost, requests tweaks |
 | 5 | Deploy | Says "deploy" |
 | 6 | Announce | Reads the test email, says "send" |
