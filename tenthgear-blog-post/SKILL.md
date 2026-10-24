@@ -173,32 +173,32 @@ If the post naturally pairs with a downloadable asset (checklist, template, calc
    - Explicit "no hands in frame, no logos, no AI-style gradient lighting"
    - 16:9 aspect ratio
    - Reference WSJ / editorial photography, never stock photo
-2. **Frame the prompt so top/bottom 10% is expendable** — this lets you crop out the Gemini watermark (lower-right sparkle) cleanly without losing subject. Plan for this up front.
+2. **Frame the subject for a 2:1 center crop** (the desktop hero). Fal output has no watermark, so nothing at the edges needs to be expendable.
 
 3. **Generate the hero yourself — don't hand Dave the prompt.** Run it as soon as the first HTML mockup is built (Phase 4 step 1–2), so his first look at the page already has the real image. Save the prompt to the scratchpad, then (~$0.15 per image on Fal, key in `app/.env`):
    ```bash
    NODE_OPTIONS='-r /Users/davidsonders/ro-bot/app/node_modules/dotenv/config' DOTENV_CONFIG_PATH=/Users/davidsonders/ro-bot/app/.env DOTENV_CONFIG_QUIET=true \
      node ~/.claude/skills/tenthgear-blog-post/hero.mjs {scratchpad}/hero-prompt.txt {scratchpad}/hero 2
    ```
-   Look at both results yourself (Read the PNGs). Reject garbled text, hands, logos, or a subject that won't survive the 2:1 crop, and regenerate with a fix prompt from the iteration table below. Process the best one (step 4) straight into `hero.jpg`.
+   Look at both results yourself (Read the PNGs). Reject garbled text, hands, logos, or a subject that won't survive the 2:1 crop. Process the best one (step 4) straight into `hero.jpg`.
+
+   **Fix a near-miss with an edit, not a regenerate.** A fresh generation throws away the composition. Pass the image as a 4th argument and the script uses `nano-banana-pro/edit`, which keeps the composition and applies the prompt as a fix (prompts in the iteration table below). For garbled text, spell out every label exactly:
+   ```bash
+   ... hero.mjs {scratchpad}/fix-prompt.txt {scratchpad}/hero-fix 1 {scratchpad}/hero-1.png
+   ```
 
 ### Checkpoint 3
 
-> Dave reviews the hero in the mockup itself. If he wants changes, regenerate with an edit prompt from the iteration table and replace `hero.jpg`. Never put the prompt on the page.
+> Dave reviews the hero in the mockup itself. If he wants changes, run an edit pass with a prompt from the iteration table and replace `hero.jpg`. Never put the prompt on the page.
 
 ### Auto-steps (image processing)
 
-4. **Process the hero image with sips**:
+4. **Resize and compress with sips** (Fal returns 2752x1536 with no watermark, so no crop):
    ```bash
-   # Get current dimensions
-   sips -g pixelWidth -g pixelHeight {source}
-
-   # Crop top and bottom 10% (new_height = floor(height * 0.8))
-   # Also compress and convert to JPEG
-   sips -c {new_height} {width} -s format jpeg -s formatOptions 82 {source} --out {dest}
+   sips -Z 1600 -s format jpeg -s formatOptions 82 {source} --out {dest}
    ```
+   Lands around 270 KB; keep it under 500 KB.
 5. **Save with clean name** to `public/blog-assets/{N}-{slug}/hero.jpg` (or a descriptive filename like `warranty-audit-letter.jpg`).
-6. **Target file size under 500 KB** after compression. If larger, resize to max 1600px wide first.
 
 ---
 
@@ -273,6 +273,15 @@ Create `docs/distribution/{slug}.md` with:
 - Match Dave's voice: direct, no emojis, no "Excited to share..."
 
 ### Email announcement draft
+**Write it in Dave's newsletter voice: model it on the last email he sent** (the newest `docs/distribution/{slug}.md` before this one; skip the `archive/` folder). He rewrote the last two drafts into this shape:
+1. Opener: "In the latest installment of the TenthGear blog, we're {going deep on / building} {topic}."
+2. The metric stores track and why it misleads: "Most stores track X. Great metric, in theory. But..."
+3. What the post is: "The new post is {what it is}. It also covers..."
+4. The free printable, if there is one, with a light nod to the app doing it faster.
+5. `Read it here: {link}`, then `Dave`.
+
+Lead with the post, not with a provocation; save the hook-style opening for LinkedIn.
+
 `scripts/newsletter.mjs` parses this section verbatim (Phase 6), so keep the exact shape:
 - `**Subject:**` line (under 50 chars) and `**Preview text:**` line (under 90 chars)
 - `**Body:**` then the body in ONE fenced code block: 3-4 short paragraphs, the CTA link as `https://tenthgear.ai/blog/{slug}/` (trailing slash), sign off on its own line as `Dave` (no dash), an optional P.S.
@@ -300,7 +309,9 @@ No checkpoint here — these are generated as output files for the user to pick 
 
 ### Auto-steps
 
-0. **Pre-flight: `grep -rn 'data-build-artifact' src/content/blog/`** must return nothing. If it hits, remove the leftover review-only block and rebuild before staging.
+0. **Pre-flight:**
+   - `grep -rn 'data-build-artifact' src/content/blog/` must return nothing. If it hits, remove the leftover review-only block and rebuild before staging.
+   - `docs/distribution/{slug}.md` must exist. If it doesn't, Phase 4.5 got skipped; write the drafts now, before the commit.
 1. **Stage specific files only** (never `-A` or `.`):
    - `src/content/blog/{slug}.md`
    - `public/blog-assets/{N}-{slug}/{filename}`
@@ -324,7 +335,14 @@ No checkpoint here — these are generated as output files for the user to pick 
    ```
    Report the PR URL.
 4. **If the session also produced an unrelated fix** (a layout bug, a stale link), that is its own branch and its own PR, per "PR per logical change." Push the fix PR too and tell Dave which to merge first. If the content branch has the fix as an ancestor, say so, since merging the fix first collapses the content diff to content only.
-5. **Remind the user** that Netlify auto-deploys from the GitHub webhook about 2 minutes **after he merges**, not on push. The post goes live at `https://tenthgear.ai/blog/{slug}/`.
+5. **On "ship it", merge it yourself.** Website `settings.local.json` allows `gh pr merge`; the required checks (Codex Review, CodeQL, Netlify preview) still gate it:
+   ```bash
+   gh pr merge {N} --squash --delete-branch --auto
+   ```
+   Netlify deploys about 2 minutes after the merge, not on push. Poll until the live page has the post's content, then go to Phase 6:
+   ```bash
+   curl -s https://tenthgear.ai/blog/{slug}/ | grep -c "{a distinctive phrase from the post}"
+   ```
 
 ---
 
@@ -341,10 +359,11 @@ Runs only after the post is live on tenthgear.ai (Netlify deploy finished after 
    npm run newsletter:announce -- --slug {slug} --test dave@tenthgear.ai
    ```
 3. **Checkpoint 6:** Dave reads the test and says "send".
-4. Send. The command syncs the form into the segment first, asks for the slug as confirmation, then creates and sends the Resend Broadcast:
+4. Send. The command syncs the form into the segment first, asks for the slug as confirmation, then creates and sends the Resend Broadcast. The Bash tool can't answer the prompt, so pipe the slug in (Dave's "send" is the confirmation):
    ```bash
-   npm run newsletter:announce -- --slug {slug} --send
+   echo {slug} | npm run newsletter:announce -- --slug {slug} --send
    ```
+   dave@tenthgear.ai is in the segment (added directly in Resend, 2026-10-24), so Dave gets the real send too; the count reads "N (N-1 from the form)".
    Report the recipient count and the Resend broadcast link. A post is not finished until this has run.
 
 ---
@@ -391,7 +410,6 @@ Think Wall Street Journal feature photography, not stock photo. No hands in fram
 | Garbled text | "Keep everything the same. Redo just the [element] so the text reads clearly: '...'. All other elements stay exactly as they are." |
 | Text is the wrong size | "Keep everything the same but make the [element] text uniformly small and dense, like a ledger, from top to bottom of the document." |
 | List is too short | "Keep everything the same. Extend the [document] downward so it becomes a much longer list running past the bottom edge of the frame, so the reader can't tell how many items there are." |
-| Gemini watermark visible | Crop it out in post-processing (top/bottom 10% works reliably). |
 | Too clean / stock-y | "Add realistic imperfections: slight paper texture, faint coffee ring stain, minor wood grain variation." |
 
 ---
