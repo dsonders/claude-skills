@@ -328,7 +328,7 @@ No checkpoint here — these are generated as output files for the user to pick 
    Co-Authored-By: {the model co-author line the current harness specifies}
    ```
    Do not hardcode a model version here. Use whatever `Co-Authored-By` line the running harness tells you to use.
-3. **Push the branch and open a PR. Never push to `main`.** Website `CLAUDE.md` RULE #5 is explicit: new session = new branch, open a PR, let Dave merge. Recent history (#53 onward) is all PR-merged.
+3. **Push the branch and open a PR. Never push to `main`.** Website `CLAUDE.md` RULE #5 is explicit: new session = new branch, open a PR; Dave's "ship it" is the merge approval (step 5). Recent history (#53 onward) is all PR-merged.
    ```bash
    git push -u origin {branch}
    gh pr create --base main --head {branch} --title "..." --body "..."
