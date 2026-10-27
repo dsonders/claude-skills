@@ -69,9 +69,11 @@ in the ledger and in the message to Dave; the number is expected to fall every p
 | Gmail MCP (TD1 tech mailbox dave@ro-bot.io) | email bodies, links, timing | every "an email arrives" row |
 | Fixture changes (feature flag ON, TD1/TD2 mode flip, `mintRo`, cold-store/restore) | rows blocked by the test org's state | "the test org has it off" is never a reason — set it and test |
 
-Not on this Mac: an Android emulator (no `adb` / `emulator`). An Android-only row is the ONE class that
-goes to Dave without a ladder attempt; say so on the card, and note in the ledger that installing the
-Android Studio emulator would remove the class (his spend call).
+| Android emulator (`~/Library/Android/sdk`, AVD `pixel8`, Android 15, Chrome 124; Playwright `_android` over adb) | Android Chrome truth: touch, the zoom rail, file inputs, layout | every Android row. Boot headless (~12 s); ⛔ `adb shell am set-debug-app --persistent com.android.chrome` once per AVD or `launchBrowser()` polls forever — recipe in memory `reference_android_emulator_recipe` |
+
+Not reproduced by any driver here: a Samsung device (its long-press menu), an incoming call, a real
+camera or photo library, cellular. Those are the ONLY classes that go to Dave without a ladder attempt;
+the card still names which one.
 
 **The ladder (every rung attempted IN ORDER, each attempt quoted on the card: the command or action,
 what happened, how long it took):**
