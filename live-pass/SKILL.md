@@ -42,27 +42,57 @@ Run in a pool worktree (`.claude/worktrees/build-N`, claim → `reset --hard ori
   `advisor` / `admin` / `parts`; TD2 for multi-player rows); API-only agents share tokens. Writers of
   per-USER or ORG-level state run in sequence, never beside a reader. Never browser-drive prod while the
   suites run.
-- The `Driver` column (awaiting README) says where a row starts: `headless` → Chromium/Playwright or
-  the API; `simulator` → `/ios-verify` (real Mobile Safari); `📱` → still TRY the ladder below first.
+- The `Driver` column (awaiting README) says where a row STARTS, never where it ends: `headless` →
+  Chromium/Playwright or the API; `simulator` → `/ios-verify`; `📱` → the whole ladder in §3 first — a
+  `📱` tag written by a PR author is a guess, not a verdict.
 - Every FAILED is replayed locally before it is written; a real one gets a fix PR plus its own awaiting
   file the same session. Re-read rows against same-batch siblings before calling a regression.
 
-## 3. The ladder — no row reaches Dave without it ⭐
+## 3. Drive it yourself — Dave's page is the failure case, not the handoff ⭐
 
-A row goes on Dave's page only when ALL of the following are true, and the card says so with evidence:
+**The target number of rows on Dave's page is ZERO.** Every card on it is a row the pass failed to
+drive, and the card has to prove that failure. "Needs a real device", "touch feel", "only Dave has the
+phone" are not reasons; a numbered ceiling with quoted attempts is. Report `rows to Dave / rows total`
+in the ledger and in the message to Dave; the number is expected to fall every pass.
 
-1. **A ceiling is named by number** from the harness README's Ceilings list. "Touch feel" or "needs a
-   real device" without a number is not a reason.
-2. **Every rung below it was tried, in order, and the attempt is quoted** (the command or action, and
-   what happened): headless Chromium → Playwright WebKit → iOS Simulator via safaridriver → the Simulator
-   WINDOW through computer-use (native app, full tier — can it raise the keyboard, open the Home Screen
-   app, lock the screen? record the answer either way) → a fixture change that makes it drivable (feature
-   flag ON, org mode flip, TD2, a minted RO; "the test org has it off" is never a reason).
-3. **The row was split.** Whatever half CAN be proved is proved and ticked in the file; only the residue
-   goes to Dave, reworded to that residue.
-4. **An independent refuter signed off.** One Opus agent per batch of candidate rows, briefed with the
-   cards' "Why I can't" text and the harness README, whose only job is to drive ONE of them anyway. A
-   refuted row is driven and ticked; the refuter's verdict is quoted on every surviving card.
+**Driver inventory on this Mac (use ALL of it before writing a card):**
+
+| Driver | Reaches | Use it for |
+|---|---|---|
+| API (`lib.mjs` `api()`, role tokens) | every server behaviour, footprints, Firestore state via the debug routes | the first attempt for any row whose Expected is a stored value or a status |
+| Playwright Chromium (headless, phone viewport, `hasTouch`, `fakeCam`, TTS dictation via `routeTts`) | every client behaviour that is not engine-specific; file inputs; HTML5 drag; mic/camera via fakes | the default for UI rows |
+| Playwright WebKit (`webkit-2359` = the desktop Safari engine) | Safari-engine rendering, drag, inputs, `date`/`number` quirks | any row that says "Safari" — BEFORE deciding it is Dave's |
+| Playwright device emulation (iPhone descriptors) | viewport, UA, touch events, `safe-area` declarations | layout rows; never for "the keyboard rises" |
+| iOS Simulator, real Mobile Safari via safaridriver (`/ios-verify`, iPhone 17 booted) | WebKit-on-iOS truth: fixed-position, momentum scroll, `dvh`, PWA install flow via Safari UI, mock camera | any row that still reads "iOS" after WebKit passed |
+| computer-use on the Simulator WINDOW (native app, full tier) | whatever safaridriver cannot: tap the keyboard, Home Screen icons, lock via Simulator menus, app switch | UNTESTED rung — try it and record the result on the row either way |
+| claude-in-chrome (Dave's real Chrome, his logins) | real-browser Chrome with real extensions and cookies | a desktop row where headless Chromium passed but "real Chrome" is the claim |
+| Gmail MCP (TD1 tech mailbox dave@ro-bot.io) | email bodies, links, timing | every "an email arrives" row |
+| Fixture changes (feature flag ON, TD1/TD2 mode flip, `mintRo`, cold-store/restore) | rows blocked by the test org's state | "the test org has it off" is never a reason — set it and test |
+
+Not on this Mac: an Android emulator (no `adb` / `emulator`). An Android-only row is the ONE class that
+goes to Dave without a ladder attempt; say so on the card, and note in the ledger that installing the
+Android Studio emulator would remove the class (his spend call).
+
+**The ladder (every rung attempted IN ORDER, each attempt quoted on the card: the command or action,
+what happened, how long it took):**
+
+1. API / footprint → 2. Playwright Chromium → 3. Playwright WebKit → 4. iOS Simulator via safaridriver →
+5. computer-use on the Simulator window → 6. a fixture change that makes any of 1–5 work.
+
+A row goes on Dave's page only when ALL hold:
+
+- **A ceiling is named by number** from the harness README's Ceilings list, and that ceiling is the
+  rung where the attempt actually stopped (a ceiling-1 keyboard row that was never tried through rung 5
+  is not finished).
+- **The row was split.** Whatever half CAN be proved (the declaration, the rect, the state after the
+  action, the API footprint) is proved and ticked in the file; only the residue goes to Dave, reworded
+  to that residue. A residue of "and it feels right" is dropped, not handed over.
+- **An independent refuter signed off.** One Opus agent per batch of candidate cards, briefed with the
+  cards' text, the harness README and this inventory, whose only job is to drive ANY of them. It gets
+  real time (up to 20 min per row) and the same logins. A refuted row is driven and ticked; the
+  refuter's verdict is quoted on every surviving card.
+- **Carried-over rows are re-tried**, not re-copied: a row carried from a previous page gets the
+  ladder again with any new rung (a new driver, a fixture that now exists), and its age is on the card.
 
 ## 4. Fixture sweep, promotion, ledger
 
@@ -100,3 +130,4 @@ A row goes on Dave's page only when ALL of the following are true, and the card 
 - Never flip an org-level prod setting from an agent brief without Dave's word (the classifier denies it;
   re-wording the brief is not the fix).
 - Never a blanket "needs a real phone" line on the page — the reason is per card, with the rung evidence.
+- Never hand Dave a row because it is faster than driving it. The pass has the time; he does not.
