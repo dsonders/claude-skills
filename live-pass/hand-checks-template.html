@@ -1,0 +1,165 @@
+<title>Hand-Checks {{DATE}}</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: one column of check cards; each card = checkbox row, the path through the product, an annotated screenshot, and the reason it needs a human. */
+  :root {
+    --bg: #f6f5f1;
+    --surface: #ffffff;
+    --fg: #1d2420;
+    --muted: #5f6b66;
+    --line: #d9d7cf;
+    --accent: #1f7a6d;      /* TenthGear teal, the tech-side brand color */
+    --accent-ink: #ffffff;
+    --mark: #e2582b;        /* callout orange — sits on every screenshot in both themes */
+    --mark-ink: #ffffff;
+    --done-bg: #e6f2ef;
+    --wait: #8a6d1c;
+    --wait-bg: #fbf3dc;
+    --font: "IBM Plex Sans", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15191a; --surface: #1f2527; --fg: #e8ebe8; --muted: #a2aca7; --line: #343c3e;
+      --accent: #4fb7a6; --accent-ink: #0f1a17; --mark: #ff7a4d; --mark-ink: #1a0d07;
+      --done-bg: #1c312c; --wait: #e2c06a; --wait-bg: #2e2914; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15191a; --surface: #1f2527; --fg: #e8ebe8; --muted: #a2aca7; --line: #343c3e;
+    --accent: #4fb7a6; --accent-ink: #0f1a17; --mark: #ff7a4d; --mark-ink: #1a0d07;
+    --done-bg: #1c312c; --wait: #e2c06a; --wait-bg: #2e2914; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 15px; line-height: 1.5;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 28px 64px;
+  }
+  main { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 26px; line-height: 1.2; margin: 0 0 6px; letter-spacing: -0.01em; text-wrap: balance; }
+  .lede { color: var(--muted); margin: 0 0 20px; max-width: 64ch; }
+  .lede code, .path code { font-family: var(--mono); font-size: 0.92em; }
+  .progress { display: flex; align-items: center; gap: 12px; margin: 0 0 28px; font-variant-numeric: tabular-nums; }
+  .bar { flex: 1; height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; min-width: 0; }
+  .bar > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .25s; }
+  .progress span { font-weight: 600; white-space: nowrap; }
+  .store { font-size: 12px; color: var(--muted); }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 36px 0 12px; font-weight: 600; }
+  section { display: grid; gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 12px; }
+  .card.done { background: var(--done-bg); }
+  .card.done .title { text-decoration: line-through; text-decoration-color: var(--muted); color: var(--muted); }
+  .head { display: flex; gap: 12px; align-items: flex-start; }
+  .head input { width: 24px; height: 24px; margin: 2px 0 0; flex: none; accent-color: var(--accent); cursor: pointer; }
+  .head label { cursor: pointer; min-width: 0; }
+  .title { font-weight: 600; font-size: 17px; line-height: 1.3; }
+  .file { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-top: 2px; word-break: break-all; }
+  dl { margin: 0; display: grid; grid-template-columns: 7.5em 1fr; gap: 6px 12px; }
+  dt { color: var(--muted); font-size: 13px; padding-top: 1px; }
+  dd { margin: 0; min-width: 0; }
+  .path { font-family: var(--mono); font-size: 13px; }
+  .why { background: var(--bg); border-left: 3px solid var(--wait); padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 14px; }
+  .why b { color: var(--wait); }
+  .shot { display: grid; gap: 8px; }
+  .frame { position: relative; display: inline-block; max-width: 100%; align-self: start; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: #111; }
+  .frame.phone { width: 320px; }
+  .frame.desk { width: 100%; }
+  .frame img { display: block; width: 100%; height: auto; }
+  .box { position: absolute; border: 3px solid var(--mark); border-radius: 6px; box-shadow: 0 0 0 2px rgba(0,0,0,.25); }
+  .box.round { border-radius: 50%; }
+  .tag { position: absolute; background: var(--mark); color: var(--mark-ink); font-weight: 700; font-size: 13px; line-height: 1; padding: 4px 7px; border-radius: 4px; font-family: var(--mono); }
+  .legend { display: grid; gap: 4px; font-size: 14px; }
+  .legend li { list-style: none; display: flex; gap: 8px; }
+  .legend ul { margin: 0; padding: 0; }
+  .legend .n { flex: none; width: 22px; height: 22px; border-radius: 4px; background: var(--mark); color: var(--mark-ink); font-family: var(--mono); font-weight: 700; font-size: 13px; display: grid; place-items: center; }
+  .note { font-size: 13px; color: var(--muted); }
+  .rec { background: var(--done-bg); border-left: 3px solid var(--accent); padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 14px; }
+  input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  @media (max-width: 480px) { dl { grid-template-columns: 1fr; gap: 2px; } dt { margin-top: 6px; } .frame.phone { width: 100%; max-width: 320px; } }
+  @media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } }
+</style>
+
+<main>
+  <h1>Hand-checks left after the {{DATE_SHORT}} live pass</h1>
+  <p class="lede">The {{REPUBLISH_TIME}} republish (<code>/api/version {{VERSION_SHA}}</code>) passed {{PROVED}} rows with {{FAILED}} failures. These are the rows the pass could not drive after trying every rung of the ladder; each card names the ceiling that blocks it and what was tried. Tick a box when you have handled it. Ticks are saved on this page.</p>
+  <div class="progress"><div class="bar"><i id="fill"></i></div><span id="count">0 / {{TOTAL}} handled</span></div>
+  <p class="store" id="store">Saving ticks…</p>
+
+  <!-- One <h2> + <section> per device/surface group: "Your iPhone — real Safari and the Home Screen app", "Desktop Safari", "Android", "DealerBuilt / a DMS fixture". Carried-over rows go in their own group at the end: "Carried over (age N republishes)". -->
+  <h2>{{GROUP_TITLE}}</h2>
+  <section>
+
+    <!-- EXAMPLE CARD — one per row. data-id is the stable key the ticks persist under (reuse the same id when a row carries over). -->
+    <article class="card" data-id="{{ROW_ID}}">
+      <div class="head"><input type="checkbox" id="cb-{{ROW_ID}}"><label for="cb-{{ROW_ID}}"><div class="title">{{ROW_TITLE}}</div><div class="file">awaiting/{{FILE}}.md</div></label></div>
+      <dl>
+        <dt>Where</dt><dd class="path">{{ROLE}} → {{PATH_THROUGH_THE_PRODUCT}}</dd>
+        <dt>Do</dt><dd>{{STEPS}}</dd>
+        <dt>Expect</dt><dd>{{EXPECTED}}</dd>
+      </dl>
+      <div class="shot">
+        <div class="frame phone"><img src="img/{{SHOT}}.png" alt="{{ALT}}">
+          <div class="box" style="left:{{L}}%;top:{{T}}%;width:{{W}}%;height:{{H}}%"></div><div class="tag" style="left:{{L}}%;top:calc({{T}}% - 24px)">1</div>
+        </div>
+        <div class="legend"><ul><li><span class="n">1</span><span>{{WHAT_THE_BOX_MARKS}}</span></li></ul></div>
+      </div>
+      <div class="why"><b>Why I can't:</b> ceiling {{N}} ({{CEILING_NAME}}). Tried: {{LADDER_EVIDENCE — each rung attempted, with what happened}}. Refuter: {{REFUTER_VERDICT}}.</div>
+    </article>
+
+  </section>
+</main>
+
+<script>
+(function () {
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.card[data-id]'));
+  var total = cards.length;
+  var fill = document.getElementById('fill'), count = document.getElementById('count'), store = document.getElementById('store');
+  var db = null;
+
+  function paint() {
+    var done = 0;
+    cards.forEach(function (c) { var cb = c.querySelector('input'); c.classList.toggle('done', cb.checked); if (cb.checked) done++; });
+    fill.style.width = (100 * done / total) + '%';
+    count.textContent = done + ' / ' + total + ' handled';
+  }
+  function localGet(id) { try { return localStorage.getItem('tick:' + id) === '1'; } catch (e) { return false; } }
+  function localSet(id, v) { try { localStorage.setItem('tick:' + id, v ? '1' : '0'); } catch (e) {} }
+
+  cards.forEach(function (c) {
+    var id = c.getAttribute('data-id'), cb = c.querySelector('input');
+    cb.checked = localGet(id);
+    cb.addEventListener('change', function () {
+      localSet(id, cb.checked); paint();
+      if (db) {
+        db.doc('checks/' + id).set({ done: cb.checked, at: new Date().toISOString() }).catch(function () {
+          store.textContent = 'Saved in this browser only (the shared save was refused).';
+        });
+      }
+    });
+  });
+  paint();
+
+  function start() {
+    var use = window.claude && window.claude.use;
+    if (!use) { store.textContent = 'Saved in this browser only.'; return; }
+    use('db').then(function (ns) {
+      db = ns;
+      if (!db) { store.textContent = 'Saved in this browser only.'; return; }
+      store.textContent = 'Ticks are saved with the page.';
+      db.collection('checks').onSnapshot(function (snap) {
+        var docs = (snap && snap.docs) || [];
+        docs.forEach(function (d) {
+          var id = d.id, data = typeof d.data === 'function' ? d.data() : d.data;
+          var c = document.querySelector('.card[data-id="' + id + '"]');
+          if (c && data && typeof data.done === 'boolean') { c.querySelector('input').checked = data.done; localSet(id, data.done); }
+        });
+        paint();
+      }, function () { store.textContent = 'Saved in this browser only.'; });
+    }).catch(function () { store.textContent = 'Saved in this browser only.'; });
+  }
+  start();
+})();
+</script>
