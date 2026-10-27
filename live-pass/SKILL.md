@@ -64,7 +64,7 @@ in the ledger and in the message to Dave; the number is expected to fall every p
 | Playwright WebKit (`webkit-2359` = the desktop Safari engine) | Safari-engine rendering, drag, inputs, `date`/`number` quirks | any row that says "Safari" — BEFORE deciding it is Dave's |
 | Playwright device emulation (iPhone descriptors) | viewport, UA, touch events, `safe-area` declarations | layout rows; never for "the keyboard rises" |
 | iOS Simulator, real Mobile Safari via safaridriver (`/ios-verify`, iPhone 17 booted) | WebKit-on-iOS truth: fixed-position, momentum scroll, `dvh`, PWA install flow via Safari UI, mock camera | any row that still reads "iOS" after WebKit passed |
-| computer-use on the Simulator WINDOW (native app, full tier) | whatever safaridriver cannot: tap the keyboard, Home Screen icons, lock via Simulator menus, app switch | UNTESTED rung — try it and record the result on the row either way |
+| computer-use on the Simulator WINDOW (`request_access(["Simulator"])`, native app, full tier) | PROVED 2026-10-27: the real iOS keyboard (⌘K "Toggle Software Keyboard" once per boot, then tap the field), the Home Screen (window-chrome Home button → a standalone PWA icon), lock (⌘L) and unlock (Home twice); `simctl openurl` to load a page, `simctl io screenshot` for the whole device | every keyboard / Home Screen / lock / app-switch row, paired with a safaridriver session for rects and JS (memory `reference_ios_simulator_webdriver_recipe`) |
 | claude-in-chrome (Dave's real Chrome, his logins) | real-browser Chrome with real extensions and cookies | a desktop row where headless Chromium passed but "real Chrome" is the claim |
 | Gmail MCP (TD1 tech mailbox dave@ro-bot.io) | email bodies, links, timing | every "an email arrives" row |
 | Fixture changes (feature flag ON, TD1/TD2 mode flip, `mintRo`, cold-store/restore) | rows blocked by the test org's state | "the test org has it off" is never a reason — set it and test |
@@ -77,7 +77,8 @@ Android Studio emulator would remove the class (his spend call).
 what happened, how long it took):**
 
 1. API / footprint → 2. Playwright Chromium → 3. Playwright WebKit → 4. iOS Simulator via safaridriver →
-5. computer-use on the Simulator window → 6. a fixture change that makes any of 1–5 work.
+5. computer-use on the Simulator window (proved: keyboard, Home Screen, lock) → 6. Android emulator
+(Playwright's `_android` over adb, once installed) → 7. a fixture change that makes any of 1–6 work.
 
 A row goes on Dave's page only when ALL hold:
 
