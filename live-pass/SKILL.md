@@ -45,6 +45,11 @@ Run in a pool worktree (`.claude/worktrees/build-N`, claim → `reset --hard ori
 - The `Driver` column (awaiting README) says where a row STARTS, never where it ends: `headless` →
   Chromium/Playwright or the API; `simulator` → `/ios-verify`; `📱` → the whole ladder in §3 first — a
   `📱` tag written by a PR author is a guess, not a verdict.
+- ⛔ (Dave 2026-10-29) Missing test-org data or a test-org setting in the way is never a residue: every brief
+  tells the agent to CREATE the data (a video, an MPI, a priced line, a DMS import) and to FLIP the TD1/TD2
+  setting (single/multi player, a feature, Spanish, a per-user switch), run the row, restore, and report
+  before/after. Sequence org-wide flips so no sibling reads that org meanwhile. Small fixable things the pass
+  finds (a stale row's wording, a copy nit) are fixed in the pass, never reported as an "observation".
 - Every FAILED is replayed locally before it is written; a real one gets a fix PR plus its own awaiting
   file the same session. Re-read rows against same-batch siblings before calling a regression.
 
