@@ -265,6 +265,10 @@ git -C <abs>/shared add <the files you edited> && git -C <abs>/shared diff --cac
 
 Do NOT auto-commit the subproject repos — those follow normal commit/PR rules per the subproject's AGENTS.md. This skill commits only the meta-files (skills + shared knowledge + memory).
 
+### Step 10: Clean Up This Session's Merged Branches
+
+In each repo the session touched: `git fetch -p`, then `git branch -vv` for the branches THIS session created. Delete each with `git branch -D <name>` (one per command) only when its upstream reads `: gone]` AND its PR is MERGED (`gh pr view <branch> --json state`). No ask needed (Dave 2026-11-05). Never touch another session's branches; a worktree-isolated session runs these from its own worktree, never `git -C <primary>`. Report the deleted names in the final summary.
+
 ---
 
 ## Where This Sits in the Loop
