@@ -139,3 +139,9 @@ A row goes on Dave's page only when ALL hold:
   re-wording the brief is not the fix).
 - Never a blanket "needs a real phone" line on the page — the reason is per card, with the rung evidence.
 - Never hand Dave a row because it is faster than driving it. The pass has the time; he does not.
+- Never tick a row whose OWN text says more than was driven (Codex blocks the ledger on each, #2590): a
+  reword goes INTO the row's How/Expected, never only into the pass note; a split row becomes two rows
+  (the proved half ticked, the residue unticked or `➖ dropped` with its reason); "Still in awaiting: N"
+  is counted with `ls` on the ledger branch, never from memory. Before the PR, grep the pass notes for
+  "reworded" / "wording" / "not driven" and check each against its row.
+- The promotion note (§4.2) goes on every closed `###` line IN the ledger PR — not after Dave asks.
