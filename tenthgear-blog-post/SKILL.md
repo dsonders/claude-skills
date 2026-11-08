@@ -47,8 +47,12 @@ Read these files before Phase 1:
 
 1. **Read all existing posts** — `src/content/blog/*.md`. For each, extract: slug, title, date, category, tags, primaryKeyword, pillar.
 2. **Categorize coverage** by the three product pillars (Find More Work / Sell More Work / Get Paid for More Work) plus founder/social-proof posts.
-3. **Identify gaps** — topics not yet covered relative to the target audience (Fixed Ops Directors at small-to-medium dealer groups). Reference CLAUDE.md Part 1 for audience details.
-4. **Propose 5 ideas** with the following structure for each:
+3. **Pull how past posts performed, before proposing anything.** Use Chrome; Dave is already logged in.
+   - Search Console, last 90 and 28 days, Pages and Queries tabs (URLs in the `reference_gsc_keyword_planner_via_chrome` memory). Per post: clicks, impressions, CTR, position. Per query: which topics show near-page-one rankings.
+   - GA4, TenthGear Marketing Site, Pages and screens (`https://analytics.google.com/analytics/web/#/a364055355p499835019/reports/explorer?params=_u.date00%3D{YYYYMMDD}%26_u.date01%3D{YYYYMMDD}&r=all-pages-and-screens`). Per post: views, users, engagement time.
+   - Weigh post age: a two-week-old post with 400 impressions beats a year-old post with 400. Say when samples are too small to conclude from, and say what you could not pull.
+4. **Identify gaps** — topics not yet covered relative to the target audience (Fixed Ops Directors at small-to-medium dealer groups), read against step 3: favor topics next to what already performs. Reference CLAUDE.md Part 1 for audience details.
+5. **Propose 5 ideas** with the following structure for each:
    - Working title
    - Angle (1-2 sentences)
    - Pillar
@@ -56,7 +60,8 @@ Read these files before Phase 1:
    - **Primary keyword** and 2-3 secondary keywords
    - **Search intent** (informational / commercial / transactional / navigational)
    - Why it's a gap worth filling
-5. **Flag one recommendation** — usually the one with the best combination of audience fit, search intent, and timeliness. If there's a timely hook (Q1 close, industry event, recent news), lean into it.
+   - **Performance evidence** from step 3, or "none" if there is none
+6. **Lead with a short performance table, then flag one recommendation** — usually the one with the best combination of past performance, audience fit, search intent, and timeliness. If there's a timely hook (Q1 close, industry event, recent news), lean into it.
 
 ### Checkpoint 1
 
