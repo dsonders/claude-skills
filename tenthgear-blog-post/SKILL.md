@@ -50,6 +50,8 @@ Read these files before Phase 1:
 3. **Pull how past posts performed, before proposing anything.** Use Chrome; Dave is already logged in.
    - Search Console, last 90 and 28 days, Pages and Queries tabs (URLs in the `reference_gsc_keyword_planner_via_chrome` memory). Per post: clicks, impressions, CTR, position. Per query: which topics show near-page-one rankings.
    - GA4, TenthGear Marketing Site, Pages and screens (`https://analytics.google.com/analytics/web/#/a364055355p499835019/reports/explorer?params=_u.date00%3D{YYYYMMDD}%26_u.date01%3D{YYYYMMDD}&r=all-pages-and-screens`). Per post: views, users, engagement time.
+   - GA4 landing pages (same URL with `r=landing-page`): sessions and key events by landing page. It credits only the converting session.
+   - Netlify demo-request submissions (form fields `first_landing_page`, `first_referrer`, `first_utm`, `blog_posts_read`, recorded from website PR "record which pages led to each demo request"): which posts each lead read. This is the real answer to which posts produce demos.
    - Weigh post age: a two-week-old post with 400 impressions beats a year-old post with 400. Say when samples are too small to conclude from, and say what you could not pull.
 4. **Identify gaps** — topics not yet covered relative to the target audience (Fixed Ops Directors at small-to-medium dealer groups), read against step 3: favor topics next to what already performs. Reference CLAUDE.md Part 1 for audience details.
 5. **Propose 5 ideas** with the following structure for each:
