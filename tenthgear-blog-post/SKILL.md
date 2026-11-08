@@ -164,7 +164,7 @@ If the post naturally pairs with a downloadable asset (checklist, template, calc
 
 ### Checkpoint 2
 
-> Present the full draft in the chat (including frontmatter), plus the hero concept and infographic concept. Ask the user to approve or request edits. Loop until approved.
+> **The first draft Dave sees is always the rendered HTML page with the real hero image.** Before this checkpoint: write the markdown, run Phase 3 (hero), build, screenshot it yourself at desktop and phone widths, then `open` the page in his browser. Don't paste the draft into chat, and don't show a page with no hero. In chat, send the URL, the file path, anything to check (dated sources, research gaps), and the infographic and content-upgrade notes. Loop until approved.
 
 ---
 
@@ -182,7 +182,7 @@ If the post naturally pairs with a downloadable asset (checklist, template, calc
    - Reference WSJ / editorial photography, never stock photo
 2. **Frame the subject for a 2:1 center crop** (the desktop hero). Fal output has no watermark, so nothing at the edges needs to be expendable.
 
-3. **Generate the hero yourself — don't hand Dave the prompt.** Run it as soon as the first HTML mockup is built (Phase 4 step 1–2), so his first look at the page already has the real image. Save the prompt to the scratchpad, then (~$0.15 per image on Fal, key in `app/.env`):
+3. **Generate the hero yourself — don't hand Dave the prompt.** Run it as part of the first draft (Phase 2), so his first look at the page already has the real image. Save the prompt to the scratchpad, then (~$0.15 per image on Fal, key in `app/.env`):
    ```bash
    NODE_OPTIONS='-r /Users/davidsonders/ro-bot/app/node_modules/dotenv/config' DOTENV_CONFIG_PATH=/Users/davidsonders/ro-bot/app/.env DOTENV_CONFIG_QUIET=true \
      node ~/.claude/skills/tenthgear-blog-post/hero.mjs {scratchpad}/hero-prompt.txt {scratchpad}/hero 2
@@ -196,7 +196,7 @@ If the post naturally pairs with a downloadable asset (checklist, template, calc
 
 ### Checkpoint 3
 
-> Dave reviews the hero in the mockup itself. If he wants changes, run an edit pass with a prompt from the iteration table and replace `hero.jpg`. Never put the prompt on the page.
+> Dave reviews the hero in the draft page at Checkpoint 2. If he wants changes, run an edit pass with a prompt from the iteration table and replace `hero.jpg`. Never put the prompt on the page.
 
 ### Auto-steps (image processing)
 
@@ -222,7 +222,7 @@ If the post naturally pairs with a downloadable asset (checklist, template, calc
    ```
    Changing the content schema needs a dev-server restart AND may still serve stale data; verify with `npm run build` + `npx astro preview` if the hero doesn't appear.
 
-   **The first mockup triggers the hero.** As soon as the page builds, run Phase 3 step 3 and drop the processed image at this path before showing Dave. No placeholder image, no hero prompt on the page.
+   **The hero is already in place from the first draft (Checkpoint 2).** No placeholder image, no hero prompt on the page.
 3. **Build the infographic inline** (if planned in Phase 2) using brand colors and `not-prose` wrapper. See existing example in `src/content/blog/warranty-audit-playbook.md` for a reference pattern.
 4. **Two-way internal linking** — identify 1-2 older posts that should link TO this new one. Propose specific sentences to add or edit. Add them.
 5. **Run `npm run build`** and verify:
@@ -230,7 +230,7 @@ If the post naturally pairs with a downloadable asset (checklist, template, calc
    - `/blog/{slug}/` appears in the page list
    - `grep` the built HTML for the primary keyword and any infographic key values to confirm they rendered
 6. **Append to keyword tracker** — add a row to `docs/seo/keyword-tracker.md` with slug, publish date, primary keyword, and placeholders for rank tracking.
-7. **Start the dev server** in the background: `npm run dev` with `run_in_background: true`.
+7. **Serve the page.** `npx astro preview --port 4400` after `npm run build`, or `npm run dev` for live edits. Astro won't start a second dev server, and one left running can 404 a new post, so check the URL returns 200 before sharing it.
 8. **Visual verification (render before claiming success).** Do not pass the post to the user with phrases like "this should match your reference." Render via headless Chrome and read the screenshot first. If the user has to call out a visual problem you could have caught by looking, you wasted a round-trip.
 
    One-time setup (in `/tmp` so it doesn't pollute the repo):
@@ -253,7 +253,7 @@ If the post naturally pairs with a downloadable asset (checklist, template, calc
    ```
    Run with `cd /tmp/pw-tools && node inspect.mjs`, then `Read /tmp/pw-tools/block.png` to see the render. For image-cropping math when using `object-cover`: container ratio < image ratio means image upscales to fill width, cropping vertically. Use `object-top` to preserve the top of the image (e.g., a meme caption).
 
-9. **Share `http://localhost:4321/blog/{slug}/` with the user** for their visual review.
+9. **`open` the page's URL in Dave's browser** for his visual review, and include the URL in chat.
 
 ### Checkpoint 4
 
@@ -380,8 +380,8 @@ Runs only after the post is live on tenthgear.ai (Netlify deploy finished after 
 | # | Phase | What the user does |
 |---|---|---|
 | 1 | Ideate | Picks one of 5 proposed ideas |
-| 2 | Draft | Approves draft + visual direction |
-| 3 | Assets | Reviews the hero I generated, in the mockup; asks for changes if needed |
+| 2 | Draft | Reviews the rendered HTML draft with the hero; approves or requests edits |
+| 3 | Assets | Asks for hero changes in that same review, if needed |
 | 4 | Integrate | Reviews on localhost, requests tweaks |
 | 5 | Deploy | Says "deploy" |
 | 6 | Announce | Reads the test email, says "send" |
