@@ -284,12 +284,19 @@ for (const [i, c] of cards.entries()) {
     // A still card. tap: { at: [x, y], word, nth, hold } draws the finger on the
     // control from the word that names it (hold = seconds, or to the card's end).
     const base = c.arrow ? `${LAYERS}/${c.id}-noarrow.png` : sb.format === 'focus' && c.img ? `${LAYERS}/${c.id}-nocap.png` : slide;
-    const ins = [...still, '-i', base];
+    // calloutsFrom: word -> the ring and arrow appear on that word, not with the card
+    // (⛔ Dave 11/09: an intro line plays first, then "Press and hold..." brings the callouts).
+    const cFrom = c.calloutsFrom ? (await wordAt(c.id, c.calloutsFrom)) - 0.1 : 0;
+    const ins = [...still, '-i', c.calloutsFrom ? `${LAYERS}/${c.id}-bare.png` : base];
     let chain = '[0:v]null[b0]', last = 'b0', k = 1;
+    if (c.calloutsFrom) {
+      ins.push(...still, '-i', base);
+      chain += `;[${last}][${k}:v]overlay=0:0:enable='gte(t,${cFrom.toFixed(2)})'[b${k}]`; last = `b${k}`; k++;
+    }
     if (c.arrow) {
       const ao = arrowOverlay(c, Array.isArray(c.arrow) ? c.arrow : c.arrow.at);
       ins.push(...still, '-i', ao.png);
-      chain += `;[${last}][${k}:v]overlay=${ao.xy}[b${k}]`; last = `b${k}`; k++;
+      chain += `;[${last}][${k}:v]overlay=${ao.xy}:enable='gte(t,${cFrom.toFixed(2)})'[b${k}]`; last = `b${k}`; k++;
     }
     if (c.tap) {
       const from = (await wordAt(c.id, c.tap.word || 'tap', c.tap.nth)) - 0.15;

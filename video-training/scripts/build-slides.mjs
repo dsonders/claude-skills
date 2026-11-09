@@ -105,6 +105,13 @@ await page.pdf({ path: `${OUT}/${sb.slug}.pdf`, width: `${CW}px`, height: `${CH}
 // ── video layers ──────────────────────────────────────────────────────────────
 // Footage steps: the card with the phone screen cut out (footage plays under it).
 // Arrow steps: the card without its arrow (the video draws a moving one).
+// calloutsFrom (still cards): the card with no ring, tag or arrow, shown until that word.
+for (const s of sb.steps.filter((x) => x.calloutsFrom && !x.footage)) {
+  const sel = `#c-${s.id} .ring, #c-${s.id} .tag, #c-${s.id} .arrow`;
+  await page.evaluate((q) => document.querySelectorAll(q).forEach((e) => { e.style.visibility = 'hidden'; }), sel);
+  await page.locator(`#c-${s.id}`).screenshot({ path: `${LAYERS}/${s.id}-bare.png` });
+  await page.evaluate((q) => document.querySelectorAll(q).forEach((e) => { e.style.visibility = ''; }), sel);
+}
 const footageIds = sb.steps.filter((s) => s.footage).map((s) => s.id);
 const arrowIds = sb.steps.filter((s) => s.arrow && !s.footage).map((s) => s.id);
 await page.evaluate(([fIds, aIds]) => {
