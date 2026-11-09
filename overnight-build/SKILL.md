@@ -142,6 +142,10 @@ Make a todo list and work through it.
   (`docs/local-dev-setup.md`); and the auto-mode classifier denied a subagent's `gh pr create` that carried a wrong `-R` repo flag
   ("Create Public Surface") — brief `gh pr create` with NO `-R`; a sibling session can take a pool tree between your check and the
   launch, so re-check the claim in the launch call and mint a fresh tree (symlink `node_modules` + `.env`, no install) on failure.
+- **A run beside a live pass (2026-11-09, line tabs):** the builder may not touch TD1/TD2, the Simulators or prod, so it tests and
+  screenshots on a mocked-route page (memory `reference_ro_page_mock_harness`; vite needs the worktree as cwd or the CSS is the
+  primary's). That proves layout and client logic only: the ledger's "Not proven" lists every server writer by name. Any string the
+  build LENGTHENS inside a one-line phone row is rendered at 390px with the longest realistic value before the PR merges.
 - **Agent hygiene that bit 2026-09-29 (Grid run, 9 builders):** `EnterWorktree` was REFUSED inside every subagent
   ("current working directory is the repository root") — brief builders to work in their claimed tree by absolute
   path (`git -C`, `npm --prefix`); two UI builders wrote the SAME test account's saved preferences at once and each
