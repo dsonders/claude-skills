@@ -69,7 +69,7 @@ const focusCard = (s) => `<section class="card" id="c-${s.id}">
 const stepCard = (s, i) => FOCUS ? focusCard(s) : `<section class="card" id="c-${s.id}">
   <div class="top">
     <div class="part">Part ${s.part}: ${esc(sb.parts[s.part - 1])}</div>
-    <div class="row"><div class="num">${i + 1}</div><div><div class="title" style="${esc(s.titleStyle || '')}">${chips(s.title)}</div>${s.body ? `<div class="body" style="${esc(s.bodyStyle || '')}">${chips(s.body)}</div>` : ''}</div></div>
+    <div class="row">${sb.stepNumbers === false ? '' : `<div class="num">${i + 1}</div>`}<div><div class="title" style="${esc(s.titleStyle || '')}">${chips(s.title)}</div>${s.body ? `<div class="body" style="${esc(s.bodyStyle || '')}">${chips(s.body)}</div>` : ''}</div></div>
   </div>
   ${screenBox(s, `<img src="${b64(`${DIR}/frames/${s.img}.png`, 'image/png')}">`)}
 </section>`;
