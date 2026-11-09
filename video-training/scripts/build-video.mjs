@@ -215,10 +215,24 @@ for (const [i, c] of cards.entries()) {
     const ins = ['-framerate', '30', '-i', `${dir}/o%05d.jpg`, ...still, '-i', `${LAYERS}/${c.id}-hole.png`];
     let chain = '', last = 'h', n = 2;
     if (fo.arrow) {
+      // after: the arrow appears on that word (⛔ Dave 11/09: on the warranty label as the voice names it).
       const until = fo.arrow.until ? (await wordAt(c.id, fo.arrow.until, fo.arrow.nth)) + 0.4 : len;
+      const after = fo.arrow.after ? (await wordAt(c.id, fo.arrow.after, fo.arrow.afterNth)) - 0.1 : 0;
       const ao = arrowOverlay(c, fo.arrow.at);
       ins.push(...still, '-i', ao.png);
-      chain += `;[${last}][${n}:v]overlay=${ao.xy}:enable='lt(t,${until.toFixed(2)})'[a${n}]`; last = `a${n}`; n++;
+      chain += `;[${last}][${n}:v]overlay=${ao.xy}:enable='between(t,${after.toFixed(2)},${until.toFixed(2)})'[a${n}]`; last = `a${n}`; n++;
+    }
+    // footage.pops: [{ text, word, nth, at: [x, y] }]: a word pops onto the screen as the voice says
+    // it, then floats gently to the card's end (⛔ Dave 11/09: "symptoms, error codes..."). The pill
+    // is a build-slides layer; it overshoots to 118 %, settles, then bobs a few px.
+    for (const [k, p] of (fo.pops || []).entries()) {
+      const t0 = (await wordAt(c.id, p.word, p.nth)) - 0.1, d = `(t-${t0.toFixed(2)})`;
+      const s = `if(lt(${d},0.16),max(0.05,1.18*${d}/0.16),if(lt(${d},0.3),1.18-0.18*(${d}-0.16)/0.14,1))`;
+      const cx = Math.round(PH.x + p.at[0] * K), cy = Math.round(PH.y + p.at[1] * K);
+      ins.push(...still, '-i', `${LAYERS}/${c.id}-pop${k}.png`);
+      chain += `;[${n}:v]format=rgba,scale=w='max(4,iw*${s})':h='max(4,ih*${s})':eval=frame[ps${n}]` +
+        `;[${last}][ps${n}]overlay=x='${cx}-overlay_w/2+4*sin(2*PI*${d}/3.1+${k})':y='${cy}-overlay_h/2+7*sin(2*PI*${d}/2.3+${k * 1.7})':enable='gte(t,${t0.toFixed(2)})'[p${n}]`;
+      last = `p${n}`; n++;
     }
     // An event with at: [x, y] (frame points) draws the finger marker on that control as the
     // take reaches it: for recordings that show no touches (the iOS Simulator).

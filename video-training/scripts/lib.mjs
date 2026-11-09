@@ -267,7 +267,9 @@ export function arrowSpec(a) {
   return s;
 }
 /** Shaft, head and label in card px, with the tip at (0, 0). head = the unit direction the head points. */
-export function arrowGeometry(spec, { reach = 92, stroke = 11, headLen = 32, headW = 38 } = {}) {
+// spec.size scales the whole arrow (0.6 = a small arrow for a small target, Dave 11/09).
+export function arrowGeometry(spec, opts = {}) {
+  const z = spec.size || 1, { reach = 92 * z, stroke = 11 * z, headLen = 32 * z, headW = 38 * z } = opts;
   const [vx, vy] = ARROW_FROM[spec.from], m = Math.hypot(vx, vy), u = [vx / m, vy / m];
   const tail = [-u[0] * reach, -u[1] * reach];
   // A soft bend: the control point sits off the chord, always to the same hand.

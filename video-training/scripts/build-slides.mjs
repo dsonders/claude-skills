@@ -4,7 +4,7 @@
 //   node build-slides.mjs <project-dir>
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { APP, PHONE, loadStoryboard, allCards, boardBody, screenOf, cardOf, textBox, captionsOf, CAPTION_BAND, arrowSpec, arrowHtml, arrowGeometry } from './lib.mjs';
+import { APP, PHONE, loadStoryboard, allCards, boardBody, screenOf, cardOf, textBox, captionsOf, CAPTION_BAND, arrowSpec, arrowHtml, arrowGeometry, ARROW_INK } from './lib.mjs';
 
 const DIR = resolve(process.argv[2] || '.');
 const sb = loadStoryboard(DIR);
@@ -174,6 +174,13 @@ for (let i = 0; i < 34; i++) {
     return document.getElementById('c').toDataURL('image/png');
   }, (i - 15) / 30);
   writeFileSync(`${LAYERS}/tap/t${String(i).padStart(3, '0')}.png`, Buffer.from(url.split(',')[1], 'base64'));
+}
+// footage.pops: one pill per word that pops onto the video (build-video animates it), video scale.
+const pp = await browser.newPage({ viewport: { width: 600, height: 200 }, deviceScaleFactor: 2 });
+for (const s of sb.steps) for (const [k, p] of (s.footage?.pops || []).entries()) {
+  await pp.setContent(`<html><body style="margin:0;background:transparent"><div id="p" style="display:inline-block;margin:10px;background:${ARROW_INK.fill};color:${ARROW_INK.edge};font:800 24px/1 -apple-system,'SF Pro Text','Helvetica Neue',Arial,sans-serif;padding:11px 18px;border-radius:999px;box-shadow:0 0 0 3px ${ARROW_INK.edge},0 4px 10px rgba(0,0,0,.55);white-space:nowrap">${esc(p.text)}</div></body></html>`);
+  const b = await pp.locator('#p').boundingBox();
+  await pp.screenshot({ path: `${LAYERS}/${s.id}-pop${k}.png`, omitBackground: true, clip: { x: b.x - 8, y: b.y - 6, width: b.width + 16, height: b.height + 18 } });
 }
 // One subtitle layer per sentence: the band only, see-through, at video scale.
 if (FOCUS) {
