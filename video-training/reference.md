@@ -121,6 +121,17 @@ The checklist opens only when the note reads as scheduled maintenance. "Schedule
 - The OpenAI key is read from the app's environment by running from the app folder with `-r dotenv/config`. Error text is scrubbed of anything shaped like a key before it is printed.
 - Bash commands that name a `.env` file are blocked. Let the script read it.
 
+## Revision knobs (Story Writer v9 to v12, Dave 2026-11-09)
+
+- Dave gives video edits by timestamp ("around 1:00"). Map a time to its card by adding up the per-card lengths `build-video.mjs` prints, then use the word times in `narration/words.json` to place an effect on a word.
+- `"stepNumbers": false` drops the numbered circle beside each headline.
+- `arrow.size`: 0.6 makes a small arrow for a small target, such as the WARRANTY label.
+- `footage.arrow.after: word` shows a clip's arrow from that word on. `until` still ends it.
+- `footage.pops: [{ text, word, at }]` pops a yellow word label onto the clip at that word, then floats it gently until the card ends.
+- `calloutsFrom: word` on a still card keeps its ring, arrow and tap off screen until that word, so an intro line plays over a clean screen. The PDF still shows them.
+- Dropping a part: filter its steps out, subtract one from every later `part`, and drop it from `parts`. Back up `storyboard.json` as `storyboard.vN.json` first.
+- A harvest line saying a footage card's arrow was "removed" can be a false positive: the canvas never drew it. Grep the local `storyboard/project/` copy for `sb-arrow` before accepting it.
+
 ## Command shapes
 
 ```

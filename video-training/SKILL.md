@@ -48,7 +48,7 @@ One file drives everything: `storyboard.json`. Dave edits it through a design ca
 | The one source of truth | `<project>/storyboard.json` |
 | Key frames, clips, narration | `<project>/frames/`, `footage/`, `narration/` |
 | Builds | `<project>/out/` |
-| What Dave receives | `~/Desktop/<Title>/` |
+| What Dave receives | `~/Desktop/RO-bot_desktop/_videos/<folder>/`, as `<slug>-vN.mp4`, `.pdf` and `slides-vN/` |
 | Worked example | `training-videos/story-writer-getting-started/` and `examples/story-writer/` here |
 
 Scripts are in `scripts/` here. They take the project folder as their first argument.
@@ -147,7 +147,7 @@ Write narration for the ear: "R O", "three Cs", "tenthgear dot A I". Announce ea
 
 ### Step 8: Deliver
 
-Copy the video, the PDF and `out/slides/` to `~/Desktop/<Title>/`. Keep earlier versions. Give the length, what changed, and anything Dave may notice (a different repair order number in a clip, a callout dropped over footage).
+Copy the video, the PDF and `out/slides/` to Dave's folder (see Where things live), as the next `-vN`. Keep earlier versions. Give the length, what changed, and anything Dave may notice (a different repair order number in a clip, a callout dropped over footage).
 
 ### Step 9: Clean up
 
