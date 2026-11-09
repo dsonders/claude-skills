@@ -15,6 +15,14 @@ Run in a pool worktree (`.claude/worktrees/build-N`, claim → `reset --hard ori
 
 ## 0. Is it real, and is it mine?
 
+**First tool call of the pass, before step 1, while Dave is still at the keyboard:**
+`mcp__computer-use__request_access(["Simulator", "Spark Desktop"])`. The grant lasts for the session only
+and nothing in settings can pre-approve it, so a request made mid-pass stalls the run until Dave comes back
+(2026-11-09: it sat on the dialog all night). Tell Dave in one line that the dialog is up and wait for the
+grant before going on. Add any other native app the awaiting files name to this ONE request. The manager
+session holds the grant and drives every computer-use row itself, in sequence (one screen); an agent that
+reaches a computer-use row hands it back and never calls `request_access`.
+
 1. `npm run verify:deploy -- --base https://app.tenthgear.ai` — the pass starts only when
    `index.html built <time>` moved past the last ledger's time (a "Published your App" commit is NOT a
    signal). Record `/api/version`'s sha.
