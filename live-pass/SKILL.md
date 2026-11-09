@@ -60,6 +60,9 @@ reaches a computer-use row hands it back and never calls `request_access`.
   finds (a stale row's wording, a copy nit) are fixed in the pass, never reported as an "observation".
 - Every FAILED is replayed locally before it is written; a real one gets a fix PR plus its own awaiting
   file the same session. Re-read rows against same-batch siblings before calling a regression.
+- ⛔ (Dave 2026-11-09) A bug REPRODUCED on prod gets its fix PR in the pass, without asking, under the normal
+  PR rules (a sensitive change still opens without auto-merge and waits for Dave). Only a suspected bug waits
+  for his review of the evidence, and a change to what users see or a product decision goes to him as a ruling.
 
 ## 3. Drive it yourself — Dave's page is the failure case, not the handoff ⭐
 
