@@ -160,7 +160,7 @@ If the post has a section with compelling math or a data story, propose an inlin
 - Wrap the whole thing in `<div class="not-prose my-10">` to escape prose styles
 
 #### Content upgrade suggestion (soft flag)
-If the post naturally pairs with a downloadable asset (checklist, template, calculator, scorecard), mention it. Example: a warranty audit post pairs with a "Warranty Audit Self-Check Checklist" PDF. The PDF creation stays manual but flagging it helps the user capture leads.
+If the post naturally pairs with a downloadable asset (checklist, template, calculator, scorecard), mention it. An email-gated Google Sheet already has a working pattern (form, `submission-created` email, thumbnail, and one reCAPTCHA per page); read `docs/lessons-learned/gated-content-upgrade.md` before building one.
 
 ### Checkpoint 2
 
