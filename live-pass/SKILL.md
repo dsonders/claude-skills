@@ -136,6 +136,13 @@ A row goes on Dave's page only when ALL hold:
   (the agents' own screenshots, boxes positioned in percent; never fresh captures, no image libraries),
   the named ceiling, the ladder evidence, the refuter's verdict. Group by device; carried-over rows last
   with their age. Reuse a carried row's `data-id` so its ticks follow it.
+- A card's Expect says what the ROW's Expected says, in Dave's words, and nothing more (2026-11-11: a card
+  promised "repair-order list calls only" where the row claimed only "no customer or vehicle lookups").
+- A card that needs Dave live (his handset, his signed-in console) is run as ONE planned sitting: before he
+  starts, list every open row in the queue that needs him or the state his action creates, order them with
+  their waits, and tell him the number of steps and which is the last (2026-11-11: two rows were found
+  mid-session and he came back an hour later for one more text). If his Chrome is already signed in to the
+  console and he says to take over, drive the read-only part yourself (harness README, 2026-11-11 notes).
 - Verify the empty `checks` collection reads back with `ArtifactData` before reporting.
 - Report to Dave: sha, counts, the page URL, the fix PRs, and the rows awaiting his ruling. Then update
   memory `reference_release_verification_queue`'s *Latest state* line only (one line; narratives live in
