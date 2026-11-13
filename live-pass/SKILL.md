@@ -120,7 +120,9 @@ A row goes on Dave's page only when ALL hold:
 2. For every file whose rows all proved and whose surface is stable: promote API rows into
    `__tests__/workflow/` cases and UI rows into a creds-gated Playwright spec (the
    `ui-permission-gates.spec.ts` shape; labels are guarded by `e2e-label-pins-exist.test.ts`). Note
-   `promoted → <test file>` on the Verified `###` line, or `promotion: deferred (<why>)`.
+   `promoted → <test file>` on the Verified `###` line, or `promotion: deferred (<why>)`. The test code
+   ships in its OWN PR (a test file under `__tests__/workflow` takes the ledger out of docs-only Codex
+   scope); run it against prod first and say so in that PR.
 3. Ledger PR (docs-only, auto-merge via `npm run pr:automerge -- <n>`): move closed files to Verified
    under one `Republish of <date>` header that carries the sha, the counts (proved / partial /
    not-drivable / failed), the judgement calls for Dave, the hand-checks page URL, and every 📱 row older
