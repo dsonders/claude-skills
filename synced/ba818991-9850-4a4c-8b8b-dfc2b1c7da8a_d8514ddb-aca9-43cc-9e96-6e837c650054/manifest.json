@@ -1,5 +1,5 @@
 {
-  "lastUpdated": 1794255099419,
+  "lastUpdated": 1794533702402,
   "skills": [
     {
       "skillId": "import-memory",
@@ -57,7 +57,7 @@
       "name": "xlsx",
       "description": "Use this skill any time a spreadsheet file is the primary input or output. This means any task where the user wants to: open, read, edit, or fix an existing .xlsx, .xlsm, .xltx, .csv, or .tsv file (e.g., adding columns, computing formulas, formatting, charting, cleaning messy data); create a new spreadsheet from scratch or from other data sources; or convert between tabular file formats. Trigger especially when the user references a spreadsheet file by name or path — even casually (like \"the xlsx in my downloads\") — and wants something done to it or produced from it. Also trigger for cleaning or restructuring messy tabular data files (malformed rows, misplaced headers, junk data) into proper spreadsheets. The deliverable must be a spreadsheet file. Do NOT trigger when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration, even if tabular data is involved.",
       "source": "anthropic",
-      "updatedAt": "2026-11-06T23:00:36.135606Z"
+      "updatedAt": "2026-11-13T00:00:23.327640Z"
     },
     {
       "skillId": "chrome-browser",
@@ -98,9 +98,8 @@
     }
   ],
   "pendingClaims": [
-    "39526:Mon Nov  2 22:54:22 2026/docx",
-    "39526:Mon Nov  2 22:54:22 2026/pdf",
-    "8892:Sun Oct 18 13:25:36 2026/computer-use",
-    "8892:Sun Oct 18 13:25:36 2026/skill-creator"
+    "57786:Tue Nov  3 13:23:37 2026/xlsx",
+    "29359:Thu Nov 12 14:57:02 2026/xlsx",
+    "39675:Mon Nov  2 22:54:52 2026/xlsx"
   ]
 }
