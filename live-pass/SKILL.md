@@ -46,7 +46,7 @@ so this table grows.
 
 Standing permissions that need NO question (do not ask again): test texts to TD1 / TD2 per §3; test-org mode and
 feature flips via the app (memory `feedback_test_org_mode_flips_allowed`); the browser cleanup; read-only test-org
-Firestore scripts; PRs per RULE #7.
+Firestore scripts; the read-only Kia Kinston text-delivery read (status fields only, ⛔ Dave 2026-11-17); PRs per RULE #7.
 
 1. `npm run verify:deploy -- --base https://app.tenthgear.ai` — the pass starts only when
    `index.html built <time>` moved past the last ledger's time (a "Published your App" commit is NOT a
