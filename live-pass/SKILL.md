@@ -32,7 +32,7 @@ every question; nothing may stall the run after he walks away).** Each probe is 
 | Messages scripting | `osascript -e 'tell application "Messages" to count of chats'` | Ghostty lost Automation → Messages: Dave re-enables it now |
 | Firestore read rule | the read-only recipe (§3 inventory) on one known TD2 RO, printing one field | the auto-mode rule is gone: texting / stamp rows become cards — ask now |
 | Browser cleanup rule | `pkill -f "Google Chrome --headless"` (exit 1 = nothing running, fine) | a leftover from a prior pass is killed now, before it collides with logins |
-| Simulator + app build | `xcrun simctl list devices booted`; `xcrun simctl listapps booted \| grep -i tenthgear` | no booted iPhone → boot it; no signed app build → every in-app row is a card: ask Dave NOW whether to rebuild |
+| Simulator + app build | `xcrun simctl list devices booted`; `xcrun simctl listapps booted \| grep -i tenthgear` | no booted iPhone → boot it; no app → REBUILD it, no question (11/17: an agent built mobile `3d103cf` Debug signed "Sign to Run Locally" — the xcodebuild recipe WITHOUT `CODE_SIGNING_ALLOWED=NO`; a package-resolver crash on the first try, the retry built). In-app rows are never cards for want of a build. In the app, dismiss the iOS notification prompt ("Don't Allow") before any drag: it eats touches |
 | Android emulator | `~/Library/Android/sdk/emulator/emulator -list-avds` has `pixel8` | rows wait on a fix |
 | Gmail MCP | one `search_threads` for the newest TenthGear email | reconnect now |
 | Test-org texting | TD1 and TD2 `features.sms` + `sms_from_number` (read-only script) | the row that needs it lists its flip in the question below |
