@@ -1,5 +1,5 @@
 {
-  "lastUpdated": 1794849471192,
+  "lastUpdated": 1794951990878,
   "skills": [
     {
       "skillId": "docs",
@@ -134,10 +134,17 @@
       "description": "Create beautiful visual art in .png and .pdf documents using design philosophy. You should use this skill when the user asks to create a poster, piece of art, design, or other static piece. Create original visual designs, never copying existing artists' work to avoid copyright violations.",
       "source": "anthropic-example",
       "updatedAt": "2026-09-14T19:41:01.576619Z"
+    },
+    {
+      "skillId": "skill_01PdkjqQ6oVzrQwTgh1ornqf",
+      "name": "tenthgear-call-prep",
+      "description": "Pre-call brief for a TenthGear demo or sales call with a dealership contact. Use instead of sales:call-prep whenever Dave asks to prep for a call or meeting with a prospect, customer or partner.",
+      "source": "plugin",
+      "updatedAt": "2026-11-17T21:39:41.797635Z",
+      "backingPluginId": "plugin_01XdA2yhRYkNkGto8jefcvDt"
     }
   ],
   "pendingClaims": [
-    "8892:Sun Oct 18 13:25:36 2026/pptx",
     "39675:Mon Nov  2 22:54:52 2026/pptx"
   ]
 }
