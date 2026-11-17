@@ -16,7 +16,7 @@ Run in a pool worktree (`.claude/worktrees/build-N`, claim → `reset --hard ori
 ## 0. Is it real, and is it mine?
 
 **First tool call of the pass, before step 1, while Dave is still at the keyboard:**
-`mcp__computer-use__request_access(["Simulator", "Spark Desktop"])`. The grant lasts for the session only
+`mcp__computer-use__request_access(["Simulator", "Spark Desktop", "Messages"])`. The grant lasts for the session only
 and nothing in settings can pre-approve it, so a request made mid-pass stalls the run until Dave comes back
 (2026-11-09: it sat on the dialog all night). Tell Dave in one line that the dialog is up and wait for the
 grant before going on. Add any other native app the awaiting files name to this ONE request. The manager
@@ -60,6 +60,7 @@ reaches a computer-use row hands it back and never calls `request_access`.
   finds (a stale row's wording, a copy nit) are fixed in the pass, never reported as an "observation".
 - Every FAILED is replayed locally before it is written; a real one gets a fix PR plus its own awaiting
   file the same session. Re-read rows against same-batch siblings before calling a regression.
+- ⛔ (Dave 2026-11-17) Texting and every other test runs on TD1 / TD2 (or the demo org), NEVER a live customer store (Kia Kinston, McGrath, …). A row written against a live store is rewritten to TD1 ↔ TD2 before it is driven.
 - ⛔ (Dave 2026-11-09) A bug REPRODUCED on prod gets its fix PR in the pass, without asking, under the normal
   PR rules (a sensitive change still opens without auto-merge and waits for Dave). Only a suspected bug waits
   for his review of the evidence, and a change to what users see or a product decision goes to him as a ruling.
@@ -83,6 +84,8 @@ in the ledger and in the message to Dave; the number is expected to fall every p
 | computer-use on the Simulator WINDOW (`request_access(["Simulator"])`, native app, full tier) | PROVED 2026-10-27: the real iOS keyboard (⌘K "Toggle Software Keyboard" once per boot, then tap the field), the Home Screen (window-chrome Home button → a standalone PWA icon), lock (⌘L) and unlock (Home twice); `simctl openurl` to load a page, `simctl io screenshot` for the whole device | every keyboard / Home Screen / lock / app-switch row, paired with a safaridriver session for rects and JS (memory `reference_ios_simulator_webdriver_recipe`) |
 | claude-in-chrome (Dave's real Chrome, his logins) | real-browser Chrome with real extensions and cookies | a desktop row where headless Chromium passed but "real Chrome" is the claim |
 | Gmail MCP (TD1 tech mailbox dave@ro-bot.io) | email bodies, links, timing | every "an email arrives" row |
+| Read-only Firestore script (⛔ Dave 2026-11-17: auto-mode allow rule in `~/.claude/settings.json`) | any stored field on a TEST-org doc (stamps, `*_at`, ledger rows) | every row whose Expected is a stored value the API does not return. Write it in the scratchpad; import dotenv by absolute path (`/Users/davidsonders/ro-bot/app/node_modules/dotenv/config`) and `server/firebase-admin` by absolute path; wrap in `async function main()` (tsx runs it as CJS: no top-level await); run `DOTENV_CONFIG_PATH=/Users/davidsonders/ro-bot/app/.env npx --prefix /Users/davidsonders/ro-bot/app tsx <file>`. READ only, test orgs only, never print a key. Never a Dave card for this |
+| Messages on this Mac, by script (⛔ Dave 2026-11-17 standing OK; Ghostty has Automation → Messages) | a real handset's STOP / START / HELP / reply texts, as Dave's number | every 📱 texting row. ONLY to TD1 +1 984 283 5916 and TD2 +1 984 333 4016, ONLY STOP / START / HELP / "ok" / "<x> check"; every STOP undone by START in the pass. Send with `osascript` to the exact number (never by clicking the conversation list: it re-sorts — the 11/17 stray STOP); read delivery from `chat.db` read-only. Anything else = ask Dave |
 | Fixture changes (feature flag ON, TD1/TD2 mode flip, `mintRo`, cold-store/restore) | rows blocked by the test org's state | "the test org has it off" is never a reason — set it and test |
 
 | Android emulator (`~/Library/Android/sdk`, AVD `pixel8`, Android 15, Chrome 124; Playwright `_android` over adb) | Android Chrome truth: touch, the zoom rail, file inputs, layout | every Android row. Boot headless (~12 s); ⛔ `adb shell am set-debug-app --persistent com.android.chrome` once per AVD or `launchBrowser()` polls forever — recipe in memory `reference_android_emulator_recipe` |
@@ -115,6 +118,7 @@ A row goes on Dave's page only when ALL hold:
 
 ## 4. Fixture sweep, promotion, ledger
 
+0. Stop every headless browser the pass started: `pkill -f "Google Chrome --headless"` (allow-listed; never touches Dave's own Chrome). A leftover one polled prod as TD1 and played dings for 16 h after the 11/16 pass.
 1. `node __tests__/workflow/live-pass/sweep-fixtures.mjs` (dry run) → read the list → `--apply`. Runs
    unconditionally, before the ledger PR, both orgs if TD2 was used.
 2. For every file whose rows all proved and whose surface is stable: promote API rows into
@@ -145,6 +149,7 @@ A row goes on Dave's page only when ALL hold:
   their waits, and tell him the number of steps and which is the last (2026-11-11: two rows were found
   mid-session and he came back an hour later for one more text). If his Chrome is already signed in to the
   console and he says to take over, drive the read-only part yourself (harness README, 2026-11-11 notes).
+- A card that asks Dave to run a command gives ONE paste-ready line with no prefix word (`cd ~/ro-bot/app && …`, never "Run …" — 11/17 he typed "Run"), and the pass ran that exact line first. Better: a stored-value read is not a card at all (read-only Firestore script above).
 - Verify the empty `checks` collection reads back with `ArtifactData` before reporting.
 - Report to Dave: sha, counts, the page URL, the fix PRs, and the rows awaiting his ruling. Then update
   memory `reference_release_verification_queue`'s *Latest state* line only (one line; narratives live in
