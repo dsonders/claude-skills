@@ -23,6 +23,31 @@ grant before going on. Add any other native app the awaiting files name to this 
 session holds the grant and drives every computer-use row itself, in sequence (one screen); an agent that
 reaches a computer-use row hands it back and never calls `request_access`.
 
+**Then the preflight — ALL in the first minutes, one message to Dave at the end of it (⛔ Dave 2026-11-17: front-load
+every question; nothing may stall the run after he walks away).** Each probe is read-only and runs in this order:
+
+| Probe | Command | A failure means |
+|---|---|---|
+| computer-use grant | `list_granted_applications` shows every app requested | re-request now |
+| Messages scripting | `osascript -e 'tell application "Messages" to count of chats'` | Ghostty lost Automation → Messages: Dave re-enables it now |
+| Firestore read rule | the read-only recipe (§3 inventory) on one known TD2 RO, printing one field | the auto-mode rule is gone: texting / stamp rows become cards — ask now |
+| Browser cleanup rule | `pkill -f "Google Chrome --headless"` (exit 1 = nothing running, fine) | a leftover from a prior pass is killed now, before it collides with logins |
+| Simulator + app build | `xcrun simctl list devices booted`; `xcrun simctl listapps booted \| grep -i tenthgear` | no booted iPhone → boot it; no signed app build → every in-app row is a card: ask Dave NOW whether to rebuild |
+| Android emulator | `~/Library/Android/sdk/emulator/emulator -list-avds` has `pixel8` | rows wait on a fix |
+| Gmail MCP | one `search_threads` for the newest TenthGear email | reconnect now |
+| Test-org texting | TD1 and TD2 `features.sms` + `sms_from_number` (read-only script) | the row that needs it lists its flip in the question below |
+
+Then read EVERY awaiting row once for anything only Dave can do: a Replit Secret, an org flip on a LIVE store,
+a `manage-org` / `sms-number` write (he types those), a purchase, a real-device-only residue, a decision a
+row is waiting on. Put them ALL in ONE message with the probe results, before step 2's agents launch:
+numbered 🟡 blocks for decisions, one paste-ready command list for his commands (in the order the pass needs
+them), and the expected end time. A question found later in the pass is a preflight bug: note it in the ledger
+so this table grows.
+
+Standing permissions that need NO question (do not ask again): test texts to TD1 / TD2 per §3; test-org mode and
+feature flips via the app (memory `feedback_test_org_mode_flips_allowed`); the browser cleanup; read-only test-org
+Firestore scripts; PRs per RULE #7.
+
 1. `npm run verify:deploy -- --base https://app.tenthgear.ai` — the pass starts only when
    `index.html built <time>` moved past the last ledger's time (a "Published your App" commit is NOT a
    signal). Record `/api/version`'s sha.
