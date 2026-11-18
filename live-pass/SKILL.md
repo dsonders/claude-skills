@@ -11,7 +11,9 @@ Orchestration only. The mechanics live in the repo and are authoritative over th
 idioms and its **Ceilings** list). Memory `reference_release_verification_queue` holds the recurring traps.
 
 Run in a pool worktree (`.claude/worktrees/build-N`, claim → `reset --hard origin/main` → branch
-`docs/live-pass-<date>`). One plain command per Bash call, absolute paths, never `cd`.
+`docs/live-pass-<date>-<HHMM>`; before the first push `git ls-remote --exit-code --heads origin <branch>` must exit 2 —
+11/17: a second pass on the same day reused `docs/live-pass-<date>`, the push was refused and `gh pr create` opened #2878 on
+the MORNING's stale branch). One plain command per Bash call, absolute paths, never `cd`.
 
 ## 0. Is it real, and is it mine?
 
@@ -32,10 +34,10 @@ every question; nothing may stall the run after he walks away).** Each probe is 
 | Messages scripting | `osascript -e 'tell application "Messages" to count of chats'` | Ghostty lost Automation → Messages: Dave re-enables it now |
 | Firestore read rule | the read-only recipe (§3 inventory) on one known TD2 RO, printing one field | the auto-mode rule is gone: texting / stamp rows become cards — ask now |
 | Browser cleanup rule | `pkill -f "Google Chrome --headless"` (exit 1 = nothing running, fine) | a leftover from a prior pass is killed now, before it collides with logins |
-| Simulator + app build | `xcrun simctl list devices booted`; `xcrun simctl listapps booted \| grep -i tenthgear` | no booted iPhone → boot it; no app → REBUILD it, no question (11/17: an agent built mobile `3d103cf` Debug signed "Sign to Run Locally" — the xcodebuild recipe WITHOUT `CODE_SIGNING_ALLOWED=NO`; a package-resolver crash on the first try, the retry built). In-app rows are never cards for want of a build. In the app, dismiss the iOS notification prompt ("Don't Allow") before any drag: it eats touches |
+| Simulator + app build | `xcrun simctl list devices booted`; `xcrun simctl listapps booted \| grep -q com.tenthgear.app` (NOT `grep -i tenthgear`: it matches the Safari Home Screen web clip, a `com.apple.WebKit.PushBundle.*` id — 11/17 false yes) | no booted iPhone → boot it; no app → REBUILD it, no question (11/17: an agent built mobile `3d103cf` Debug signed "Sign to Run Locally" — the xcodebuild recipe WITHOUT `CODE_SIGNING_ALLOWED=NO`; a package-resolver crash on the first try, the retry built). In-app rows are never cards for want of a build. In the app, dismiss the iOS notification prompt ("Don't Allow") before any drag: it eats touches |
 | Android emulator | `~/Library/Android/sdk/emulator/emulator -list-avds` has `pixel8` | rows wait on a fix |
 | Gmail MCP | one `search_threads` for the newest TenthGear email | reconnect now |
-| Test-org texting | TD1 and TD2 `features.sms` + `sms_from_number` (read-only script) | the row that needs it lists its flip in the question below |
+| Test-org texting | TD1 and TD2 `features.sms` + `sms_from_number` (read-only script) | off on a test org → flip it yourself: `npm run manage-org set-feature <TD1 or TD2 id> sms on` (⛔ Dave 2026-11-17 standing OK, allow-listed for those two ids only; restore after if the row says so). Never a live store |
 
 Then read EVERY awaiting row once for anything only Dave can do: a Replit Secret, an org flip on a LIVE store,
 a `manage-org` / `sms-number` write (he types those), a purchase, a real-device-only residue, a decision a
@@ -46,7 +48,7 @@ so this table grows.
 
 Standing permissions that need NO question (do not ask again): test texts to TD1 / TD2 per §3; test-org mode and
 feature flips via the app (memory `feedback_test_org_mode_flips_allowed`); the browser cleanup; read-only test-org
-Firestore scripts; the read-only Kia Kinston text-delivery read (status fields only, ⛔ Dave 2026-11-17); two Twilio-API "Stranger check" texts TD1 → TD2 per pass (⛔ Dave 2026-11-17); PRs per RULE #7.
+Firestore scripts; `manage-org set-feature` on TD1 (`mlTaPo12wbpUtJB9GXJM`) and TD2 (`test-dealership-2`) only (⛔ Dave 2026-11-17); the read-only Kia Kinston text-delivery read (status fields only, ⛔ Dave 2026-11-17); two Twilio-API "Stranger check" texts TD1 → TD2 per pass (⛔ Dave 2026-11-17); PRs per RULE #7.
 
 1. `npm run verify:deploy -- --base https://app.tenthgear.ai` — the pass starts only when
    `index.html built <time>` moved past the last ledger's time (a "Published your App" commit is NOT a
@@ -89,6 +91,9 @@ Firestore scripts; the read-only Kia Kinston text-delivery read (status fields o
 - ⛔ (Dave 2026-11-09) A bug REPRODUCED on prod gets its fix PR in the pass, without asking, under the normal
   PR rules (a sensitive change still opens without auto-merge and waits for Dave). Only a suspected bug waits
   for his review of the evidence, and a change to what users see or a product decision goes to him as a ruling.
+  The MANAGER builds that fix in its own claimed tree on a `fix/...` branch off `origin/main` (commit, push, PR, then
+  back to the ledger branch): a subagent spawned from a pool tree cannot write any other tree (Worktree guard; 11/17
+  a fix agent briefed for build-2 came back with the diagnosis and no PR). Arm auto-merge after the self-review fork.
 
 ## 3. Drive it yourself — Dave's page is the failure case, not the handoff ⭐
 
@@ -118,7 +123,11 @@ in the ledger and in the message to Dave; the number is expected to fall every p
 
 Not reproduced by any driver here: a Samsung device (its long-press menu), an incoming call, a real
 camera or photo library, cellular. Those are the ONLY classes that go to Dave without a ladder attempt;
-the card still names which one.
+the card still names which one. ⛔ (Dave 2026-11-17) **A Samsung-only residue is NOT a card:** Dave has no Samsung, so
+prove the Pixel 8 emulator half and close the residue `➖ closed — accepted on first user report`.
+
+Helpers driving the Simulator never sign out a session they did not create (11/17: a Guide me agent signed out a
+Safari session left by someone else); use a free device, or report it and stop.
 
 **The ladder (every rung attempted IN ORDER, each attempt quoted on the card: the command or action,
 what happened, how long it took):**
