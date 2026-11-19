@@ -80,6 +80,16 @@ Firestore scripts; `manage-org set-feature` on TD1 (`mlTaPo12wbpUtJB9GXJM`) and 
 - The `Driver` column (awaiting README) says where a row STARTS, never where it ends: `headless` →
   Chromium/Playwright or the API; `simulator` → `/ios-verify`; `📱` → the whole ladder in §3 first — a
   `📱` tag written by a PR author is a guess, not a verdict.
+- ⛔ (Dave 2026-11-19) **Both forms of the iPhone app, every pass**: many technicians still use the installed
+  PWA, so the pass tests it AND the App Store app (playbook step 5 in `docs/release-verification.md` has the
+  detail). From `~/ro-bot/device-harness`, outside the command sandbox:
+  `python3 tools/store-app-check.py smoke --udid <iPhone 17 Simulator udid> --shutdown` (about 5 min; every
+  step PASS in both forms; `tools/build-shell-sim.sh` first if `build/shell-sim` is empty). When the release
+  changed layout or CSS, also `… compare --udid <udid> --appearance both --shutdown` on iPhone 17 and
+  `--appearance light` on iPhone 17e and 17 Pro Max (about 40 min with the three side by side), then open every
+  NEW pair in each `summary.md`. One manager-owned agent runs this while the row agents work; it holds the TD2
+  `tech` login and the three Simulators, so no row agent uses those meanwhile. A phone row is driven in BOTH
+  forms unless it is about one form by nature (push, deep links). A real NEW difference = evidence to Dave, no fix.
 - ⛔ (Dave 2026-10-29) Missing test-org data or a test-org setting in the way is never a residue: every brief
   tells the agent to CREATE the data (a video, an MPI, a priced line, a DMS import) and to FLIP the TD1/TD2
   setting (single/multi player, a feature, Spanish, a per-user switch), run the row, restore, and report
