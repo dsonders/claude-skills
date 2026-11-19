@@ -21,7 +21,7 @@ One file drives everything: `storyboard.json`. Dave edits it through a design ca
 - A revision to a video made with this skill (new wording, new card, new clip)
 
 **Do not use for:**
-- Marketing or promotional video (different tone, different rules; ask Dave)
+- Marketing, promo or demo video (different tone, different rules: use `video-promo`)
 - Customer inspection videos recorded inside the product
 - A mockup of a screen that does not exist yet (use `/visual`)
 
