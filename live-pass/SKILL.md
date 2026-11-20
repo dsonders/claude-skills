@@ -30,7 +30,8 @@ every question; nothing may stall the run after he walks away).** Each probe is 
 
 | Probe | Command | A failure means |
 |---|---|---|
-| computer-use grant | `list_granted_applications` shows every app requested | re-request now |
+| computer-use grant | `list_granted_applications` shows every app requested | re-request now. Refused with "in use by another Claude session" = an idle sibling still holds its old grant: tell Dave which session, he closes it or says "try again" (11/19: it sat until he came back). Request only installed apps: one missing name ("Android Studio") fails the whole request |
+| Blocked PRs | `gh pr list --state open --json number,title,statusCheckRollup` | an open PR with a failed check that no live session owns (ask the siblings in step 2) is fixed in the pass or named in the report (11/19: #2880 had sat Codex-blocked for two days until Dave asked) |
 | Messages scripting | `osascript -e 'tell application "Messages" to count of chats'` | Ghostty lost Automation → Messages: Dave re-enables it now |
 | Firestore read rule | the read-only recipe (§3 inventory) on one known TD2 RO, printing one field | the auto-mode rule is gone: texting / stamp rows become cards — ask now |
 | Browser cleanup rule | `pkill -f "Google Chrome --headless"` (exit 1 = nothing running, fine) | a leftover from a prior pass is killed now, before it collides with logins |
