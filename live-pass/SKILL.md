@@ -38,6 +38,7 @@ every question; nothing may stall the run after he walks away).** Each probe is 
 | Simulator + app build | `xcrun simctl list devices booted`; `xcrun simctl listapps booted \| grep -q com.tenthgear.app` (NOT `grep -i tenthgear`: it matches the Safari Home Screen web clip, a `com.apple.WebKit.PushBundle.*` id — 11/17 false yes) | no booted iPhone → boot it; no app → REBUILD it, no question (11/17: an agent built mobile `3d103cf` Debug signed "Sign to Run Locally" — the xcodebuild recipe WITHOUT `CODE_SIGNING_ALLOWED=NO`; a package-resolver crash on the first try, the retry built). In-app rows are never cards for want of a build. In the app, dismiss the iOS notification prompt ("Don't Allow") before any drag: it eats touches |
 | Android emulator | `~/Library/Android/sdk/emulator/emulator -list-avds` has `pixel8` | rows wait on a fix |
 | Gmail MCP | one `search_threads` for the newest TenthGear email | reconnect now |
+| Dave's iPhone (only when an awaiting row names a real iPhone, camera, mic or speaker) | `xcrun devicectl list devices` → "Davo phone" not `unavailable` | ask him in the preflight message to plug it in and unlock it; a row split so its Simulator half is proved never waits on the answer (11/26: asked, no answer, nothing stalled) |
 | Test-org texting | TD1 and TD2 `features.sms` + `sms_from_number` (read-only script) | off on a test org → flip it yourself: `npm run manage-org set-feature <TD1 or TD2 id> sms on` (⛔ Dave 2026-11-17 standing OK, allow-listed for those two ids only; restore after if the row says so). Never a live store |
 
 Then read EVERY awaiting row once for anything only Dave can do: a Replit Secret, an org flip on a LIVE store,
@@ -210,6 +211,8 @@ A row goes on Dave's page only when ALL hold:
   re-wording the brief is not the fix).
 - Never a blanket "needs a real phone" line on the page — the reason is per card, with the rung evidence.
 - Never hand Dave a row because it is faster than driving it. The pass has the time; he does not.
+- Never open the ledger PR with a check the pass itself named and did not run. Before the PR, grep the pass notes and agent reports for "not tested", "not proved", "not measured", "did not test" and RUN each one (11/26: "a click during the wait was not tested" and "no AI call: not proved" were both run only after Dave asked "anything else to test?"; the click found a double registration, and both needed a second ledger PR).
+- Zero surviving cards = no hand-checks page; say so in the ledger header instead of publishing an empty one.
 - Never tick a row whose OWN text says more than was driven (Codex blocks the ledger on each, #2590): a
   reword goes INTO the row's How/Expected, never only into the pass note; a split row becomes two rows
   (the proved half ticked, the residue unticked or `➖ dropped` with its reason); "Still in awaiting: N"
